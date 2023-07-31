@@ -4,7 +4,7 @@ An open source, performant fortnite backend server with a built in web-interface
 
 _Note: Some features are not yet implemented, please see the [Roadmap](#roadmap) for more information._
 
-## Installation
+## Features
 
 - Uses a PostgresQL database to ensure that data is stored securely and quickly.
 - Web interface is built with React so users can easily manage their account without having to use the desktop app.
@@ -12,17 +12,9 @@ _Note: Some features are not yet implemented, please see the [Roadmap](#roadmap)
 - Desktop app is built with Tauri which allows for a native experience on all platforms.
 - Backend (will be) written in Go to ensure that the server is performant and secure.
 
-## Usage
-
-### Screenshots of web interface
-
-![https://github.com/zombman/server](./public/home.png)
-![https://github.com/zombman/server](./public/login.png)
-![https://github.com/zombman/server](./public/register.png)
-![https://github.com/zombman/server](./public/dashboard.png)
-![https://github.com/zombman/server](./public/account.png)
-
 ## Roadmap
+
+- Allow fortnite to interact with the api :)
 
 ## Development
 
