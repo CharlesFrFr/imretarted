@@ -1,8 +1,10 @@
 # ![Zombie Server](./public/icon.png)
 
-An open source, performant fortnite backend server with a built in web-interface and desktop launcher! [View the frontend development here!](https://github.com/zombman/server/tree/frontend)
-
+An open source, performant fortnite backend server with a built in web-interface and desktop launcher!
 _Note: Some features are not yet implemented, please see the [Roadmap](#roadmap) for more information._
+
+[View the frontend development here!](https://github.com/zombman/server/tree/frontend)
+
 
 ## Features
 
