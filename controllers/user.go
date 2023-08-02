@@ -72,7 +72,7 @@ func UserAccountPrivate(c *gin.Context) {
 		"country": "US",
 		"preferredLanguage": "en",
 		"failedLoginAttempts": 0,
-		"lastLogin": time.Now().Format(time.RFC3339),
+		"lastLogin": time.Now().Format("2006-01-02T15:04:05.999Z"),
 		"ageGroup": "UNKNOWN",
 		"headless": false,
 	})

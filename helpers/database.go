@@ -28,4 +28,5 @@ func AutoMigrate() {
 	Postgres.AutoMigrate(&models.RefreshToken{})
 
 	Postgres.AutoMigrate(&models.UserProfile{})
+	Postgres.AutoMigrate(&models.UserLoadout{})
 }

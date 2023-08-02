@@ -11,6 +11,41 @@ type UserProfile struct {
   Profile string `gorm:"type:text" json:"profile"`
 }
 
+type UserLoadout struct {
+	gorm.Model
+	AccountId		string	`gorm:"default:null" json:"accountId"`
+	Loadout 		string	`gorm:"type:text" json:"loadout"`
+}
+
+type Loadout struct {
+	TemplateId string              `json:"templateId"`
+	Attributes LoadoutAttributes   `json:"attributes"`
+	Quantity   int                 `json:"quantity"`
+}
+
+type LoadoutAttributes struct {
+	LockerSlotsData LockerSlotsData `json:"locker_slots_data"`
+	UseCount        int             `json:"use_count"`
+	BannerIconTemplate string      `json:"banner_icon_template"`
+	LockerName string             `json:"locker_name"`
+	BannerColorTemplate string    `json:"banner_color_template"`
+	ItemSeen bool                `json:"item_seen"`
+	Favorite bool                `json:"favorite"`
+}
+
+type LockerSlotsData struct {
+	Slots map[string]LockerSlotItem `json:"slots"`
+}
+
+type LockerSlotItem struct {
+	Items         []string     `json:"items"`
+	ActiveVariants []Variant   `json:"activeVariants"`
+}
+
+type Variant struct {
+	Variants []string `json:"variants"`
+}
+
 type Profile struct {
 	Created         string             `json:"created"`
 	Updated         string             `json:"updated"`
@@ -19,7 +54,7 @@ type Profile struct {
 	AccountId       string             `json:"accountId"`
 	ProfileId       string             `json:"profileId"`
 	Version         string             `json:"version"`
-	Items           map[string]Item    `json:"items"`
+	Items           map[string]any    `json:"items"`
 	Stats           Stats              `json:"stats"`
 	CommandRevision int                `json:"commandRevision"`
 }
@@ -27,13 +62,7 @@ type Profile struct {
 type Item struct {
 	Attributes ItemAttributes 	`json:"attributes"`
 	TemplateId string			 	`json:"templateId"`
-	Quantity   int					`json:"quantity"`
-}
-
-type Loadout struct {
-	Attributes interface{} 	`json:"attributes"`
-	TemplateId string			 	`json:"templateId"`
-	Quantity   int					`json:"quantity"`
+	Quantity   int				 	`json:"quantity"`
 }
 
 type ItemAttributes struct {
@@ -44,25 +73,6 @@ type ItemAttributes struct {
 	RndSelCnt                   int         `json:"rnd_sel_cnt"`
 	Variants                    []string    `json:"variants"`
 	Xp                          int         `json:"xp"`
-}
-
-type LoadoutAttributes struct {
-	LockerSlotsData 		LockerSlots `json:"locker_slots_data"`
-	UseCount        		int         `json:"use_count"`
-	BannerIconTemplate 	string 			`json:"banner_icon_template"`
-	LockerName 					string 			`json:"locker_name"`
-	BannerColorTemplate string 			`json:"banner_color_template"`
-	ItemSeen					 	bool 				`json:"item_seen"`
-	Favorite 						bool 				`json:"favorite"`
-}
-
-type LockerSlots struct {
-	Slots map[string]LockerSlotItem `json:"slots"`
-}
-
-type LockerSlotItem struct {
-	Items         	[]string 			`json:"items"`
-	ActiveVariants 	[]interface{} `json:"activeVariants"`
 }
 
 type Stats struct {

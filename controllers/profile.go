@@ -27,8 +27,12 @@ func ProfileQuery(c *gin.Context) {
 
 	profile.Rvn += 1
 	profile.CommandRevision += 1
-	if profileId == "athena" { profile.Stats.Attributes.LastAppliedLoadout = profile.Stats.Attributes.Loadouts[0] }
+	profile.AccountId = user.AccountId
 	common.SaveProfileToUSer(user.AccountId, profile)
+
+	athenaProfile.Stats.Attributes.LastAppliedLoadout = athenaProfile.Stats.Attributes.Loadouts[0]
+	addblackknight(&athenaProfile, user.AccountId)
+	common.SaveProfileToUSer(user.AccountId, athenaProfile)
 
 	switch action {
 		case "QueryProfile":
@@ -39,7 +43,7 @@ func ProfileQuery(c *gin.Context) {
 			break
 	}
 
-	profile.Stats.Attributes.SeasonNum = 6
+	profile.Stats.Attributes.SeasonNum = common.Season
 	
 	c.JSON(200, gin.H{
 		"profileRevision": profile.Rvn,
@@ -49,7 +53,7 @@ func ProfileQuery(c *gin.Context) {
 			"changeType": "fullProfileUpdate",
 			"profile": profile,
 		}},
-		"serverTime": time.Now().Format(time.RFC3339),
+		"serverTime": time.Now().Format("2006-01-02T15:04:05.999Z"),
 		"multiUpdate": []gin.H{{
 			"profileRevision": athenaProfile.Rvn,
 			"profileId": athenaProfile.ProfileId,
@@ -61,4 +65,20 @@ func ProfileQuery(c *gin.Context) {
 			"profileCommandRevision": athenaProfile.CommandRevision,
 		}},
 	})
+}
+
+func addblackknight(profile *models.Profile, accountId string) {
+	profile.Items["CID_035_Athena_Commando_M_Medieval"] = models.Item{
+		TemplateId: "AthenaCharacter:CID_035_Athena_Commando_M_Medieval",
+		Attributes: models.ItemAttributes{
+			MaxLevelBonus: 0,
+			Level: 1,
+			ItemSeen: true,
+			Variants: []string{},
+			Favorite: false,
+			Xp: 0,
+		},
+		Quantity: 1,
+	}
+	common.AppendLoadoutsToProfile(profile, accountId)
 }

@@ -1,0 +1,348 @@
+{
+  "_title": "Fortnite Game",
+  "_activeDate": "2023-01-01T00:00:00.000Z",
+  "lastModified": "2023-01-01T00:00:00.000Z",
+  "_locale": "en-US",
+  "loginmessage": {
+    "_title": "LoginMessage",
+    "loginmessage": {
+      "_type": "CommonUI Simple Message",
+      "message": {}
+    },
+    "_activeDate": "2023-01-01T00:00:00.000Z",
+    "lastModified": "2023-01-01T00:00:00.000Z",
+    "_locale": "en-US"
+  },
+  "survivalmessage": {
+    "_title": "survivalmessage",
+    "overrideablemessage": {
+      "_type": "CommonUI Simple Message",
+      "message": {}
+    },
+    "_activeDate": "2023-01-01T00:00:00.000Z",
+    "lastModified": "2023-01-01T00:00:00.000Z",
+    "_locale": "en-US"
+  },
+  "athenamessage": {
+    "_title": "athenamessage",
+    "overrideablemessage": {
+      "_type": "CommonUI Simple Message",
+      "message": {}
+    },
+    "_activeDate": "2023-01-01T00:00:00.000Z",
+    "lastModified": "2023-01-01T00:00:00.000Z",
+    "_locale": "en-US"
+  },
+  "subgameselectdata": {
+    "saveTheWorldUnowned": {
+      "_type": "CommonUI Simple Message",
+      "message": {
+        "image": "",
+        "hidden": true,
+        "messagetype": "normal",
+        "_type": "CommonUI Simple Message Base",
+        "title": {
+          "en": "Co-op PvE"
+        },
+        "body": {
+          "en": "Cooperative PvE storm-fighting adventure!"
+        },
+        "spotlight": true
+      }
+    },
+    "_title": "subgameselectdata",
+    "battleRoyale": {
+      "_type": "CommonUI Simple Message",
+      "message": {
+        "image": "",
+        "hidden": false,
+        "messagetype": "normal",
+        "_type": "CommonUI Simple Message Base",
+        "title": {
+          "en": "100 Player PvP"
+        },
+        "body": {
+          "en": "100 Player PvP Battle Royale.\n\nPvE progress does not affect Battle Royale."
+        },
+        "spotlight": false
+      }
+    },
+    "creative": {
+      "_type": "CommonUI Simple Message",
+      "message": {
+        "image": "",
+        "hidden": true,
+        "messagetype": "normal",
+        "_type": "CommonUI Simple Message Base",
+        "title": {
+          "en": "New Featured Islands!"
+        },
+        "body": {
+          "en": "Your Island. Your Friends. Your Rules.\n\nDiscover new ways to play Fortnite, play community made games with friends and build your dream island."
+        },
+        "spotlight": false
+      }
+    },
+    "saveTheWorld": {
+      "_type": "CommonUI Simple Message",
+      "message": {
+        "image": "",
+        "hidden": false,
+        "messagetype": "normal",
+        "_type": "CommonUI Simple Message Base",
+        "title": {
+          "en": "Co-op PvE"
+        },
+        "body": {
+          "en": "Cooperative PvE storm-fighting adventure!"
+        },
+        "spotlight": false
+      }
+    },
+    "_activeDate": "2023-01-01T00:00:00.000Z",
+    "lastModified": "2023-01-01T00:00:00.000Z",
+    "_locale": "en-US"
+  },
+  "savetheworldnews": {
+    "news": {
+      "_type": "Battle Royale News",
+      "messages": []
+    },
+    "_title": "SaveTheWorldNews",
+    "_noIndex": false,
+    "alwaysShow": false,
+    "_activeDate": "2023-01-01T00:00:00.000Z",
+    "lastModified": "2023-01-01T00:00:00.000Z",
+    "_locale": "en-US"
+  },
+  "battlepassaboutmessages": {
+    "news": {
+      "_type": "Battle Royale News",
+      "messages": []
+    },
+    "_title": "BattlePassAboutMessages",
+    "_noIndex": false,
+    "_activeDate": "2023-01-01T00:00:00.000Z",
+    "lastModified": "2023-01-01T00:00:00.000Z",
+    "_locale": "en-US"
+  },
+  "playlistinformation": {
+    "frontend_matchmaking_header_style": "None",
+    "_title": "playlistinformation",
+    "frontend_matchmaking_header_text": "",
+    "playlist_info": {
+      "_type": "Playlist Information",
+      "playlists": [],
+      "//": {
+        "image": "",
+        "playlist_name": "Playlist_DefaultSolo",
+        "violator": "",
+        "_type": "FortPlaylistInfo",
+        "description": ""
+      }
+    },
+    "_noIndex": false,
+    "_activeDate": "2023-01-01T00:00:00.000Z",
+    "lastModified": "2023-01-01T00:00:00.000Z",
+    "_locale": "en-US"
+  },
+  "tournamentinformation": {
+    "tournament_info": {
+      "tournaments": [],
+      "_type": "Tournaments Info"
+    },
+    "_title": "tournamentinformation",
+    "_noIndex": false,
+    "_activeDate": "2023-01-01T00:00:00.000Z",
+    "lastModified": "2023-01-01T00:00:00.000Z",
+    "_locale": "en-US"
+  },
+  "emergencynotice": {
+    "news": {
+      "_type": "Battle Royale News",
+      "messages": []
+    },
+    "_title": "emergencynotice",
+    "_noIndex": false,
+    "alwaysShow": false,
+    "_activeDate": "2023-01-01T00:00:00.000Z",
+    "lastModified": "2023-01-01T00:00:00.000Z",
+    "_locale": "en-US"
+  },
+  "emergencynoticev2": {
+    "jcr:isCheckedOut": true,
+    "_title": "emergencynoticev2",
+    "_noIndex": false,
+    "jcr:baseVersion": "a7ca237317f1e771e921e2-7f15-4485-b2e2-553b809fa363",
+    "emergencynotices": {
+      "_type": "Emergency Notices",
+      "emergencynotices": []
+    },
+    "_activeDate": "2023-01-01T00:00:00.000Z",
+    "lastModified": "2023-01-01T00:00:00.000Z",
+    "_locale": "en-US"
+  },
+  "creativeAds": {
+    "ad_info": {
+      "ads": [],
+      "_type": "Creative Ad Info"
+    },
+    "_title": "creative-ads",
+    "_activeDate": "2023-01-01T00:00:00.000Z",
+    "lastModified": "2023-01-01T00:00:00.000Z",
+    "_locale": "en-US"
+  },
+  "creativeFeatures": {
+    "ad_info": {
+      "_type": "Creative Ad Info"
+    },
+    "_title": "Creative Features",
+    "_activeDate": "2023-01-01T00:00:00.000Z",
+    "lastModified": "2023-01-01T00:00:00.000Z",
+    "_locale": "en-US"
+  },
+  "specialoffervideo": {
+    "_activeDate": "2023-01-01T00:00:00.000Z",
+    "_locale": "pl",
+    "_noIndex": false,
+    "_title": "specialoffervideo",
+    "bSpecialOfferEnabled": false,
+    "jcr:baseVersion": "a7ca237317f1e78e4627c4-c68f-4a12-9480-066c92dd14e5",
+    "jcr:isCheckedOut": true,
+    "lastModified": "2023-01-01T00:00:00.000Z",
+    "specialoffervideo": {
+      "_type": "SpecialOfferVideoConfig",
+      "bCheckAutoPlay": true,
+      "bStreamingEnabled": true,
+      "videoString": "",
+      "videoUID": ""
+    }
+  },
+  "subgameinfo": {
+    "_title": "SubgameInfo",
+    "_noIndex": false,
+    "battleroyale": {
+      "image": "",
+      "color": "1164c1",
+      "_type": "Subgame Info",
+      "description": {
+        "en": "100 Player PvP"
+      },
+      "subgame": "battleroyale",
+      "standardMessageLine2": "fortnite",
+      "title": {
+        "en": "Battle Royale"
+      },
+      "standardMessageLine1": "Hello Bye"
+    },
+    "savetheworld": {
+      "image": "",
+      "color": "7615E9FF",
+      "specialMessage": "Hi fortnite",
+      "_type": "Subgame Info",
+      "description": {
+        "en": "Cooperative PvE Adventure"
+      },
+      "subgame": "savetheworld",
+      "title": {
+        "en": "Save The World"
+      },
+      "standardMessageLine1": "Hello World"
+    },
+    "creative": {
+      "image": "",
+      "color": "13BDA1FF",
+      "_type": "Subgame Info",
+      "description": {
+        "en": "Your Islands. Your Friends. Your Rules."
+      },
+      "subgame": "creative",
+      "title": {
+        "en": "Creative"
+      },
+      "standardMessageLine1": "zombieman rulez"
+    },
+    "_activeDate": "2023-01-01T00:00:00.000Z",
+    "lastModified": "2023-01-01T00:00:00.000Z",
+    "_locale": "en-US"
+  },
+  "lobby": {
+    "backgroundimage": "",
+    "stage": "season",
+    "_title": "lobby",
+    "_activeDate": "2023-01-01T00:00:00.000Z",
+    "lastModified": "2023-01-01T00:00:00.000Z",
+    "_locale": "en-US"
+  },
+  "battleroyalenews": {
+    "news": {
+      "platform_messages": [],
+      "_type": "Battle Royale News",
+      "messages": []
+    },
+    "_title": "battleroyalenews",
+    "header": "",
+    "style": "SpecialEvent",
+    "_noIndex": false,
+    "alwaysShow": false,
+    "_activeDate": "2023-01-01T00:00:00.000Z",
+    "lastModified": "2023-01-01T00:00:00.000Z",
+    "_locale": "en-US"
+  },
+  "dynamicbackgrounds": {
+    "backgrounds": {
+      "backgrounds": [],
+      "_type": "DynamicBackgroundList"
+    },
+    "_title": "dynamicbackgrounds",
+    "_noIndex": false,
+    "_activeDate": "2023-01-01T00:00:00.000Z",
+    "lastModified": "2023-01-01T00:00:00.000Z",
+    "_locale": "en-US"
+  },
+  "shopSections": {
+    "_title": "shop-sections",
+    "sectionList": {
+      "_type": "ShopSectionList",
+      "sections": [
+        {
+          "bSortOffersByOwnership": false,
+          "bShowIneligibleOffersIfGiftable": false,
+          "bEnableToastNotification": true,
+          "background": {
+            "stage": "default",
+            "_type": "DynamicBackground",
+            "key": "vault"
+          },
+          "_type": "ShopSection",
+          "landingPriority": 70,
+          "bHidden": false,
+          "sectionId": "Featured",
+          "bShowTimer": true,
+          "sectionDisplayName": "Item Shop",
+          "bShowIneligibleOffers": true
+        }
+      ]
+    },
+    "_noIndex": false,
+    "_activeDate": "2023-01-01T00:00:00.000Z",
+    "lastModified": "2023-01-01T00:00:00.000Z",
+    "_locale": "en-US",
+    "_templateName": "FortniteGameShopSections"
+  },
+  "creativenews": {
+    "news": {
+      "_type": "Battle Royale News",
+      "messages": []
+    },
+    "_title": "Creativenews",
+    "header": "",
+    "style": "None",
+    "_noIndex": false,
+    "alwaysShow": false,
+    "_activeDate": "2023-01-01T00:00:00.000Z",
+    "lastModified": "2023-01-01T00:00:00.000Z",
+    "_locale": "en-US"
+  },
+  "_suggestedPrefetch": []
+}

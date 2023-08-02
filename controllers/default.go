@@ -1,9 +1,17 @@
 package controllers
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
+	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/zombman/server/common"
+	"github.com/zombman/server/models"
 )
 
 func StorefrontKeychain(c *gin.Context) {
@@ -839,4 +847,76 @@ func Lightswitch(c *gin.Context) {
 			"namespace": "fn",
 		},
 	}})
+}
+
+var ContentPageData models.ContentPage = models.ContentPage{}
+
+func ContentPage(c *gin.Context) {
+	if ContentPageData.Active == 0 {
+		file, err := os.Open("default/contentpage.json")
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		defer file.Close()
+
+		fileData, err := io.ReadAll(file)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		str := string(bytes.ReplaceAll(bytes.ReplaceAll(fileData, []byte("\n"), []byte("")), []byte("\t"), []byte("")))
+
+		err = json.Unmarshal([]byte(str), &ContentPageData)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+	}
+	
+	c.JSON(http.StatusOK, ContentPageData)
+}
+
+func CalendarTimeline(c *gin.Context) {
+	monthPos := time.Now().Add(time.Hour * 24 * 30).Format("2006-01-02T15:04:05.999Z")
+	endOfDay := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 23, 59, 59, 999999999, time.Now().Location()).Format("2006-01-02T15:04:05.999Z")
+
+	file, err := os.Open("default/time.json")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	defer file.Close()
+
+	fileData, err := io.ReadAll(file)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	str := string(bytes.ReplaceAll(bytes.ReplaceAll(fileData, []byte("\n"), []byte("")), []byte("\t"), []byte("")))
+
+	var calendar models.FortniteTimeCalendar
+	err = json.Unmarshal([]byte(str), &calendar)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	state := calendar.Channels.ClientEvents.States[0]
+	state.ActiveEvents[0].EventType = "EventFlag.Season" + fmt.Sprint(common.Season)
+	state.ActiveEvents[1].EventType = "EventFlag.LobbySeason" + fmt.Sprint(common.Season)
+	state.State.SeasonNumber = common.Season
+	state.State.SeasonTemplateID = "AthenaSeason:athenaseason" + fmt.Sprint(common.Season)
+	state.State.SeasonEnd = monthPos
+	state.State.SeasonDisplayedEnd = monthPos
+	state.State.DailyStoreEnd = endOfDay
+	state.State.WeeklyStoreEnd = endOfDay
+	state.State.SectionStoreEnds = map[string]string {
+		"Featured": endOfDay,
+	}
+	
+	calendar.Channels.ClientEvents.States[0] = state
+	calendar.CurrentTime = time.Now().Format("2006-01-02T15:04:05.999Z")
+
+	c.JSON(http.StatusOK, calendar)
 }

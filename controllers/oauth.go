@@ -77,11 +77,11 @@ func Generate(user models.User, client string) gin.H {
 		"displayName": user.Username,
 		"access_token": accessToken,
 		"token_type": "bearer",
-		"expires_at": time.Now().Add(time.Hour * 24).Format(time.RFC3339),
+		"expires_at": time.Now().Add(time.Hour * 24).Format("2006-01-02T15:04:05.999Z"),
 		"expires_in": time.Hour.Milliseconds() * 24,
 		"refresh_token": refreshToken,
 		"refresh_expires": time.Hour.Milliseconds() * 24,
-		"refresh_expires_at": time.Now().Add(time.Hour * 24 * 30).Format(time.RFC3339),
+		"refresh_expires_at": time.Now().Add(time.Hour * 24 * 30).Format("2006-01-02T15:04:05.999Z"),
 	}
 }
 
@@ -131,7 +131,7 @@ func ClientCredentials(c *gin.Context, client string) {
 		"client_id": client,
 		"client_service": "fortnite",
 		"internal_client": true,
-		"expires_at": time.Now().Add(time.Hour * 24).Format(time.RFC3339),
+		"expires_at": time.Now().Add(time.Hour * 24).Format("2006-01-02T15:04:05.999Z"),
 		"expires_in": time.Hour.Milliseconds() * 24,
 	})
 }

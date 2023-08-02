@@ -1,0 +1,48 @@
+{
+  "channels": {
+    "client-matchmaking": {
+      "states": [],
+      "cacheExpire": "9999-01-01T00:00:00.000Z"
+    },
+    "client-events": {
+      "states": [
+        {
+          "validFrom": "0001-01-01T00:00:00.000Z",
+          "activeEvents": [
+            {
+              "eventType": "EventFlag.Season",
+              "activeUntil": "9999-01-01T00:00:00.000Z",
+              "activeSince": "2020-01-01T00:00:00.000Z"
+            },
+            {
+              "eventType": "EventFlag.LobbySeason",
+              "activeUntil": "9999-01-01T00:00:00.000Z",
+              "activeSince": "2020-01-01T00:00:00.000Z"
+            }
+          ],
+          "state": {
+            "activeStorefronts": [],
+            "eventNamedWeights": {},
+            "seasonNumber": 0,
+            "seasonTemplateId": "AthenaSeason:athenaseason",
+            "matchXpBonusPoints": 0,
+            "seasonBegin": "0001-01-01T00:00:00.000Z",
+            "seasonEnd": "9999-01-01T00:00:00Z",
+            "seasonDisplayedEnd": "9999-01-01T00:00:00Z",
+            "weeklyStoreEnd": "9999-01-01T00:00:00.000Z",
+            "stwEventStoreEnd": "9999-01-01T00:00:00.000Z",
+            "stwWeeklyStoreEnd": "9999-01-01T00:00:00.000Z",
+            "sectionStoreEnds": {
+              "Featured": "9999-01-01T00:00:00.000Z"
+            },
+            "dailyStoreEnd": "9999-01-01T00:00:00.000Z"
+          }
+        }
+      ],
+      "cacheExpire": "9999-01-01T00:00:00.000Z"
+    }
+  },
+  "eventsTimeOffsetHrs": 0,
+  "cacheIntervalMins": 10,
+  "currentTime": "0001-01-01T00:00:00.000Z"
+}

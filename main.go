@@ -2,6 +2,8 @@ package main
 
 import (
 	"net/http"
+	"os"
+	"os/exec"
 
 	"github.com/gin-gonic/gin"
 	"github.com/zombman/server/controllers"
@@ -10,6 +12,10 @@ import (
 )
 
 func init() {
+  cmd := exec.Command("cmd", "/c", "cls")
+  cmd.Stdout = os.Stdout
+  cmd.Run()
+
   helpers.LoadEnviroment()
   helpers.ConnectToDatabase()
   helpers.AutoMigrate()
@@ -43,13 +49,21 @@ func main() {
   fortnite := r.Group("/fortnite/api")
   {
     fortnite.POST("/game/v2/profile/:accountId/client/:action", middleware.VerifyAccessToken, controllers.ProfileQuery)
-    fortnite.GET("/game/v2/enabled_features", controllers.EmptyArray)
     fortnite.POST("/game/v2/tryPlayOnPlatform/account/*accountId", controllers.True)
+    fortnite.GET("/game/v2/enabled_features", controllers.EmptyArray)
+    fortnite.GET("/receipts/v1/account/:accountId/receipts", controllers.EmptyArray)
     fortnite.GET("/storefront/v2/keychain", controllers.StorefrontKeychain)
+    fortnite.GET("/calendar/v1/timeline", controllers.CalendarTimeline)
+
+    store := fortnite.Group("/storefront")
+    {
+      store.GET("/v2/catalog", controllers.StorefrontCatalog)
+    }
   }
 
   blank := r.Group("/")
   {
+    blank.GET("/content/api/pages/*contentPageName", controllers.ContentPage)
     blank.GET("/waitingroom/api/waitingroom", controllers.NoResponse)
     blank.POST("/datarouter/*api", controllers.NoResponse)
     blank.GET("/lightswitch/api/service/bulk/status", controllers.Lightswitch)
