@@ -12,6 +12,8 @@ _Note: Some features are not yet implemented, please see the [Roadmap](#roadmap)
 ## Roadmap
 
 - [x] Basic user creation and authentication
-- [ ] Fortnite uses oauth tokens
-- [ ] All required fortnite responses be dynamic not from a static json file
+- [x] Fortnite uses oauth tokens
+- [ ] Profiles to access lobby and skins
+- [ ] All required fortnite responses
+- [ ] Xmpp
 - [ ] Control panel for server admins

@@ -1,28 +1,137 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
+	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/zombman/server/common"
+	"github.com/zombman/server/helpers"
+	"github.com/zombman/server/models"
 )
 
+type Body struct {
+	GrantType    string `form:"grant_type" binding:"required"`
+	Username     string	`form:"username"`
+	Password     string	`form:"password"`
+	ExchangeCode string	`form:"exchange_code"`
+	RefreshToken string	`form:"refresh_token"`
+}
+
 func OAuthMain(c *gin.Context) {
-	var body struct {
-		GrantType    string `json:"grant_type" binding:"required"`
-		Username     string `json:"username"`
-		Password     string `json:"password"`
-		ExchangeCode string `json:"exchange_code"`
-		RefreshToken string `json:"refresh_token"`
+	var body Body
+
+	client := c.GetHeader("Authorization")
+	if client == "" {
+		common.ErrorInvalidOAuthRequest(c)
+		return
 	}
-
-	authHeader := c.GetHeader("Authorization")
-
-	fmt.Println(body, authHeader)
-
-	if err := c.ShouldBindJSON(&body); err != nil {
+	if len(strings.Split(client, " ")) <= 1 {
+		common.ErrorInvalidOAuthRequest(c)
+		return
+	}
+	client = strings.Split(helpers.DecodeBase64(strings.Split(client, " ")[1]), ":")[0]
+	
+	if err := c.ShouldBind(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	
+	helpers.PrintRed([]string{"grant_type: ", body.GrantType})
+	switch body.GrantType {
+		case "client_credentials": 
+			ClientCredentials(c, client)
+		case "password":
+			Password(c, body, client)
+		case "refresh_token":
+			RefreshToken(c, body, client)
+		default: 
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid grant_type"})
+	}
+}
 
+func Generate(user models.User, client string) gin.H {
+	device := strings.ReplaceAll(uuid.New().String(), "-", "")
+	accessToken := common.GenerateAccessToken(user, client, device)
+	refreshToken := common.GenerateRefreshToken(user, client, device)
+
+	helpers.Postgres.
+		Where(models.AccessToken{AccountId: user.AccountId}).
+		Assign(models.AccessToken{Token: accessToken}).
+		FirstOrCreate(&models.AccessToken{})
+
+	helpers.Postgres.
+		Where(models.RefreshToken{AccountId: user.AccountId}).
+		Assign(models.RefreshToken{Token: refreshToken}).
+		FirstOrCreate(&models.RefreshToken{})
+
+	return gin.H{
+		"app": "fortnite",
+		"account_id": user.AccountId,
+		"device_id": device,
+		"client_id": client,
+		"client_service": "fortnite",
+		"internal_client": true,
+		"displayName": user.Username,
+		"access_token": accessToken,
+		"token_type": "bearer",
+		"expires_at": time.Now().Add(time.Hour * 24).Format(time.RFC3339),
+		"expires_in": time.Hour.Milliseconds() * 24,
+		"refresh_token": refreshToken,
+		"refresh_expires": time.Hour.Milliseconds() * 24,
+		"refresh_expires_at": time.Now().Add(time.Hour * 24 * 30).Format(time.RFC3339),
+	}
+}
+
+func RefreshToken(c *gin.Context, body Body, client string) {
+	refreshToken, err := common.GetRefreshTokenWithToken(body.RefreshToken)
+	if err != nil {
+		common.ErrorInvalidCredentials(c)
+		return
+	}
+
+	user, err := common.GetUserByAccountId(refreshToken.AccountId)
+	if err != nil {
+		common.ErrorInvalidCredentials(c)
+		return
+	}
+
+	c.JSON(http.StatusOK, Generate(user, client))
+}
+
+func Password(c *gin.Context, body Body, client string) {
+	user, err := common.GetUserByUsernameAndPlainPassword(strings.Replace(body.Username, "@.", "", -1), body.Password)
+	if err != nil {
+		common.ErrorInvalidCredentials(c)
+		return
+	}
+
+	c.JSON(http.StatusOK, Generate(user, client))
+}
+
+func ClientCredentials(c *gin.Context, client string) {
+	ip := c.ClientIP()
+	existingClientToken, _ := common.GetClientToken(ip)
+
+	if existingClientToken.ID != 0 {
+		helpers.Postgres.Delete(&existingClientToken)
+	}
+
+	clientToken := common.GenerateClientToken(client)
+	helpers.Postgres.Create(&models.ClientToken{
+		IP: ip,
+		Token: clientToken,
+	})
+
+	c.JSON(http.StatusOK, gin.H{
+		"access_token": clientToken,
+		"token_type": "bearer",
+		"client_id": client,
+		"client_service": "fortnite",
+		"internal_client": true,
+		"expires_at": time.Now().Add(time.Hour * 24).Format(time.RFC3339),
+		"expires_in": time.Hour.Milliseconds() * 24,
+	})
 }
