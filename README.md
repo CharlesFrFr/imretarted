@@ -13,7 +13,10 @@ _Note: Some features are not yet implemented, please see the [Roadmap](#roadmap)
 
 - [x] Basic user creation and authentication
 - [x] Fortnite uses oauth tokens
-- [ ] Profiles to access lobby and skins
+- [x] Profiles to access lobby and item shop
+- [x] Random item shop
+- [ ] Buy from item shop
+- [ ] Equip skins
 - [ ] All required fortnite responses
 - [ ] Xmpp
 - [ ] Control panel for server admins
