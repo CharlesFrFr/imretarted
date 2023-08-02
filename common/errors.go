@@ -33,3 +33,7 @@ func ErrorInvalidOAuthRequest(c *gin.Context) {
 func ErrorAuthFailed(c *gin.Context) {
 	DefaultEpicError(c, "errors.com.epicgames.common.authorization.authorization_failed", "auth Failed", 1032, "")
 }
+
+func ErrorBadRequest(c *gin.Context) {
+	DefaultEpicError(c, "errors.com.epicgames.common.bad_request", "Bad Request", 1000, "")
+}

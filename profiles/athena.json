@@ -1,7 +1,7 @@
 {
   "created": "",
   "updated": "",
-  "rvn": 1,
+  "rvn": 0,
   "wipeNumber": 1,
   "accountId": "",
   "profileId": "athena",
@@ -238,5 +238,5 @@
       "favorite_loadingscreen": ""
     }
   },
-  "commandRevision": 5
+  "commandRevision": 0
 }
