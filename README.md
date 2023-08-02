@@ -6,10 +6,10 @@ _Note: Some features are not yet implemented, please see the [Roadmap](#roadmap)
 
 ## Features
 
-- **Blazing fast** - Written in Go, this server is extremely fast and lightweight.
-- **Easy to use** - The server is designed to be easy to use and setup.
-- **Open source** - The server is completely open source and free to use.
-- **Web interface** - The server comes with a built in web interface to manage your server. (not implemented yet)
+- **Blazing fast** Written in Go, this server is extremely fast and lightweight.
+- **Easy to use** Designed to be easy to use and setup.
+- **Open source** Completely free to use, share and modify!
+- **Web interface** Built in web interface to manage your server. (not implemented yet)
 
 ## Roadmap
 
