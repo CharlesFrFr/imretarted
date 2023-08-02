@@ -26,4 +26,6 @@ func AutoMigrate() {
 	Postgres.AutoMigrate(&models.ClientToken{})
 	Postgres.AutoMigrate(&models.AccessToken{})
 	Postgres.AutoMigrate(&models.RefreshToken{})
+
+	Postgres.AutoMigrate(&models.UserProfile{})
 }
