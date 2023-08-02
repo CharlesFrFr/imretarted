@@ -6,8 +6,10 @@ _Note: Some features are not yet implemented, please see the [Roadmap](#roadmap)
 
 ## Features
 
-- Written in GoLang to ensure that the server is performant and secure.
-- Uses a PostgresQL database to ensure that data is stored securely and quickly.
+- **Blazing fast** - Written in Go, this server is extremely fast and lightweight.
+- **Easy to use** - The server is designed to be easy to use and setup.
+- **Open source** - The server is completely open source and free to use.
+- **Web interface** - The server comes with a built in web interface to manage your server. (not implemented yet)
 
 ## Roadmap
 
