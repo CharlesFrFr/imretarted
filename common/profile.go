@@ -7,7 +7,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/zombman/server/helpers"
+	"github.com/zombman/server/all"
 	"github.com/zombman/server/models"
 )
 
@@ -26,7 +26,7 @@ func AddProfileToUser(user models.User, profileId string) {
 	}
 	str := string(bytes.ReplaceAll(bytes.ReplaceAll(fileData, []byte("\n"), []byte("")), []byte("\t"), []byte("")))
 
-	helpers.Postgres.Create(&models.UserProfile{
+	all.Postgres.Create(&models.UserProfile{
 		AccountId: user.AccountId,
 		ProfileId: profileId,
 		Profile:   str,
@@ -34,14 +34,15 @@ func AddProfileToUser(user models.User, profileId string) {
 
 	if profileId == "athena" {
 		CreateLoadoutForUser(user.AccountId, "sandbox_loadout")
+		CreateLoadoutForUser(user.AccountId, "zombie_loadout")
 	}
 
-	helpers.PrintGreen([]string{profileId, "profile added to", user.Username})
+	all.PrintGreen([]string{profileId, "profile added to", user.Username})
 }
 
 func ReadProfileFromUser(accountId string, profileId string) (models.Profile, error) {
 	var userProfile models.UserProfile
-	result := helpers.Postgres.Model(&models.UserProfile{}).Where("account_id = ? AND profile_id = ?", accountId, profileId).First(&userProfile)
+	result := all.Postgres.Model(&models.UserProfile{}).Where("account_id = ? AND profile_id = ?", accountId, profileId).First(&userProfile)
 
 	if result.Error != nil {
 		return models.Profile{}, result.Error
@@ -57,16 +58,20 @@ func ReadProfileFromUser(accountId string, profileId string) (models.Profile, er
 		return models.Profile{}, err
 	}
 
+	if profileId == "athena" {
+		AppendLoadoutsToProfile(&profileData, accountId)
+	}
+
 	return profileData, nil
 }
 
-func SaveProfileToUSer(accountId string, profile models.Profile) error {
+func SaveProfileToUser(accountId string, profile models.Profile) error {
 	profileData, err := json.Marshal(profile)
 	if err != nil {
 		return err
 	}
 
-	result := helpers.Postgres.Model(&models.UserProfile{}).Where("account_id = ? AND profile_id = ?", accountId, profile.ProfileId).Update("profile", string(profileData))
+	result := all.Postgres.Model(&models.UserProfile{}).Where("account_id = ? AND profile_id = ?", accountId, profile.ProfileId).Update("profile", string(profileData))
 	if result.Error != nil {
 		return result.Error
 	}
@@ -100,21 +105,24 @@ func CreateLoadoutForUser(accountId string, loadoutName string) {
 		return
 	}
 
-	helpers.Postgres.Create(&models.UserLoadout{
+	all.Postgres.Create(&models.UserLoadout{
 		AccountId: accountId,
 		Loadout:   string(marshal),
+		LoadoutName: loadoutName,
 	})
 
-	helpers.PrintGreen([]string{"created loadout", loadoutName, "for", accountId})
+	all.PrintGreen([]string{"created loadout", loadoutName, "for", accountId})
 }
 
 func AppendLoadoutsToProfile(profile *models.Profile, accountId string) {
 	var loadouts []models.UserLoadout
-	result := helpers.Postgres.Model(&models.UserLoadout{}).Where("account_id = ?", accountId).Find(&loadouts)
+	result := all.Postgres.Model(&models.UserLoadout{}).Where("account_id = ?", accountId).Find(&loadouts)
 
 	if result.Error != nil {
 		return
 	}
+
+	loadoutIds := []string{}
 
 	for _, loadout := range loadouts {
 		var loadoutData models.Loadout
@@ -123,9 +131,59 @@ func AppendLoadoutsToProfile(profile *models.Profile, accountId string) {
 			return
 		}
 
+		loadoutIds = append(loadoutIds, loadoutData.Attributes.LockerName)
+
 		profile.Items[loadoutData.Attributes.LockerName] = loadoutData
-		profile.Stats.Attributes.Loadouts = append(profile.Stats.Attributes.Loadouts, loadoutData.Attributes.LockerName)
+		profile.Stats.Attributes.Loadouts = loadoutIds
+		profile.Stats.Attributes.ActiveLoadoutIndex = len(loadoutIds) - 1
+		profile.Stats.Attributes.LastAppliedLoadout = loadoutData.Attributes.LockerName
 	}
 
-	SaveProfileToUSer(accountId, *profile)
+	SaveProfileToUser(accountId, *profile)
+}
+
+func AppendLoadoutToProfile(profile *models.Profile, loadout *models.Loadout, accountId string) {
+	var userLoadout models.UserLoadout
+	result := all.Postgres.Model(&models.UserLoadout{}).Where("account_id = ? AND loadout_name = ?", accountId, loadout.Attributes.LockerName).First(&userLoadout)
+
+	if result.Error != nil {
+		return
+	}
+
+	profile.Items[loadout.Attributes.LockerName] = *loadout
+
+	var marshaledLoadout []byte
+	marshaledLoadout, err := json.Marshal(loadout)
+	if err != nil {
+		return
+	}
+
+	result = all.Postgres.Model(&models.UserLoadout{}).Where("account_id = ? AND loadout_name = ?", accountId, loadout.Attributes.LockerName).Update("loadout", string(marshaledLoadout))
+	if result.Error != nil {
+		return
+	}
+
+	SaveProfileToUser(accountId, *profile)
+}
+
+func GetLoadout(loadoutId string, accountId string) (models.Loadout, error) {
+	var loadouts []models.UserLoadout
+	result := all.Postgres.Model(&models.UserLoadout{}).Where("account_id = ?", accountId).Find(&loadouts)
+	if result.Error != nil {
+		return models.Loadout{}, result.Error
+	}
+
+	for _, loadout := range loadouts {
+		var loadoutData models.Loadout
+		err := json.Unmarshal([]byte(loadout.Loadout), &loadoutData)
+		if err != nil {
+			return models.Loadout{}, err
+		}
+
+		if loadoutData.Attributes.LockerName == loadoutId {
+			return loadoutData, nil
+		}
+	}
+
+	return models.Loadout{}, errors.New("loadout not found")
 }

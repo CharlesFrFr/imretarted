@@ -6,8 +6,8 @@ import (
 	"os/exec"
 
 	"github.com/gin-gonic/gin"
+	"github.com/zombman/server/all"
 	"github.com/zombman/server/controllers"
-	"github.com/zombman/server/helpers"
 	"github.com/zombman/server/middleware"
 )
 
@@ -16,16 +16,16 @@ func init() {
   cmd.Stdout = os.Stdout
   cmd.Run()
 
-  helpers.LoadEnviroment()
-  helpers.ConnectToDatabase()
-  helpers.AutoMigrate()
+  all.LoadEnviroment()
+  all.ConnectToDatabase()
+  all.AutoMigrate()
 }
 
 func main() {
-  helpers.PrintGreen([]string{"development mode"})
+  all.PrintGreen([]string{"development mode"})
   r := gin.Default()
   r.Use(func(c *gin.Context) {
-    if helpers.Postgres == nil {
+    if all.Postgres == nil {
 		  c.JSON(http.StatusInternalServerError, gin.H{"error": "database not connected"})
 		  c.Abort()
 	  }
@@ -48,7 +48,7 @@ func main() {
 
   fortnite := r.Group("/fortnite/api")
   {
-    fortnite.POST("/game/v2/profile/:accountId/client/:action", middleware.VerifyAccessToken, controllers.ProfileQuery)
+    fortnite.POST("/game/v2/profile/:accountId/client/:action", middleware.VerifyAccessToken, controllers.ProfileActionHandler)
     fortnite.POST("/game/v2/tryPlayOnPlatform/account/*accountId", controllers.True)
     fortnite.GET("/game/v2/enabled_features", controllers.EmptyArray)
     fortnite.GET("/receipts/v1/account/:accountId/receipts", controllers.EmptyArray)

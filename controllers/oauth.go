@@ -7,8 +7,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/zombman/server/all"
 	"github.com/zombman/server/common"
-	"github.com/zombman/server/helpers"
 	"github.com/zombman/server/models"
 )
 
@@ -32,14 +32,14 @@ func OAuthMain(c *gin.Context) {
 		common.ErrorInvalidOAuthRequest(c)
 		return
 	}
-	client = strings.Split(helpers.DecodeBase64(strings.Split(client, " ")[1]), ":")[0]
+	client = strings.Split(all.DecodeBase64(strings.Split(client, " ")[1]), ":")[0]
 	
 	if err := c.ShouldBind(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	
-	helpers.PrintRed([]string{"grant_type: ", body.GrantType})
+	all.PrintRed([]string{"grant_type: ", body.GrantType})
 	switch body.GrantType {
 		case "client_credentials": 
 			ClientCredentials(c, client)
@@ -57,12 +57,12 @@ func Generate(user models.User, client string) gin.H {
 	accessToken := common.GenerateAccessToken(user, client, device)
 	refreshToken := common.GenerateRefreshToken(user, client, device)
 
-	helpers.Postgres.
+	all.Postgres.
 		Where(models.AccessToken{AccountId: user.AccountId}).
 		Assign(models.AccessToken{Token: accessToken}).
 		FirstOrCreate(&models.AccessToken{})
 
-	helpers.Postgres.
+	all.Postgres.
 		Where(models.RefreshToken{AccountId: user.AccountId}).
 		Assign(models.RefreshToken{Token: refreshToken}).
 		FirstOrCreate(&models.RefreshToken{})
@@ -116,11 +116,11 @@ func ClientCredentials(c *gin.Context, client string) {
 	existingClientToken, _ := common.GetClientToken(ip)
 
 	if existingClientToken.ID != 0 {
-		helpers.Postgres.Delete(&existingClientToken)
+		all.Postgres.Delete(&existingClientToken)
 	}
 
 	clientToken := common.GenerateClientToken(client)
-	helpers.Postgres.Create(&models.ClientToken{
+	all.Postgres.Create(&models.ClientToken{
 		IP: ip,
 		Token: clientToken,
 	})

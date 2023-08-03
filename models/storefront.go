@@ -59,3 +59,12 @@ type ItemGrant struct {
 	TemplateID string `json:"templateId"`
 	Quantity   int    `json:"quantity"`
 }
+
+type BeforeStoreItem struct {
+	ID                	string `json:"id"`
+	BackendType       	string `json:"backendType"`
+	IntroductionSeason 	int    `json:"introductionSeason"`
+	Rarity            	string `json:"rarity"`
+}
+
+type Prices map[string]map[string]int

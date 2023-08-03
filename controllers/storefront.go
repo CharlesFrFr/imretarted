@@ -1,21 +1,57 @@
 package controllers
 
 import (
-	"bytes"
 	"encoding/json"
-	"io"
+	"fmt"
 	"math/rand"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/zombman/server/all"
 	"github.com/zombman/server/common"
-	"github.com/zombman/server/helpers"
 	"github.com/zombman/server/models"
 )
 
-var randomPrices = []int{0, 200, 500, 600, 800, 1200, 1500, 2000}
+var Prices = models.Prices{
+	"AthenaCharacter": {
+		"Legendary": 2000,
+		"Epic":      1500,
+		"Rare":      1200,
+		"Uncommon":  800,
+		"Common":    500,
+	},
+	"AthenaPickaxe": {
+		"Legendary": 1500,
+		"Epic":      1200,
+		"Rare":      800,
+		"Uncommon":  500,
+		"Common":    300,
+	},
+	"AthenaGlider": {
+		"Legendary": 1500,
+		"Epic":      1200,
+		"Rare":      800,
+		"Uncommon":  500,
+		"Common":    300,
+	},
+	"AthenaDance": {
+		"Legendary": 800,
+		"Epic":      800,
+		"Rare":      500,
+		"Uncommon":  200,
+		"Common":    200,
+	},
+	"AthenaSkyDiveContrail": {
+		"Legendary": 500,
+		"Epic":      400,
+		"Rare":      300,
+		"Uncommon":  200,
+		"Common":    100,
+	},
+}
+
 var ItemShop models.StorePage
 var ShouldRefresh int64
 
@@ -33,34 +69,20 @@ func StorefrontCatalog(c *gin.Context) {
 	c.JSON(http.StatusOK, ItemShop)
 }
 
-func StorefrontFromJSONFile(c *gin.Context) {
-	file, err := os.Open("default/shop.json")
-	if err != nil {
-		return
-	}
-	defer file.Close()
-
-	fileData, err := io.ReadAll(file)
-	if err != nil {
-		return
-	}
-	str := string(bytes.ReplaceAll(bytes.ReplaceAll(fileData, []byte("\n"), []byte("")), []byte("\t"), []byte("")))
-
-	var shop models.StorePage
-	err = json.Unmarshal([]byte(str), &shop)
-	if err != nil {
-		return
-	}
-
-	c.JSON(http.StatusOK, shop)
-}
-
 func RefreshItemShop() {
 	ShouldRefresh = time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 23, 59, 59, 999999999, time.Now().Location()).Unix()
 	GenerateRandomItemShop()
 }
 
 func GenerateRandomItemShop() {
+	allItems, err := common.GetItemsFromSeason(common.Season + (common.Chapter * 10))
+	if err != nil {
+		return
+	}
+
+	legendaryItems := common.FilterRarity(allItems, "Legendary")
+	dailyItems := common.ExcludeRarity(allItems, "Legendary")
+
 	ItemShop = models.StorePage{
 		RefreshIntervalHrs: 24,
 		DailyPurchaseHrs:  24,
@@ -82,23 +104,28 @@ func GenerateRandomItemShop() {
 	}
 
 	for i := 0; i < 6; i++ {
-		entry := GenerateRandomCatalogEntry(1)
+		entry := GenerateRandomCatalogEntry(1, &dailyItems)
 		ItemShop.Storefronts[0].CatalogEntries = append(ItemShop.Storefronts[0].CatalogEntries, entry)
 	}
 
 	for i := 0; i < 2; i++ {
-		entry := GenerateRandomCatalogEntry(-1)
+		entry := GenerateRandomCatalogEntry(-1, &legendaryItems)
 		ItemShop.Storefronts[1].CatalogEntries = append(ItemShop.Storefronts[1].CatalogEntries, entry)
 	}
+
+	all.PrintGreen([]string{"generated new item shop", fmt.Sprint(ItemShop)})
+	SaveItemShop()
 }
 
-func GenerateRandomCatalogEntry(f int) models.CatalogEntry {
-	price := randomPrices[rand.Intn(len(randomPrices) - 1) + 1]
-	randomId := "AthenaCharacter:" + common.SkinList[rand.Intn(len(common.SkinList) -1 ) + 1]
+func GenerateRandomCatalogEntry(f int, items *[]models.BeforeStoreItem) models.CatalogEntry {
+	randomItem := (*items)[rand.Intn(len(*items) - 1)]
+	price := Prices[randomItem.BackendType][randomItem.Rarity]
+	id := all.HashString(randomItem.ID)
+	id = id[:40]
 
 	return models.CatalogEntry{
-		DevName: helpers.HashStringSHA1(randomId),
-		OfferID: helpers.HashStringSHA1(randomId),
+		DevName: id,
+		OfferID: id,
 		FulfillmentIDs: []string{},
 		DailyLimit: -1,
 		WeeklyLimit: -1,
@@ -139,12 +166,27 @@ func GenerateRandomCatalogEntry(f int) models.CatalogEntry {
 		}},
 		Requirements: []models.Requirement{{
 			RequirementType: "DenyOnItemOwnership",
-			RequiredID: randomId,
+			RequiredID: randomItem.BackendType + ":" + randomItem.ID,
 			MinQuantity: 1,
 		}},
 		ItemGrants: []models.ItemGrant{{
-			TemplateID: randomId,
+			TemplateID: randomItem.BackendType + ":" + randomItem.ID,
 			Quantity: 1,
 		}},
 	}
+}
+
+func SaveItemShop() {
+	file, err := os.OpenFile("default/shop.json", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	data, err := json.MarshalIndent(ItemShop, "", "\t")
+	if err != nil {
+		return
+	}
+
+	file.Write(data)
 }

@@ -7,8 +7,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/zombman/server/all"
 	"github.com/zombman/server/common"
-	"github.com/zombman/server/helpers"
 )
 
 func VerifyAccessToken(c *gin.Context) {
@@ -47,15 +47,15 @@ func VerifyAccessToken(c *gin.Context) {
 	if dbToken.Token != strings.Join([]string{"eg1~", tokenString}, "") {
 		fmt.Println("token not match")
 
-		helpers.PrintRed([]string{"dbToken", dbToken.Token})
-		helpers.PrintGreen([]string{"tokenString", strings.Join([]string{"eg1~", tokenString}, "")})
+		all.PrintRed([]string{"dbToken", dbToken.Token})
+		all.PrintGreen([]string{"tokenString", strings.Join([]string{"eg1~", tokenString}, "")})
 
 		common.ErrorAuthFailed(c)
 		c.Abort()
 		return
 	}
 	
-	helpers.PrintGreen([]string{"token verified for account", accountId})
+	all.PrintGreen([]string{"token verified for account", accountId})
 
 	user, err := common.GetUserByAccountId(accountId)
 

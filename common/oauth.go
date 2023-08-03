@@ -8,7 +8,7 @@ import (
 
 	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
-	"github.com/zombman/server/helpers"
+	"github.com/zombman/server/all"
 	"github.com/zombman/server/models"
 )
 
@@ -34,7 +34,7 @@ func GenerateClientToken(client string) string {
 func GetClientToken(ip string) (models.ClientToken, error) {
 	var clientToken models.ClientToken
 
-	result := helpers.Postgres.Where("ip = ?", ip).First(&clientToken)
+	result := all.Postgres.Where("ip = ?", ip).First(&clientToken)
 
 	if result.Error != nil {
 		return models.ClientToken{}, result.Error
@@ -70,7 +70,7 @@ func GenerateAccessToken(user models.User, clientId string, device string) strin
 func GetAccessToken(accountId string) (models.AccessToken, error) {
 	var accessToken models.AccessToken
 
-	result := helpers.Postgres.Where("account_id = ?", accountId).First(&accessToken)
+	result := all.Postgres.Where("account_id = ?", accountId).First(&accessToken)
 
 	if result.Error != nil {
 		return models.AccessToken{}, result.Error
@@ -99,7 +99,7 @@ func GenerateRefreshToken(user models.User, clientId string, device string) stri
 func GetRefreshToken(accountId string) (models.RefreshToken, error) {
 	var refreshToken models.RefreshToken
 
-	result := helpers.Postgres.Where("account_id = ?", accountId).First(&refreshToken)
+	result := all.Postgres.Where("account_id = ?", accountId).First(&refreshToken)
 
 	if result.Error != nil {
 		return models.RefreshToken{}, result.Error
@@ -111,7 +111,7 @@ func GetRefreshToken(accountId string) (models.RefreshToken, error) {
 func GetRefreshTokenWithToken(token string) (models.RefreshToken, error) {
 	var refreshToken models.RefreshToken
 
-	result := helpers.Postgres.Where("token = ?", token).First(&refreshToken)
+	result := all.Postgres.Where("token = ?", token).First(&refreshToken)
 
 	if result.Error != nil {
 		return models.RefreshToken{}, result.Error

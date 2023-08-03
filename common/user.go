@@ -4,18 +4,18 @@ import (
 	"errors"
 
 	"github.com/google/uuid"
-	"github.com/zombman/server/helpers"
+	"github.com/zombman/server/all"
 	"github.com/zombman/server/models"
 )
 
 func CreateUser(username string, password string) (models.User, error) {
 	user := models.User{
 		Username:  username,
-		Password:  helpers.HashString(password),
+		Password:  all.HashString(password),
 		AccountId: uuid.New().String(),
 	}
 
-	result := helpers.Postgres.Create(&user)
+	result := all.Postgres.Create(&user)
 	
 	if result.Error != nil {
 		return models.User{}, result.Error
@@ -40,7 +40,7 @@ func CreateUser(username string, password string) (models.User, error) {
 func GetUserByAccountId(accountId string) (models.User, error) {
 	var user models.User
 
-	result := helpers.Postgres.Where("account_id = ? AND banned = false", accountId).First(&user)
+	result := all.Postgres.Where("account_id = ? AND banned = false", accountId).First(&user)
 
 	if result.Error != nil {
 		return models.User{}, result.Error
@@ -56,7 +56,7 @@ func GetUserByAccountId(accountId string) (models.User, error) {
 func GetUserByUsername(username string) (models.User, error) {
 	var user models.User
 
-	result := helpers.Postgres.Where("username = ? AND banned = false", username).First(&user)
+	result := all.Postgres.Where("username = ? AND banned = false", username).First(&user)
 
 	if result.Error != nil {
 		return models.User{}, result.Error
@@ -72,7 +72,7 @@ func GetUserByUsername(username string) (models.User, error) {
 func GetUserByUsernameAndPlainPassword(username string, password string) (models.User, error) {
 	var user models.User
 
-	result := helpers.Postgres.Where("username = ? AND password = ? AND banned = false", username, helpers.HashString(password)).First(&user)
+	result := all.Postgres.Where("username = ? AND password = ? AND banned = false", username, all.HashString(password)).First(&user)
 
 	if result.Error != nil {
 		return models.User{}, result.Error

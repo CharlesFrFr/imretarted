@@ -14,6 +14,7 @@ type UserProfile struct {
 type UserLoadout struct {
 	gorm.Model
 	AccountId		string	`gorm:"default:null" json:"accountId"`
+	LoadoutName string	`gorm:"default:null" json:"loadoutName"`
 	Loadout 		string	`gorm:"type:text" json:"loadout"`
 }
 
@@ -115,5 +116,5 @@ type StatsAttributes struct {
 	FavoriteDance                    []string          `json:"favorite_dance"`
 	FavoriteItemWraps                []string          `json:"favorite_itemwraps"`
 	FavoriteCharacter                string            `json:"favorite_character"`
-	FavoriteLoadingscreen            string            `json:"favorite_loadingscreen"`
+	FavoriteLoadingScreen            string            `json:"favorite_loadingscreen"`
 }

@@ -19,90 +19,6 @@
       },
       "templateId": "AthenaCharacter:CID_001_Athena_Commando_F_Default"
     },
-    "AthenaCharacter:CID_002_Athena_Commando_F_Default": {
-      "attributes": {
-        "favorite": false,
-        "item_seen": true,
-        "level": 0,
-        "max_level_bonus": 0,
-        "rnd_sel_cnt": 0,
-        "variants": [],
-        "xp": 0
-      },
-      "templateId": "AthenaCharacter:CID_002_Athena_Commando_F_Default"
-    },
-    "AthenaCharacter:CID_003_Athena_Commando_F_Default": {
-      "attributes": {
-        "favorite": false,
-        "item_seen": true,
-        "level": 0,
-        "max_level_bonus": 0,
-        "rnd_sel_cnt": 0,
-        "variants": [],
-        "xp": 0
-      },
-      "templateId": "AthenaCharacter:CID_003_Athena_Commando_F_Default"
-    },
-    "AthenaCharacter:CID_004_Athena_Commando_F_Default": {
-      "attributes": {
-        "favorite": false,
-        "item_seen": true,
-        "level": 0,
-        "max_level_bonus": 0,
-        "rnd_sel_cnt": 0,
-        "variants": [],
-        "xp": 0
-      },
-      "templateId": "AthenaCharacter:CID_004_Athena_Commando_F_Default"
-    },
-    "AthenaCharacter:CID_005_Athena_Commando_M_Default": {
-      "attributes": {
-        "favorite": false,
-        "item_seen": true,
-        "level": 0,
-        "max_level_bonus": 0,
-        "rnd_sel_cnt": 0,
-        "variants": [],
-        "xp": 0
-      },
-      "templateId": "AthenaCharacter:CID_005_Athena_Commando_M_Default"
-    },
-    "AthenaCharacter:CID_006_Athena_Commando_M_Default": {
-      "attributes": {
-        "favorite": false,
-        "item_seen": true,
-        "level": 0,
-        "max_level_bonus": 0,
-        "rnd_sel_cnt": 0,
-        "variants": [],
-        "xp": 0
-      },
-      "templateId": "AthenaCharacter:CID_006_Athena_Commando_M_Default"
-    },
-    "AthenaCharacter:CID_007_Athena_Commando_M_Default": {
-      "attributes": {
-        "favorite": false,
-        "item_seen": true,
-        "level": 0,
-        "max_level_bonus": 0,
-        "rnd_sel_cnt": 0,
-        "variants": [],
-        "xp": 0
-      },
-      "templateId": "AthenaCharacter:CID_007_Athena_Commando_M_Default"
-    },
-    "AthenaCharacter:CID_008_Athena_Commando_M_Default": {
-      "attributes": {
-        "favorite": false,
-        "item_seen": true,
-        "level": 0,
-        "max_level_bonus": 0,
-        "rnd_sel_cnt": 0,
-        "variants": [],
-        "xp": 0
-      },
-      "templateId": "AthenaCharacter:CID_008_Athena_Commando_M_Default"
-    },
     "AthenaPickaxe:DefaultPickaxe": {
       "attributes": {
         "favorite": false,
@@ -168,15 +84,15 @@
       "daily_rewards": {},
       "xp": 0,
       "season_friend_match_boost": 1,
-      "active_loadout_index": 1,
+      "active_loadout_index": 0,
       "favorite_musicpack": "",
-      "favorite_glider": "",
-      "favorite_pickaxe": "",
+      "favorite_glider": "AthenaGlider:DefaultGlider",
+      "favorite_pickaxe": "AthenaPickaxe:DefaultPickaxe",
       "favorite_skydivecontrail": "",
       "favorite_backpack": "",
-      "favorite_dance": ["", "", "", "", "", ""],
-      "favorite_itemwraps": [],
-      "favorite_character": "",
+      "favorite_dance": ["AthenaDance:EID_DanceMoves", "", "", "", "", ""],
+      "favorite_itemwraps": ["", "", "", "", "", "", "", ""],
+      "favorite_character": "AthenaCharacter:CID_001_Athena_Commando_F_Default",
       "favorite_loadingscreen": ""
     }
   },

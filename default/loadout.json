@@ -8,14 +8,7 @@
           "activeVariants": []
         },
         "Dance": {
-          "items": [
-            "AthenaDance:EID_BoogieDown",
-            "AthenaDance:EID_DanceMoves",
-            "",
-            "",
-            "",
-            ""
-          ]
+          "items": ["AthenaDance:EID_DanceMoves", "", "", "", "", ""]
         },
         "Glider": {
           "items": ["AthenaGlider:DefaultGlider"]

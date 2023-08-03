@@ -37,3 +37,7 @@ func ErrorAuthFailed(c *gin.Context) {
 func ErrorBadRequest(c *gin.Context) {
 	DefaultEpicError(c, "errors.com.epicgames.common.bad_request", "Bad Request", 1000, "")
 }
+
+func ErrorItemNotFound(c *gin.Context) {
+	DefaultEpicError(c, "errors.com.epicgames.common.item_not_found", "Item not found", 1004, "")
+}
