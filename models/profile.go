@@ -66,14 +66,21 @@ type Item struct {
 	Quantity   int				 	`json:"quantity"`
 }
 
+type CommonCoreItem struct {
+	Attributes map[string]any 	`json:"attributes"`
+	TemplateId string			 	`json:"templateId"`
+	Quantity   int				 	`json:"quantity"`
+}
+
 type ItemAttributes struct {
 	Favorite                    bool        `json:"favorite"`
 	ItemSeen                    bool        `json:"item_seen"`
 	Level                       int         `json:"level"`
 	MaxLevelBonus               int         `json:"max_level_bonus"`
 	RndSelCnt                   int         `json:"rnd_sel_cnt"`
-	Variants                    []string    `json:"variants"`
+	Variants                    []any    `json:"variants"`
 	Xp                          int         `json:"xp"`
+	Platform 										*string      `json:"platform"`
 }
 
 type Stats struct {

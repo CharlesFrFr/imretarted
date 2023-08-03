@@ -22,7 +22,7 @@ func init() {
 }
 
 func main() {
-  all.PrintGreen([]string{"development mode"})
+  all.PrintGreen([]any{"development mode"})
   r := gin.Default()
   r.Use(func(c *gin.Context) {
     if all.Postgres == nil {

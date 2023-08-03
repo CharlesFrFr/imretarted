@@ -39,7 +39,7 @@ func OAuthMain(c *gin.Context) {
 		return
 	}
 	
-	all.PrintRed([]string{"grant_type: ", body.GrantType})
+	all.PrintRed([]any{"grant_type: ", body.GrantType})
 	switch body.GrantType {
 		case "client_credentials": 
 			ClientCredentials(c, client)

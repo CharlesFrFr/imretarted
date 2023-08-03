@@ -47,15 +47,15 @@ func VerifyAccessToken(c *gin.Context) {
 	if dbToken.Token != strings.Join([]string{"eg1~", tokenString}, "") {
 		fmt.Println("token not match")
 
-		all.PrintRed([]string{"dbToken", dbToken.Token})
-		all.PrintGreen([]string{"tokenString", strings.Join([]string{"eg1~", tokenString}, "")})
+		all.PrintRed([]any{"dbToken", dbToken.Token})
+		all.PrintGreen([]any{"tokenString", strings.Join([]string{"eg1~", tokenString}, "")})
 
 		common.ErrorAuthFailed(c)
 		c.Abort()
 		return
 	}
 	
-	all.PrintGreen([]string{"token verified for account", accountId})
+	all.PrintGreen([]any{"token verified for account", accountId})
 
 	user, err := common.GetUserByAccountId(accountId)
 

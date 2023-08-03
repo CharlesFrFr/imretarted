@@ -37,7 +37,7 @@ func AddProfileToUser(user models.User, profileId string) {
 		CreateLoadoutForUser(user.AccountId, "zombie_loadout")
 	}
 
-	all.PrintGreen([]string{profileId, "profile added to", user.Username})
+	all.PrintGreen([]any{profileId, "profile added to", user.Username})
 }
 
 func ReadProfileFromUser(accountId string, profileId string) (models.Profile, error) {
@@ -76,6 +76,7 @@ func SaveProfileToUser(accountId string, profile models.Profile) error {
 		return result.Error
 	}
 
+
 	return nil
 }
 
@@ -111,7 +112,7 @@ func CreateLoadoutForUser(accountId string, loadoutName string) {
 		LoadoutName: loadoutName,
 	})
 
-	all.PrintGreen([]string{"created loadout", loadoutName, "for", accountId})
+	all.PrintGreen([]any{"created loadout", loadoutName, "for", accountId})
 }
 
 func AppendLoadoutsToProfile(profile *models.Profile, accountId string) {
@@ -186,4 +187,130 @@ func GetLoadout(loadoutId string, accountId string) (models.Loadout, error) {
 	}
 
 	return models.Loadout{}, errors.New("loadout not found")
+}
+
+func AddItemToProfile(profile *models.Profile, itemId string, accountId string) {
+	profile.Items[itemId] = models.Item{
+		TemplateId: itemId,
+		Attributes: models.ItemAttributes{
+			MaxLevelBonus: 0,
+			Level: 1,
+			ItemSeen: true,
+			Variants: []any{},
+			Favorite: false,
+			Xp: 0,
+		},
+		Quantity: 1,
+	}
+	AppendLoadoutsToProfile(profile, accountId)
+}
+
+func AddItemsToProfile(profile *models.Profile, itemIds []string, accountId string) {
+	for _, itemId := range itemIds {
+		profile.Items[itemId] = models.Item{
+			TemplateId: itemId,
+			Attributes: models.ItemAttributes{
+				MaxLevelBonus: 0,
+				Level: 1,
+				ItemSeen: true,
+				Variants: []any{},
+				Favorite: false,
+				Xp: 0,
+			},
+			Quantity: 1,
+		}
+	}
+	AppendLoadoutsToProfile(profile, accountId)
+}
+
+func AddEverythingToProfile(profile *models.Profile, accountId string) {
+	pathToAllItems := "default/items.json"
+
+	file, err := os.Open(pathToAllItems)
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	fileData, err := io.ReadAll(file)
+	if err != nil {
+		return
+	}
+	str := string(bytes.ReplaceAll(bytes.ReplaceAll(fileData, []byte("\n"), []byte("")), []byte("\t"), []byte("")))
+
+	var itemsData []models.BeforeStoreItem
+	err = json.Unmarshal([]byte(str), &itemsData)
+	if err != nil {
+		return
+	}
+
+	var itemIds []string
+	for _, item := range itemsData {
+		itemIds = append(itemIds, item.BackendType + ":" + item.ID)
+	}
+
+	AddItemsToProfile(profile, itemIds, accountId)
+}
+
+func SetUserVBucks(accountId string, profile *models.Profile, amount int) {
+	_, err := GetUserByAccountId(accountId)
+	if err != nil {
+		return
+	}
+
+	wantedAmount := amount
+
+	all.Postgres.Model(&models.User{}).Where("account_id = ?", accountId).Update("v_bucks", wantedAmount)
+	
+	profile.Items["Currency:MtxPurchased"] = models.CommonCoreItem{
+		TemplateId: "Currency:MtxPurchased",
+		Attributes: map[string]any {
+			"platform": "EpicPC",
+		},
+		Quantity: wantedAmount,
+	}
+
+	AppendLoadoutsToProfile(profile, accountId)
+}
+
+func TakeUserVBucks(accountId string, profile *models.Profile, amount int) {
+	user, err := GetUserByAccountId(accountId)
+	if err != nil {
+		return
+	}
+
+	wantedAmount := user.VBucks - amount
+
+	all.Postgres.Model(&models.User{}).Where("account_id = ?", accountId).Update("v_bucks", wantedAmount)
+	
+	profile.Items["Currency:MtxPurchased"] = models.CommonCoreItem{
+		TemplateId: "Currency:MtxPurchased",
+		Attributes: map[string]any {
+			"platform": "EpicPC",
+		},
+		Quantity: wantedAmount,
+	}
+
+	AppendLoadoutsToProfile(profile, accountId)
+}
+
+func AddUserVBucks(accountId string, profile *models.Profile, amount int) {
+	user, err := GetUserByAccountId(accountId)
+	if err != nil {
+		return
+	}
+
+	wantedAmount := user.VBucks + amount
+
+	all.Postgres.Model(&models.User{}).Where("account_id = ?", accountId).Update("v_bucks", wantedAmount)
+	
+	profile.Items["Currency:MtxPurchased"] = models.CommonCoreItem{
+		TemplateId: "Currency:MtxPurchased",
+		Attributes: map[string]any {
+			"platform": "EpicPC",
+		},
+		Quantity: wantedAmount,
+	}
+
+	AppendLoadoutsToProfile(profile, accountId)
 }

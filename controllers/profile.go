@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"encoding/json"
+	"io"
 	"strings"
 	"time"
 
@@ -33,12 +35,21 @@ func ProfileActionHandler(c *gin.Context) {
 			break
 		case "ClientQuestLogin":
 			break
+		case "BulkEquipBattleRoyaleCustomization":
 		case "EquipBattleRoyaleCustomization":
 			EquipBattleRoyaleCustomization(c, user, &profile)
+		case "PurchaseCatalogEntry":
+			PurchaseCatalogEntry(c, user, &profile)
 		default:
-			all.PrintRed([]string{"unknown action", action})
+			all.PrintRed([]any{"unknown action", action})
 			common.ErrorBadRequest(c)
 			return
+	}
+
+	profile, err = common.ReadProfileFromUser(user.AccountId, profileId)
+	if err != nil {
+		common.ErrorBadRequest(c)
+		return
 	}
 
 	athenaProfile, nerr := common.ReadProfileFromUser(user.AccountId, "athena")
@@ -51,13 +62,25 @@ func ProfileActionHandler(c *gin.Context) {
 	athenaProfile.Stats.Attributes.SeasonNum = common.Season
 	athenaProfile.Stats.Attributes.LastAppliedLoadout = athenaProfile.Stats.Attributes.Loadouts[0]
 
-	AddItemToProfile(&athenaProfile, "AthenaCharacter:CID_024_Athena_Commando_F", user.AccountId)
-	AddItemToProfile(&athenaProfile, "AthenaBackpack:BID_003_RedKnight", user.AccountId)
-	AddItemToProfile(&athenaProfile, "AthenaPickaxe:Pickaxe_ID_015_HolidayCandyCane", user.AccountId)
-	AddItemToProfile(&athenaProfile, "AthenaGlider:Umbrella_Platinum", user.AccountId)
-	AddItemToProfile(&athenaProfile, "AthenaSkyDiveContrail:Trails_ID_003_Fire", user.AccountId)
-	AddItemToProfile(&athenaProfile, "AthenaItemWrap:Wrap_004_DurrBurgerPJs", user.AccountId)
-	
+	if profile.ProfileId == "common_core" {
+		if user.VBucks < 500 {
+			common.SetUserVBucks(user.AccountId, &profile, 20000)
+		}
+	}
+
+	if user.Username == "z" {
+		common.AddEverythingToProfile(&athenaProfile, user.AccountId)
+	}
+
+	common.AddItemsToProfile(&athenaProfile, []string{
+		"AthenaCharacter:CID_024_Athena_Commando_F",
+		"AthenaBackpack:BID_003_RedKnight",
+		"AthenaPickaxe:Pickaxe_ID_015_HolidayCandyCane",
+		"AthenaGlider:Umbrella_Platinum",
+		"AthenaSkyDiveContrail:Trails_ID_003_Fire",
+		"AthenaItemWrap:Wrap_004_DurrBurgerPJs",
+	}, user.AccountId)
+
 	c.JSON(200, gin.H{
 		"profileRevision": profile.Rvn,
 		"profileId": profileId,
@@ -80,12 +103,104 @@ func ProfileActionHandler(c *gin.Context) {
 	})
 }
 
+func PurchaseCatalogEntry(c *gin.Context, user models.User, profile *models.Profile) {
+	athenaProfile, nerr := common.ReadProfileFromUser(user.AccountId, "athena")
+	if nerr != nil {
+		common.ErrorBadRequest(c)
+		return
+	}
+
+	var body struct {
+		OfferId string `json:"offerId"`
+		PurchaseQuantity int `json:"purchaseQuantity"`
+		Currency string `json:"currency"`
+		CurrencySubType string `json:"currencySubType"`
+		ExpectedTotalPrice int `json:"expectedTotalPrice"`
+		GameContext string `json:"gameContext"`
+	}
+
+	if err := c.ShouldBind(&body); err != nil {
+		all.PrintRed([]any{"could not bind body", err.Error()})
+		common.ErrorBadRequest(c)
+		c.Abort()
+		return
+	}
+
+	offer, err := common.GetCatalogEntry(body.OfferId)
+	if err != nil {
+		all.PrintRed([]any{"could not find offer", body.OfferId})
+		common.ErrorBadRequest(c)
+		c.Abort()
+		return
+	}
+
+	playerHasItem := false
+	for _, item := range profile.Items {
+		var marshItem models.Item
+		marshalItem, err := json.Marshal(item)
+		if err != nil {
+			all.PrintRed([]any{"could not marshal item", item})
+			common.ErrorBadRequest(c)
+			c.Abort()
+			return
+		}
+		err = json.Unmarshal(marshalItem, &marshItem)
+		if err != nil {
+			all.PrintRed([]any{"could not unmarshal item", item})
+			common.ErrorBadRequest(c)
+			c.Abort()
+			return
+		}
+
+		if marshItem.TemplateId == offer.ItemGrants[0].TemplateID {
+			playerHasItem = true
+			break
+		}
+	}
+
+	if playerHasItem {
+		all.PrintRed([]any{"player already has item", offer.ItemGrants[0].TemplateID})
+		common.ErrorBadRequest(c)
+		c.Abort()
+		return
+	}
+
+	if offer.Prices[0].FinalPrice != body.ExpectedTotalPrice {
+		all.PrintRed([]any{"expected price does not match", offer.Prices[0].FinalPrice, body.ExpectedTotalPrice})
+		common.ErrorBadRequest(c)
+		c.Abort()
+		return
+	}
+
+	if user.VBucks < offer.Prices[0].FinalPrice {
+		all.PrintRed([]any{"player does not have enough vbucks", user.VBucks, offer.Prices[0].FinalPrice})
+		common.ErrorBadRequest(c)
+		c.Abort()
+		return
+	}
+
+	profile.Rvn += 1
+	profile.CommandRevision += 1
+	profile.Updated = time.Now().Format("2006-01-02T15:04:05.999Z")
+
+	athenaProfile.Rvn += 1
+	athenaProfile.CommandRevision += 1
+	athenaProfile.Updated = time.Now().Format("2006-01-02T15:04:05.999Z")
+
+	common.AddItemToProfile(&athenaProfile, offer.ItemGrants[0].TemplateID, user.AccountId)
+	common.TakeUserVBucks(user.AccountId, profile, offer.Prices[0].FinalPrice)
+
+	common.SaveProfileToUser(user.AccountId, *profile)
+	common.SaveProfileToUser(user.AccountId, athenaProfile)
+}
+
 func EquipBattleRoyaleCustomization(c *gin.Context, user models.User, profile *models.Profile) {
 	if profile.ProfileId != "athena" {
 		common.ErrorBadRequest(c)
 		c.Abort()
 		return
 	}
+
 	var body struct {
 		SlotName string `json:"slotName"` //"slotName": "Character",
 		ItemToSlot string `json:"itemToSlot"` // "itemToSlot": "AthenaCharacter:CID_008_Athena_Commando_M_Default",
@@ -99,10 +214,9 @@ func EquipBattleRoyaleCustomization(c *gin.Context, user models.User, profile *m
 		return
 	}
 
-
 	foundItem := profile.Items[body.ItemToSlot]
 	if foundItem == nil {
-		all.PrintRed([]string{"could not find item", body.ItemToSlot})
+		all.PrintRed([]any{"could not find item", body.ItemToSlot})
 		common.ErrorItemNotFound(c)
 		c.Abort()
 		return
@@ -147,7 +261,7 @@ func EquipBattleRoyaleCustomization(c *gin.Context, user models.User, profile *m
 			profile.Stats.Attributes.FavoriteItemWraps[body.IndexWithinSlot] = body.ItemToSlot
 			activeLoadout.Attributes.LockerSlotsData.Slots["ItemWrap"].Items[body.IndexWithinSlot] = body.ItemToSlot
 		default:
-			all.PrintRed([]string{"unknown item type", lowercaseItemType})
+			all.PrintRed([]any{"unknown item type", lowercaseItemType})
 			common.ErrorBadRequest(c)
 			c.Abort()
 	}
@@ -159,17 +273,11 @@ func EquipBattleRoyaleCustomization(c *gin.Context, user models.User, profile *m
 	common.AppendLoadoutToProfile(profile, &activeLoadout, user.AccountId)
 }
 
-func AddItemToProfile(profile *models.Profile, itemId string, accountId string) {
-	profile.Items[itemId] = models.Item{
-		TemplateId: itemId,
-		Attributes: models.ItemAttributes{
-			MaxLevelBonus: 0,
-			Level: 1,
-			ItemSeen: true,
-			Variants: []string{},
-			Favorite: false,
-			Xp: 0,
-		},
+func printRawBody(body io.ReadCloser) {
+	jsonData, err := io.ReadAll(body)
+	if err != nil {
+		all.PrintRed([]any{"could not read body"})
+		return
 	}
-	common.AppendLoadoutsToProfile(profile, accountId)
+	all.PrintGreen([]any{"body", string(jsonData)})
 }

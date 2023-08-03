@@ -10,4 +10,5 @@ type User struct {
 	DiscordId   uint32 `gorm:"default:0"`
 	Banned      bool   `gorm:"default:false"`
 	LoginSecret string `gorm:"default:null"`
+	VBucks 			int    `gorm:"default:0"`
 }

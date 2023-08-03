@@ -3,6 +3,7 @@ package common
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 
@@ -88,4 +89,47 @@ func ExcludeType(items *[]models.BeforeStoreItem, backendType string) {
 	}
 
 	*items = filteredItems
+}
+
+func GetCatalogEntry(offerId string) (models.CatalogEntry, error) {
+	itemshop := GetItemShop()
+
+	var entry models.CatalogEntry
+	for _, storefront := range itemshop.Storefronts {
+		for _, catalogEntry := range storefront.CatalogEntries {
+			if catalogEntry.OfferID == offerId {
+				entry = catalogEntry
+			}
+		}
+	}
+
+	if entry.OfferID == "" {
+		return models.CatalogEntry{}, fmt.Errorf("could not find catalog entry with offerId %s", offerId)
+	}
+
+	return entry, nil
+}
+
+func GetItemShop() models.StorePage {
+	pathToProfile := "default/shop.json"
+
+	file, err := os.Open(pathToProfile)
+	if err != nil {
+		return models.StorePage{}
+	}
+	defer file.Close()
+
+	fileData, err := io.ReadAll(file)
+	if err != nil {
+		return models.StorePage{}
+	}
+	str := string(bytes.ReplaceAll(bytes.ReplaceAll(fileData, []byte("\n"), []byte("")), []byte("\t"), []byte("")))
+
+	var itemshop models.StorePage
+	err = json.Unmarshal([]byte(str), &itemshop)
+	if err != nil {
+		return models.StorePage{}
+	}
+
+	return itemshop
 }

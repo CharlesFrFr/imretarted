@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"math/rand"
 	"net/http"
 	"os"
@@ -61,9 +63,35 @@ func StorefrontCatalog(c *gin.Context) {
 	if timeNow > ShouldRefresh {
 		RefreshItemShop()	
 	}
-
+	
 	if len(ItemShop.Storefronts) == 0 {
 		GenerateRandomItemShop()
+	}
+
+	if (common.LoadShopFromJson) {
+		pathToProfile := "default/shop.json"
+
+		file, err := os.Open(pathToProfile)
+		if err != nil {
+			all.PrintRed([]any{"error opening shop", err})
+			return
+		}
+		defer file.Close()
+
+		fileData, err := io.ReadAll(file)
+		if err != nil {
+			all.PrintRed([]any{"error reading shop", err})
+			return
+		}
+		str := string(bytes.ReplaceAll(bytes.ReplaceAll(fileData, []byte("\n"), []byte("")), []byte("\t"), []byte("")))
+
+		err = json.Unmarshal([]byte(str), &ItemShop)
+		if err != nil {
+			all.PrintRed([]any{"error unmarshalling shop", err})
+			return
+		}
+
+		all.PrintGreen([]any{"loaded shop from json", fmt.Sprint(ItemShop)})
 	}
 
 	c.JSON(http.StatusOK, ItemShop)
@@ -113,8 +141,10 @@ func GenerateRandomItemShop() {
 		ItemShop.Storefronts[1].CatalogEntries = append(ItemShop.Storefronts[1].CatalogEntries, entry)
 	}
 
-	all.PrintGreen([]string{"generated new item shop", fmt.Sprint(ItemShop)})
-	SaveItemShop()
+	all.PrintGreen([]any{"generated new random item shop"})
+	if !common.LoadShopFromJson {
+		SaveItemShop()
+	}
 }
 
 func GenerateRandomCatalogEntry(f int, items *[]models.BeforeStoreItem) models.CatalogEntry {
