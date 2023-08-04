@@ -1,6 +1,7 @@
 package all
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 )
@@ -36,4 +37,18 @@ func PrintYellow(strings []any) {
 		fmt.Print("\033[33m" + fmt.Sprint(str) + "\033[0m ")
 	}
 	fmt.Println()
+}
+
+func MarshPrintJSON(obj interface{}) {
+	if (os.Getenv("PRODUCTION") == "true") {
+		return
+	}
+
+	marsh, err := json.Marshal(obj)
+	if err != nil {
+		fmt.Println("could not marshal object")
+		return
+	}
+
+	PrintYellow([]any{string(marsh)})
 }

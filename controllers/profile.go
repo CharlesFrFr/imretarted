@@ -22,6 +22,7 @@ func ProfileActionHandler(c *gin.Context) {
 	profile, err := common.ReadProfileFromUser(user.AccountId, profileId)
 	if err != nil {
 		common.ErrorBadRequest(c)
+		c.Abort()
 		return
 	}
 
@@ -40,6 +41,7 @@ func ProfileActionHandler(c *gin.Context) {
 		default:
 			all.PrintRed([]any{"unknown action", action})
 			common.ErrorBadRequest(c)
+			c.Abort()
 			return
 	}
 
@@ -66,8 +68,7 @@ func ProfileActionHandler(c *gin.Context) {
 	response.ServerTime = time.Now().Format("2006-01-02T15:04:05.999Z")
 	response.ResponseVersion = 1
 
-	marsh, _ := json.Marshal(response)
-	all.PrintYellow([]any{"response", string(marsh)})
+	all.MarshPrintJSON(response)
 
 	c.JSON(200, response)
 }
@@ -203,22 +204,14 @@ func EquipBattleRoyaleCustomization(c *gin.Context, user models.User, profile *m
 	}
 
 	var body struct {
-		SlotName string `json:"slotName"` //"slotName": "Character",
-		ItemToSlot string `json:"itemToSlot"` // "itemToSlot": "AthenaCharacter:CID_008_Athena_Commando_M_Default",
+		SlotName string `json:"slotName"`
+		ItemToSlot string `json:"itemToSlot"`
 		IndexWithinSlot int `json:"indexWithinSlot"`
 		VariantUpdates []map[string]interface{} `json:"variantUpdates"`
 	}
 
 	if err := c.ShouldBind(&body); err != nil {
 		common.ErrorBadRequest(c)
-		c.Abort()
-		return
-	}
-
-	foundItem := profile.Items[body.ItemToSlot]
-	if foundItem == nil {
-		all.PrintRed([]any{"could not find item", body.ItemToSlot})
-		common.ErrorItemNotFound(c)
 		c.Abort()
 		return
 	}
@@ -271,6 +264,7 @@ func EquipBattleRoyaleCustomization(c *gin.Context, user models.User, profile *m
 			profile.Stats.Attributes.FavoriteItemWraps[body.IndexWithinSlot] = body.ItemToSlot
 			activeLoadout.Attributes.LockerSlotsData.Slots["ItemWrap"].Items[body.IndexWithinSlot] = body.ItemToSlot
 			valueChanged = profile.Stats.Attributes.FavoriteItemWraps
+			lowercaseItemType = "itemwraps"
 		default:
 			all.PrintRed([]any{"unknown item type", lowercaseItemType})
 			common.ErrorBadRequest(c)

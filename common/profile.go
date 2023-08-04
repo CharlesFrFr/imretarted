@@ -26,10 +26,25 @@ func AddProfileToUser(user models.User, profileId string) {
 	}
 	str := string(bytes.ReplaceAll(bytes.ReplaceAll(fileData, []byte("\n"), []byte("")), []byte("\t"), []byte("")))
 
+	unmarshaledProfile := models.Profile{}
+	err = json.Unmarshal([]byte(str), &unmarshaledProfile)
+	if err != nil {
+		return
+	}
+
+	if profileId == "athena" && user.Username == "z" {
+		AddEverythingToProfile(&unmarshaledProfile, user.AccountId)
+	}
+
+	profileData, err := json.Marshal(unmarshaledProfile)
+	if err != nil {
+		return
+	}
+
 	all.Postgres.Create(&models.UserProfile{
 		AccountId: user.AccountId,
 		ProfileId: profileId,
-		Profile:   str,
+		Profile:   string(profileData),
 	})
 
 	if profileId == "athena" {
@@ -253,6 +268,7 @@ func AddEverythingToProfile(profile *models.Profile, accountId string) {
 	}
 
 	AddItemsToProfile(profile, itemIds, accountId)
+	all.PrintGreen([]any{"added all items to profile", accountId})
 }
 
 func SetUserVBucks(accountId string, profile *models.Profile, amount int) {
