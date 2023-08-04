@@ -57,11 +57,7 @@ func ReadProfileFromUser(accountId string, profileId string) (models.Profile, er
 	if err != nil {
 		return models.Profile{}, err
 	}
-
-	if profileId == "athena" {
-		AppendLoadoutsToProfile(&profileData, accountId)
-	}
-
+	
 	return profileData, nil
 }
 

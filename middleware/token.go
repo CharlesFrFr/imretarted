@@ -67,5 +67,8 @@ func VerifyAccessToken(c *gin.Context) {
 	}
 
 	c.Set("user", user)
+
+	all.PrintYellow([]any{"after checking token"})
+
 	c.Next()
 }

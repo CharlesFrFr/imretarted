@@ -17,8 +17,7 @@ func ProfileActionHandler(c *gin.Context) {
 	profileId, _ := c.GetQuery("profileId")
 	action := c.Param("action")
 
-	profileChanges := []gin.H{}
-	multiUpdate := []gin.H{}
+	response := models.ProfileResponse{}
 
 	profile, err := common.ReadProfileFromUser(user.AccountId, profileId)
 	if err != nil {
@@ -35,9 +34,9 @@ func ProfileActionHandler(c *gin.Context) {
 			break
 		case "BulkEquipBattleRoyaleCustomization":
 		case "EquipBattleRoyaleCustomization":
-			EquipBattleRoyaleCustomization(c, user, &profile, &profileChanges)
+			EquipBattleRoyaleCustomization(c, user, &profile, &response)
 		case "PurchaseCatalogEntry":
-			PurchaseCatalogEntry(c, user, &profile, &profileChanges, &multiUpdate)
+			PurchaseCatalogEntry(c, user, &profile, &response)
 		default:
 			all.PrintRed([]any{"unknown action", action})
 			common.ErrorBadRequest(c)
@@ -47,9 +46,9 @@ func ProfileActionHandler(c *gin.Context) {
 	profile.Stats.Attributes.SeasonNum = common.Season
 
 	if queryRevision, err := strconv.Atoi(c.Query("rvn")); err == nil && queryRevision != profile.Rvn {
-		profileChanges = []gin.H{{
-			"changeType": "fullProfileUpdate",
-			"profile": profile,
+		response.ProfileChanges = []models.ProfileChange{{
+			ChangeType: "fullProfileUpdate",
+			Profile: profile,
 		}}
 	}
 
@@ -60,31 +59,20 @@ func ProfileActionHandler(c *gin.Context) {
 
 	common.SaveProfileToUser(user.AccountId, profile)
 
-	marshalUpdate, _ := json.Marshal(gin.H{
-		"profileRevision": profile.Rvn,
-		"profileCommandRevision": profile.CommandRevision,
-		"profileId": profileId,
-		"profileChangesBaseRevision": profile.Rvn - 1,
-		"profileChanges": profileChanges,
-		"serverTime": time.Now().Format("2006-01-02T15:04:05.999Z"),
-		"multiUpdate": multiUpdate,
-		"responseVersion": 1,
-	})
-	all.PrintYellow([]any{"response: ", string(marshalUpdate)})
+	response.ProfileRevision = profile.Rvn
+	response.ProfileCommandRevision = profile.CommandRevision
+	response.ProfileID = profileId
+	response.ProfileChangesBaseRevision = profile.Rvn - 1
+	response.ServerTime = time.Now().Format("2006-01-02T15:04:05.999Z")
+	response.ResponseVersion = 1
 
-	c.JSON(200, gin.H{
-		"profileRevision": profile.Rvn,
-		"profileCommandRevision": profile.CommandRevision,
-		"profileId": profileId,
-		"profileChangesBaseRevision": profile.Rvn - 1,
-		"profileChanges": profileChanges,
-		"serverTime": time.Now().Format("2006-01-02T15:04:05.999Z"),
-		"multiUpdate": multiUpdate,
-		"responseVersion": 1,
-	})
+	marsh, _ := json.Marshal(response)
+	all.PrintYellow([]any{"response", string(marsh)})
+
+	c.JSON(200, response)
 }
 
-func PurchaseCatalogEntry(c *gin.Context, user models.User, profile *models.Profile, profileChanges *[]gin.H, multiUpdate *[]gin.H) {
+func PurchaseCatalogEntry(c *gin.Context, user models.User, profile *models.Profile, response *models.ProfileResponse) {
 	athenaProfile, nerr := common.ReadProfileFromUser(user.AccountId, "athena")
 	if nerr != nil {
 		common.ErrorBadRequest(c)
@@ -170,38 +158,44 @@ func PurchaseCatalogEntry(c *gin.Context, user models.User, profile *models.Prof
 	athenaProfile.Updated = time.Now().Format("2006-01-02T15:04:05.999Z")
 	common.SaveProfileToUser(user.AccountId, athenaProfile)
 
-	*multiUpdate = append(*multiUpdate, gin.H{
-		"profileRevision": profile.Rvn,
-		"profileCommandRevision": profile.CommandRevision,
-		"profileId": "athena",
-		"profileChangesBaseRevision": profile.Rvn - 1,
-		"profileChanges": []gin.H{{
-		"changeType": "itemAdded",
-		"itemId": offer.ItemGrants[0].TemplateID,
-		"item": models.Item{
+	response.MultiUpdate = append(response.MultiUpdate, models.MultiUpdate{
+		ProfileRevision: athenaProfile.Rvn,
+		ProfileCommandRevision: athenaProfile.CommandRevision,
+		ProfileID: "athena",
+		ProfileChangesBaseRevision: athenaProfile.Rvn - 1,
+		ProfileChanges: []models.ProfileChange{{
+			ChangeType: "itemAdded",
+			ItemID: offer.ItemGrants[0].TemplateID,
+			Item: models.Item{
 				TemplateId: offer.ItemGrants[0].TemplateID,
 				Attributes: models.ItemAttributes{
 					ItemSeen: false,
-					Level: 1,
 					Variants: []any{},
-					Xp: 0,
-					MaxLevelBonus: 0,
-					Favorite: false,
-					RndSelCnt: 0,
 				},
 				Quantity: 1,
 			},
 		}},
 	})
 
-	*profileChanges = append(*profileChanges, gin.H{
-		"changeType": "itemQuantityChanged",
-		"itemId": "Currency:MtxPurchased",
-		"quantity": user.VBucks - offer.Prices[0].FinalPrice,
+	response.Notifications = append(response.Notifications, models.Notification{
+		Type: "CatalogPurchase",
+		Primary: true,
+		LootResult: models.LootResult{ Items: []models.LootResultItem{{
+			ItemType: offer.ItemGrants[0].TemplateID,
+			ItemGuid: offer.ItemGrants[0].TemplateID,
+			ItemProfile: "athena",
+			Quantity: 1,
+		}}},
+	})
+
+	response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
+		ChangeType: "itemQuantityChanged",
+		ItemID: "Currency:MtxPurchased",
+		Quantity: user.VBucks - offer.Prices[0].FinalPrice,
 	})
 }
 
-func EquipBattleRoyaleCustomization(c *gin.Context, user models.User, profile *models.Profile, profileChanges *[]gin.H) {
+func EquipBattleRoyaleCustomization(c *gin.Context, user models.User, profile *models.Profile, response *models.ProfileResponse) {
 	if profile.ProfileId != "athena" {
 		common.ErrorBadRequest(c)
 		c.Abort()
@@ -283,10 +277,10 @@ func EquipBattleRoyaleCustomization(c *gin.Context, user models.User, profile *m
 			c.Abort()
 	}
 
-	*profileChanges = append(*profileChanges, gin.H{
-		"changeType": "statModified",
-		"name": "favorite_" + lowercaseItemType,
-		"value": valueChanged,
+	response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
+		ChangeType: "statModified",
+		Name: "favorite_" + lowercaseItemType,
+		Value: valueChanged,
 	})
 
 	profile.Stats.Attributes.LastAppliedLoadout = activeLoadoutId
