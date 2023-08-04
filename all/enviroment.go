@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
 
@@ -19,4 +20,13 @@ func LoadEnviroment() {
 	if os.Getenv("PRODUCTION") == "true" {
 		IsProduction = true
 	}
+
+	var mode string
+	if IsProduction {
+		mode = gin.ReleaseMode
+	} else {
+		mode = gin.DebugMode
+	}
+
+	gin.SetMode(mode)
 }

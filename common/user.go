@@ -33,7 +33,7 @@ func CreateUser(username string, password string) (models.User, error) {
 	AddProfileToUser(user, "outpost0")
 	AddProfileToUser(user, "profile0")
 	AddProfileToUser(user, "theater0")
-
+	
 	return user, nil
 }
 

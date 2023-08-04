@@ -76,6 +76,7 @@ func SaveProfileToUser(accountId string, profile models.Profile) error {
 		return result.Error
 	}
 
+	all.PrintRed([]any{"saved profile", profile.ProfileId, "for", accountId})
 
 	return nil
 }
@@ -115,7 +116,29 @@ func CreateLoadoutForUser(accountId string, loadoutName string) {
 	all.PrintGreen([]any{"created loadout", loadoutName, "for", accountId})
 }
 
-func AppendLoadoutsToProfile(profile *models.Profile, accountId string) {
+func AppendLoadoutToProfileNoSave(profile *models.Profile, loadout *models.Loadout, accountId string) {
+	var userLoadout models.UserLoadout
+	result := all.Postgres.Model(&models.UserLoadout{}).Where("account_id = ? AND loadout_name = ?", accountId, loadout.Attributes.LockerName).First(&userLoadout)
+
+	if result.Error != nil {
+		return
+	}
+
+	profile.Items[loadout.Attributes.LockerName] = *loadout
+
+	var marshaledLoadout []byte
+	marshaledLoadout, err := json.Marshal(loadout)
+	if err != nil {
+		return
+	}
+
+	result = all.Postgres.Model(&models.UserLoadout{}).Where("account_id = ? AND loadout_name = ?", accountId, loadout.Attributes.LockerName).Update("loadout", string(marshaledLoadout))
+	if result.Error != nil {
+		return
+	}
+}
+
+func AppendLoadoutsToProfileNoSave(profile *models.Profile, accountId string) {
 	var loadouts []models.UserLoadout
 	result := all.Postgres.Model(&models.UserLoadout{}).Where("account_id = ?", accountId).Find(&loadouts)
 
@@ -139,31 +162,15 @@ func AppendLoadoutsToProfile(profile *models.Profile, accountId string) {
 		profile.Stats.Attributes.ActiveLoadoutIndex = len(loadoutIds) - 1
 		profile.Stats.Attributes.LastAppliedLoadout = loadoutData.Attributes.LockerName
 	}
-
-	SaveProfileToUser(accountId, *profile)
 }
 
 func AppendLoadoutToProfile(profile *models.Profile, loadout *models.Loadout, accountId string) {
-	var userLoadout models.UserLoadout
-	result := all.Postgres.Model(&models.UserLoadout{}).Where("account_id = ? AND loadout_name = ?", accountId, loadout.Attributes.LockerName).First(&userLoadout)
+	AppendLoadoutToProfileNoSave(profile, loadout, accountId)
+	SaveProfileToUser(accountId, *profile)
+}
 
-	if result.Error != nil {
-		return
-	}
-
-	profile.Items[loadout.Attributes.LockerName] = *loadout
-
-	var marshaledLoadout []byte
-	marshaledLoadout, err := json.Marshal(loadout)
-	if err != nil {
-		return
-	}
-
-	result = all.Postgres.Model(&models.UserLoadout{}).Where("account_id = ? AND loadout_name = ?", accountId, loadout.Attributes.LockerName).Update("loadout", string(marshaledLoadout))
-	if result.Error != nil {
-		return
-	}
-
+func AppendLoadoutsToProfile(profile *models.Profile, accountId string) {
+	AppendLoadoutsToProfileNoSave(profile, accountId)
 	SaveProfileToUser(accountId, *profile)
 }
 
@@ -202,7 +209,7 @@ func AddItemToProfile(profile *models.Profile, itemId string, accountId string) 
 		},
 		Quantity: 1,
 	}
-	AppendLoadoutsToProfile(profile, accountId)
+	AppendLoadoutsToProfileNoSave(profile, accountId)
 }
 
 func AddItemsToProfile(profile *models.Profile, itemIds []string, accountId string) {
@@ -220,7 +227,7 @@ func AddItemsToProfile(profile *models.Profile, itemIds []string, accountId stri
 			Quantity: 1,
 		}
 	}
-	AppendLoadoutsToProfile(profile, accountId)
+	AppendLoadoutsToProfileNoSave(profile, accountId)
 }
 
 func AddEverythingToProfile(profile *models.Profile, accountId string) {
@@ -270,7 +277,7 @@ func SetUserVBucks(accountId string, profile *models.Profile, amount int) {
 		Quantity: wantedAmount,
 	}
 
-	AppendLoadoutsToProfile(profile, accountId)
+	AppendLoadoutsToProfileNoSave(profile, accountId)
 }
 
 func TakeUserVBucks(accountId string, profile *models.Profile, amount int) {
@@ -291,7 +298,7 @@ func TakeUserVBucks(accountId string, profile *models.Profile, amount int) {
 		Quantity: wantedAmount,
 	}
 
-	AppendLoadoutsToProfile(profile, accountId)
+	AppendLoadoutsToProfileNoSave(profile, accountId)
 }
 
 func AddUserVBucks(accountId string, profile *models.Profile, amount int) {
@@ -312,5 +319,5 @@ func AddUserVBucks(accountId string, profile *models.Profile, amount int) {
 		Quantity: wantedAmount,
 	}
 
-	AppendLoadoutsToProfile(profile, accountId)
+	AppendLoadoutsToProfileNoSave(profile, accountId)
 }

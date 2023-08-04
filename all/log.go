@@ -26,3 +26,14 @@ func PrintRed(strings []any) {
 	}
 	fmt.Println()
 }
+
+func PrintYellow(strings []any) {
+	if (os.Getenv("PRODUCTION") == "true") {
+		return
+	}
+
+	for _, str := range strings {
+		fmt.Print("\033[33m" + fmt.Sprint(str) + "\033[0m ")
+	}
+	fmt.Println()
+}
