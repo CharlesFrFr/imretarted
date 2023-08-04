@@ -2,6 +2,9 @@ package controllers
 
 import (
 	"bytes"
+	"crypto/sha1"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -849,10 +852,11 @@ func Lightswitch(c *gin.Context) {
 	}})
 }
 
-var ContentPageData models.ContentPage = models.ContentPage{}
+var ContentPageData map[string]interface{}
+var LoadedContentPage bool = false
 
 func ContentPage(c *gin.Context) {
-	if ContentPageData.Active == 0 {
+	if !LoadedContentPage {
 		file, err := os.Open("default/contentpage.json")
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -872,8 +876,25 @@ func ContentPage(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
+
+		LoadedContentPage = true
 	}
-	
+
+
+	// backgrounds := ContentPageData["dynamicBackgrounds"].([]interface{})
+	// backgrounds = append(backgrounds, gin.H{
+	// 	"_type": "DynamicBackground",
+	// 	"key": "lobby",
+	// 	"stage": "season" + fmt.Sprint(common.Season),
+	// })
+	// backgrounds = append(backgrounds, gin.H{
+	// 	"_type": "DynamicBackground",
+	// 	"key": "vault",
+	// 	"stage": "season" + fmt.Sprint(common.Season),
+	// })
+
+	// ContentPageData["dynamicBackgrounds"] = backgrounds
+
 	c.JSON(http.StatusOK, ContentPageData)
 }
 
@@ -919,4 +940,95 @@ func CalendarTimeline(c *gin.Context) {
 	calendar.CurrentTime = time.Now().Format("2006-01-02T15:04:05.999Z")
 
 	c.JSON(http.StatusOK, calendar)
+}
+
+type FileResponse struct {
+	UniqueFilename string `json:"uniqueFilename"`
+	Filename string `json:"filename"`
+	Hash string `json:"hash"`
+	Hash256 string `json:"hash256"`
+	Length int `json:"length"`
+	ContentType string `json:"contentType"`
+	Uploaded string `json:"uploaded"`
+	StorageType string `json:"storageType"`
+	StorageIds map[string]string `json:"storageIds"`
+	DoNotCache bool `json:"doNotCache"`
+}
+
+func CloudFilesSystem(c *gin.Context) {
+	var files []FileResponse
+
+	err := AddCloudFile("DefaultEngine.ini", &files)
+	if err != nil {
+		common.ErrorBadRequest(c)
+		return
+	}
+	err = AddCloudFile("DefaultGame.ini", &files)
+	if err != nil {
+		common.ErrorBadRequest(c)
+		return
+	}
+	err = AddCloudFile("DefaultInput.ini", &files)
+	if err != nil {
+		common.ErrorBadRequest(c)
+		return
+	}
+	err = AddCloudFile("DefaultRuntimeOptions.ini", &files)
+	if err != nil {
+		common.ErrorBadRequest(c)
+		return
+	}
+
+	c.JSON(http.StatusOK, files)
+}
+
+func AddCloudFile(fileName string, files *[]FileResponse) error {
+	path := "default/storage/" + fileName
+	file, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+
+	fileData, err := io.ReadAll(file)
+	if err != nil {
+		return err
+	}
+
+	hash := sha1.Sum(fileData)
+	hash256 := sha256.Sum256(fileData)
+
+	*files = append(*files, FileResponse{
+		UniqueFilename: fileName,
+		Filename: fileName,
+		Hash: hex.EncodeToString(hash[:]),
+		Hash256: hex.EncodeToString(hash256[:]),
+		Length: len(fileData),
+		ContentType: "application/octet-stream",
+		Uploaded: time.Now().Format("2006-01-02T15:04:05.999Z"),
+		StorageType: "S3",
+		StorageIds: map[string]string{
+			"Fortnite": "Fortnite",
+		},
+		DoNotCache: false,
+	})
+
+	return nil
+}
+
+func SendCloudFile(c *gin.Context) {
+	fileName := c.Param("fileName")
+	path := "default/storage/" + fileName
+	file, err := os.Open(path)
+	if err != nil {
+		common.ErrorBadRequest(c)
+		return
+	}
+
+	fileData, err := io.ReadAll(file)
+	if err != nil {
+		common.ErrorBadRequest(c)
+		return
+	}
+
+	c.Data(http.StatusOK, "application/octet-stream", fileData)
 }

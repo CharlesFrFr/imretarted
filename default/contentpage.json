@@ -41,12 +41,8 @@
         "hidden": true,
         "messagetype": "normal",
         "_type": "CommonUI Simple Message Base",
-        "title": {
-          "en": "Co-op PvE"
-        },
-        "body": {
-          "en": "Cooperative PvE storm-fighting adventure!"
-        },
+        "title": "Co-op PvE",
+        "body": "Cooperative PvE storm-fighting adventure!",
         "spotlight": true
       }
     },
@@ -58,12 +54,8 @@
         "hidden": false,
         "messagetype": "normal",
         "_type": "CommonUI Simple Message Base",
-        "title": {
-          "en": "100 Player PvP"
-        },
-        "body": {
-          "en": "100 Player PvP Battle Royale.\n\nPvE progress does not affect Battle Royale."
-        },
+        "title": "100 Player PvP",
+        "body": "100 Player PvP Battle Royale.",
         "spotlight": false
       }
     },
@@ -74,12 +66,8 @@
         "hidden": true,
         "messagetype": "normal",
         "_type": "CommonUI Simple Message Base",
-        "title": {
-          "en": "New Featured Islands!"
-        },
-        "body": {
-          "en": "Your Island. Your Friends. Your Rules.\n\nDiscover new ways to play Fortnite, play community made games with friends and build your dream island."
-        },
+        "title": "New Featured Islands!",
+        "body": "Your Island. Your Friends. Your Rules.",
         "spotlight": false
       }
     },
@@ -90,12 +78,8 @@
         "hidden": false,
         "messagetype": "normal",
         "_type": "CommonUI Simple Message Base",
-        "title": {
-          "en": "Co-op PvE"
-        },
-        "body": {
-          "en": "Cooperative PvE storm-fighting adventure!"
-        },
+        "title": "Co-op PvE",
+        "body": "Cooperative PvE storm-fighting adventure!",
         "spotlight": false
       }
     },
@@ -223,44 +207,32 @@
     "_noIndex": false,
     "battleroyale": {
       "image": "",
-      "color": "1164c1",
+      "color": "FFFFFFFF",
       "_type": "Subgame Info",
-      "description": {
-        "en": "100 Player PvP"
-      },
+      "description": "100 Player PvP",
       "subgame": "battleroyale",
       "standardMessageLine2": "fortnite",
-      "title": {
-        "en": "Battle Royale"
-      },
-      "standardMessageLine1": "Hello Bye"
+      "title": "Battle Royale",
+      "standardMessageLine1": ""
     },
     "savetheworld": {
       "image": "",
-      "color": "7615E9FF",
-      "specialMessage": "Hi fortnite",
+      "color": "FFFFFFFF",
+      "specialMessage": "",
       "_type": "Subgame Info",
-      "description": {
-        "en": "Cooperative PvE Adventure"
-      },
+      "description": "Cooperative PvE Adventure",
       "subgame": "savetheworld",
-      "title": {
-        "en": "Save The World"
-      },
-      "standardMessageLine1": "Hello World"
+      "title": "Save The World",
+      "standardMessageLine1": ""
     },
     "creative": {
       "image": "",
-      "color": "13BDA1FF",
+      "color": "FFFFFFFF",
       "_type": "Subgame Info",
-      "description": {
-        "en": "Your Islands. Your Friends. Your Rules."
-      },
+      "description": "Your Islands. Your Friends. Your Rules.",
       "subgame": "creative",
-      "title": {
-        "en": "Creative"
-      },
-      "standardMessageLine1": "zombieman rulez"
+      "title": "Creative",
+      "standardMessageLine1": ""
     },
     "_activeDate": "2023-01-01T00:00:00.000Z",
     "lastModified": "2023-01-01T00:00:00.000Z",
@@ -342,6 +314,19 @@
     "alwaysShow": false,
     "_activeDate": "2023-01-01T00:00:00.000Z",
     "lastModified": "2023-01-01T00:00:00.000Z",
+    "_locale": "en-US"
+  },
+  "playersurvey": {
+    "s": {
+      "s": [],
+      "cg": [],
+      "e": true,
+      "_type": "Player Survey - Survey Root"
+    },
+    "_title": "playersurvey",
+    "_noIndex": false,
+    "_activeDate": "2019-10-15T07:50:00.000Z",
+    "lastModified": "2019-10-15T22:00:24.726Z",
     "_locale": "en-US"
   },
   "_suggestedPrefetch": []

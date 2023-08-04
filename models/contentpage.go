@@ -5,12 +5,17 @@ type Message struct {
 	Body  map[string]string `json:"body"`
 }
 
+type MessageS struct {
+	Title string `json:"title"`
+	Body  string `json:"body"`
+}
+
 type LoginMessage struct {
-	Title        string  `json:"_title"`
-	LoginMessage Message `json:"loginmessage"`
-	ActiveDate   string  `json:"_activeDate"`
-	LastModified string  `json:"lastModified"`
-	Locale       string  `json:"_locale"`
+	Title        string   `json:"_title"`
+	LoginMessage MessageS `json:"loginmessage"`
+	ActiveDate   string   `json:"_activeDate"`
+	LastModified string   `json:"lastModified"`
+	Locale       string   `json:"_locale"`
 }
 
 type SurvivalMessage struct {
@@ -252,7 +257,58 @@ type Lobby struct {
 	Locale       string `json:"_locale"`
 }
 
+type DynamicBackground struct {
+	Stage string `json:"stage"`
+	Type  string `json:"_type"`
+	Key   string `json:"key"`
+}
+
+type DynamicBackgroundList struct {
+	Backgrounds []DynamicBackground `json:"backgrounds"`
+	Type        string              `json:"_type"`
+}
+
+type ShopSection struct {
+	BSortOffersByOwnership          bool              `json:"bSortOffersByOwnership"`
+	BShowIneligibleOffersIfGiftable bool              `json:"bShowIneligibleOffersIfGiftable"`
+	BEnableToastNotification        bool              `json:"bEnableToastNotification"`
+	Background                      DynamicBackground `json:"background"`
+	Type                            string            `json:"_type"`
+	LandingPriority                 int               `json:"landingPriority"`
+	BHidden                         bool              `json:"bHidden"`
+	SectionID                       string            `json:"sectionId"`
+	BShowTimer                      bool              `json:"bShowTimer"`
+	SectionDisplayName              string            `json:"sectionDisplayName"`
+	BShowIneligibleOffers           bool              `json:"bShowIneligibleOffers"`
+}
+
+type ShopSectionList struct {
+	Type     string        `json:"_type"`
+	Sections []ShopSection `json:"sections"`
+}
+
+type Creativenews struct {
+	News         BattleRoyaleNews `json:"news"`
+	Title        string           `json:"_title"`
+	Header       string           `json:"header"`
+	Style        string           `json:"style"`
+	NoIndex      bool             `json:"_noIndex"`
+	AlwaysShow   bool             `json:"alwaysShow"`
+	ActiveDate   string           `json:"_activeDate"`
+	LastModified string           `json:"lastModified"`
+	Locale       string           `json:"_locale"`
+}
+
+type BattleRoyaleNews struct {
+	Type     string   `json:"_type"`
+	Messages []string `json:"messages"`
+}
+
 type ContentPage struct {
+	DynamicBackground     DynamicBackgroundList   `json:"dynamicbackgrounds"`
+	ShopSectionList       ShopSectionList         `json:"shopSections"`
+	Creativenews          Creativenews            `json:"creativenews"`
+	BattleRoyaleNews      Creativenews            `json:"battleroyalenews"`
 	Lobby                 Lobby                   `json:"lobby"`
 	SubgameInfo           SubgameInfo             `json:"subgameinfo"`
 	SpecialOfferVideo     SpecialOfferVideo       `json:"specialoffer"`
@@ -268,5 +324,4 @@ type ContentPage struct {
 	AthenaMessage         AthenaMessage           `json:"athenamessage"`
 	SurvivalMessage       SurvivalMessage         `json:"survivalmessage"`
 	LoginMessage          LoginMessage            `json:"loginmessage"`
-	Active                int                     `json:"active"`
 }

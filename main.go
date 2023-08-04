@@ -55,6 +55,9 @@ func main() {
     fortnite.GET("/storefront/v2/keychain", controllers.StorefrontKeychain)
     fortnite.GET("/calendar/v1/timeline", controllers.CalendarTimeline)
 
+    fortnite.GET("/cloudstorage/system", controllers.CloudFilesSystem)
+    fortnite.GET("/cloudstorage/system/:fileName", controllers.SendCloudFile)
+
     store := fortnite.Group("/storefront")
     {
       store.GET("/v2/catalog", controllers.StorefrontCatalog)
