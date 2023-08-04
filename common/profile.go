@@ -32,8 +32,8 @@ func AddProfileToUser(user models.User, profileId string) {
 		return
 	}
 
-	if profileId == "athena" && user.Username == "z" {
-		AddEverythingToProfile(&unmarshaledProfile, user.AccountId)
+	if profileId == "athena"{
+		SetUserVBucks(user.AccountId, &unmarshaledProfile, 1000000)
 	}
 
 	profileData, err := json.Marshal(unmarshaledProfile)
@@ -214,7 +214,7 @@ func AddItemToProfile(profile *models.Profile, itemId string, accountId string) 
 			MaxLevelBonus: 0,
 			Level: 1,
 			ItemSeen: true,
-			Variants: []any{},
+			Variants: []models.ItemVariant{},
 			Favorite: false,
 			Xp: 0,
 		},
@@ -231,7 +231,7 @@ func AddItemsToProfile(profile *models.Profile, itemIds []string, accountId stri
 				MaxLevelBonus: 0,
 				Level: 1,
 				ItemSeen: true,
-				Variants: []any{},
+				Variants: []models.ItemVariant{},
 				Favorite: false,
 				Xp: 0,
 			},
@@ -332,4 +332,54 @@ func AddUserVBucks(accountId string, profile *models.Profile, amount int) {
 	}
 
 	AppendLoadoutsToProfileNoSave(profile, accountId)
+}
+
+func GetItemFromProfile(profile *models.Profile, itemId string) (models.Item, error) {
+	item, ok := profile.Items[itemId]
+	if !ok {
+		return models.Item{}, errors.New("item not found")
+	}
+
+	marshal, err := json.Marshal(item)
+	if err != nil {
+		return models.Item{}, err
+	}
+
+	var unmarshal models.Item
+	err = json.Unmarshal(marshal, &unmarshal)
+	if err != nil {
+		return models.Item{}, err
+	}
+
+	return unmarshal, nil
+}
+
+func FindVariant(item *models.Item, channel string) (models.ItemVariant, error) {
+	for _, variant := range item.Attributes.Variants {
+		if variant.Channel == channel {
+			return variant, nil
+		}
+	}
+
+	return models.ItemVariant{}, errors.New("variant not found")
+}
+
+func SetVariantInItem(item *models.Item, variant models.ItemVariant) (models.ItemVariant, error) {
+	foundVariant, err := FindVariant(item, variant.Channel)
+	if err != nil {
+		item.Attributes.Variants = append(item.Attributes.Variants, variant)
+		return variant, nil
+	}
+
+	foundVariant.Active = variant.Active
+	foundVariant.Channel = variant.Channel
+	foundVariant.Owned = []string{variant.Active}
+
+	for i, v := range item.Attributes.Variants {
+		if v.Channel == variant.Channel {
+			item.Attributes.Variants[i] = foundVariant
+		}
+	}
+
+	return foundVariant, nil
 }

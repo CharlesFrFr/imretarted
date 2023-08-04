@@ -34,6 +34,9 @@ func ProfileActionHandler(c *gin.Context) {
 		case "ClientQuestLogin":
 			break
 		case "BulkEquipBattleRoyaleCustomization":
+			break
+		case "MarkItemSeen":
+			break
 		case "EquipBattleRoyaleCustomization":
 			EquipBattleRoyaleCustomization(c, user, &profile, &response)
 		case "PurchaseCatalogEntry":
@@ -67,8 +70,6 @@ func ProfileActionHandler(c *gin.Context) {
 	response.ProfileChangesBaseRevision = profile.Rvn - 1
 	response.ServerTime = time.Now().Format("2006-01-02T15:04:05.999Z")
 	response.ResponseVersion = 1
-
-	all.MarshPrintJSON(response)
 
 	c.JSON(200, response)
 }
@@ -171,7 +172,7 @@ func PurchaseCatalogEntry(c *gin.Context, user models.User, profile *models.Prof
 				TemplateId: offer.ItemGrants[0].TemplateID,
 				Attributes: models.ItemAttributes{
 					ItemSeen: false,
-					Variants: []any{},
+					Variants: []models.ItemVariant{},
 				},
 				Quantity: 1,
 			},
@@ -207,10 +208,11 @@ func EquipBattleRoyaleCustomization(c *gin.Context, user models.User, profile *m
 		SlotName string `json:"slotName"`
 		ItemToSlot string `json:"itemToSlot"`
 		IndexWithinSlot int `json:"indexWithinSlot"`
-		VariantUpdates []map[string]interface{} `json:"variantUpdates"`
+		VariantUpdates []models.ItemVariant `json:"variantUpdates"`
 	}
 
 	if err := c.ShouldBind(&body); err != nil {
+		all.PrintRed([]any{"could not bind body", err.Error()})
 		common.ErrorBadRequest(c)
 		c.Abort()
 		return
@@ -276,6 +278,42 @@ func EquipBattleRoyaleCustomization(c *gin.Context, user models.User, profile *m
 		Name: "favorite_" + lowercaseItemType,
 		Value: valueChanged,
 	})
+
+	for _, variant := range body.VariantUpdates {
+		itemWithVariant, err := common.GetItemFromProfile(profile, body.ItemToSlot)
+		if err != nil {
+			all.PrintRed([]any{"could not find item", body.ItemToSlot})
+			common.ErrorBadRequest(c)
+			return
+		}
+
+		variantFound, erra := common.FindVariant(&itemWithVariant, variant.Channel)
+		if erra != nil {
+			newVariant, err := common.SetVariantInItem(&itemWithVariant, models.ItemVariant{
+				Channel: variant.Channel,
+				Active: variant.Active,
+				Owned: variant.Owned,
+			})
+			if err != nil {
+				all.PrintRed([]any{"could not set variant in item", err.Error()})
+				common.ErrorBadRequest(c)
+				return
+			}
+			variantFound = newVariant
+		}
+
+		variantFound.Active = variant.Active
+		variantFound.Owned = []string{variant.Active}
+		common.SetVariantInItem(&itemWithVariant, variantFound)
+		profile.Items[body.ItemToSlot] = itemWithVariant
+
+		response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
+			ChangeType: "itemAttrChanged",
+			ItemID: body.ItemToSlot,
+			AttributeName: "variants",
+			AttributeValue: itemWithVariant.Attributes.Variants,
+		})
+	}
 
 	profile.Stats.Attributes.LastAppliedLoadout = activeLoadoutId
 

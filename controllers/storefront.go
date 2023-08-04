@@ -108,6 +108,8 @@ func GenerateRandomItemShop() {
 		return
 	}
 
+	common.ExcludeId(&allItems, "EID_AirHornRaisin")
+
 	legendaryItems := common.FilterRarity(allItems, "Legendary")
 	dailyItems := common.ExcludeRarity(allItems, "Legendary")
 

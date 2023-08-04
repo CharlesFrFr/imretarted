@@ -20,6 +20,7 @@ func DefaultEpicError(c *gin.Context, code string, message string, numberCode in
 		"intent": "prod",
 		"messageVars": []string{},
 	})
+	c.Abort()
 }
 
 func ErrorInvalidCredentials(c *gin.Context) {

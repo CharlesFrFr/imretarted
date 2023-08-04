@@ -91,6 +91,17 @@ func ExcludeType(items *[]models.BeforeStoreItem, backendType string) {
 	*items = filteredItems
 }
 
+func ExcludeId(items *[]models.BeforeStoreItem, id string) {
+	var filteredItems []models.BeforeStoreItem
+	for _, item := range *items {
+		if item.ID != id {
+			filteredItems = append(filteredItems, item)
+		}
+	}
+
+	*items = filteredItems
+}
+
 func GetCatalogEntry(offerId string) (models.CatalogEntry, error) {
 	itemshop := GetItemShop()
 
