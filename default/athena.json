@@ -110,7 +110,9 @@
         ""
       ],
       "favorite_character": "AthenaCharacter:CID_001_Athena_Commando_F_Default",
-      "favorite_loadingscreen": ""
+      "favorite_loadingscreen": "",
+      "banner_icon": "StandardBanner1",
+      "banner_color": "DefaultColor1"
     }
   },
   "commandRevision": 0

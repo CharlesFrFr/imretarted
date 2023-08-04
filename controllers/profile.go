@@ -28,23 +28,20 @@ func ProfileActionHandler(c *gin.Context) {
 
 	switch action {
 		case "QueryProfile":
-			break
 		case "SetMtxPlatform":
-			break
 		case "ClientQuestLogin":
-			break
 		case "BulkEquipBattleRoyaleCustomization":
-			break
 		case "MarkItemSeen":
+		case "SetItemFavoriteStatusBatch":
 			break
 		case "EquipBattleRoyaleCustomization":
 			EquipBattleRoyaleCustomization(c, user, &profile, &response)
 		case "PurchaseCatalogEntry":
 			PurchaseCatalogEntry(c, user, &profile, &response)
+		case "SetBattleRoyaleBanner":
+			SetBattleRoyaleBanner(c, user, &profile, &response)
 		default:
-			all.PrintRed([]any{"unknown action", action})
-			common.ErrorBadRequest(c)
-			c.Abort()
+			all.PrintRed([]any{action, "Not Handled"})
 			return
 	}
 
@@ -287,19 +284,13 @@ func EquipBattleRoyaleCustomization(c *gin.Context, user models.User, profile *m
 			return
 		}
 
-		variantFound, erra := common.FindVariant(&itemWithVariant, variant.Channel)
-		if erra != nil {
-			newVariant, err := common.SetVariantInItem(&itemWithVariant, models.ItemVariant{
+		variantFound, err := common.FindVariant(&itemWithVariant, variant.Channel)
+		if err != nil {
+			variantFound = models.ItemVariant{
 				Channel: variant.Channel,
 				Active: variant.Active,
 				Owned: variant.Owned,
-			})
-			if err != nil {
-				all.PrintRed([]any{"could not set variant in item", err.Error()})
-				common.ErrorBadRequest(c)
-				return
 			}
-			variantFound = newVariant
 		}
 
 		variantFound.Active = variant.Active
@@ -318,4 +309,46 @@ func EquipBattleRoyaleCustomization(c *gin.Context, user models.User, profile *m
 	profile.Stats.Attributes.LastAppliedLoadout = activeLoadoutId
 
 	common.AppendLoadoutToProfileNoSave(profile, &activeLoadout, user.AccountId)
+}
+
+func SetBattleRoyaleBanner(c *gin.Context, user models.User, profile *models.Profile, response *models.ProfileResponse) {
+	var body struct {
+		HomebaseBannerIconId string `json:"homebaseBannerIconId"`
+		HomebaseBannerColorId string `json:"homebaseBannerColorId"`
+	}
+
+	if err := c.ShouldBind(&body); err != nil {
+		all.PrintRed([]any{"could not bind body", err.Error()})
+		common.ErrorBadRequest(c)
+		c.Abort()
+		return
+	}
+
+	profile.Stats.Attributes.BannerIcon = body.HomebaseBannerIconId
+	profile.Stats.Attributes.BannerColor = body.HomebaseBannerColorId
+
+	activeLoadoutId := profile.Stats.Attributes.Loadouts[profile.Stats.Attributes.ActiveLoadoutIndex]
+	activeLoadout, err := common.GetLoadout(activeLoadoutId, user.AccountId)
+	if err != nil {
+		common.ErrorItemNotFound(c)
+		c.Abort()
+		return
+	}
+
+	activeLoadout.Attributes.BannerIconTemplate = body.HomebaseBannerIconId
+	activeLoadout.Attributes.BannerColorTemplate = body.HomebaseBannerColorId
+
+	common.AppendLoadoutToProfileNoSave(profile, &activeLoadout, user.AccountId)
+
+	response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
+		ChangeType: "statModified",
+		Name: "banner_icon",
+		Value: body.HomebaseBannerIconId,
+	})
+
+	response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
+		ChangeType: "statModified",
+		Name: "banner_color",
+		Value: body.HomebaseBannerColorId,
+	})
 }

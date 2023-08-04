@@ -55,7 +55,7 @@ func VerifyAccessToken(c *gin.Context) {
 		return
 	}
 	
-	all.PrintGreen([]any{"token verified for account", accountId})
+	all.PrintYellow([]any{"token verified for account", accountId})
 
 	user, err := common.GetUserByAccountId(accountId)
 
@@ -67,8 +67,5 @@ func VerifyAccessToken(c *gin.Context) {
 	}
 
 	c.Set("user", user)
-
-	all.PrintYellow([]any{"after checking token"})
-
 	c.Next()
 }

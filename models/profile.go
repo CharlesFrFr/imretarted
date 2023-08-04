@@ -130,6 +130,8 @@ type StatsAttributes struct {
 	FavoriteItemWraps                []string          `json:"favorite_itemwraps"`
 	FavoriteCharacter                string            `json:"favorite_character"`
 	FavoriteLoadingScreen            string            `json:"favorite_loadingscreen"`
+	BannerIcon                       string            `json:"banner_icon"`
+	BannerColor                      string            `json:"banner_color"`
 }
 
 type ProfileResponse struct {
