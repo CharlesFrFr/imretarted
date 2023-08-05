@@ -11,7 +11,7 @@ import (
 )
 
 func GetAllFortniteItems() ([]models.BeforeStoreItem, error) {
-	pathToProfile := "default/items.json"
+	pathToProfile := "data/items.json"
 
 	file, err := os.Open(pathToProfile)
 	if err != nil {
@@ -122,7 +122,7 @@ func GetCatalogEntry(offerId string) (models.CatalogEntry, error) {
 }
 
 func GetItemShop() models.StorePage {
-	pathToProfile := "default/shop.json"
+	pathToProfile := "data/shop.json"
 
 	file, err := os.Open(pathToProfile)
 	if err != nil {

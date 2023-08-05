@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -857,7 +858,7 @@ var LoadedContentPage bool = false
 
 func ContentPage(c *gin.Context) {
 	if !LoadedContentPage {
-		file, err := os.Open("default/contentpage.json")
+		file, err := os.Open("data/contentpage.json")
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -880,21 +881,6 @@ func ContentPage(c *gin.Context) {
 		LoadedContentPage = true
 	}
 
-
-	// backgrounds := ContentPageData["dynamicBackgrounds"].([]interface{})
-	// backgrounds = append(backgrounds, gin.H{
-	// 	"_type": "DynamicBackground",
-	// 	"key": "lobby",
-	// 	"stage": "season" + fmt.Sprint(common.Season),
-	// })
-	// backgrounds = append(backgrounds, gin.H{
-	// 	"_type": "DynamicBackground",
-	// 	"key": "vault",
-	// 	"stage": "season" + fmt.Sprint(common.Season),
-	// })
-
-	// ContentPageData["dynamicBackgrounds"] = backgrounds
-
 	c.JSON(http.StatusOK, ContentPageData)
 }
 
@@ -902,7 +888,7 @@ func CalendarTimeline(c *gin.Context) {
 	monthPos := time.Now().Add(time.Hour * 24 * 30).Format("2006-01-02T15:04:05.999Z")
 	endOfDay := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 23, 59, 59, 999999999, time.Now().Location()).Format("2006-01-02T15:04:05.999Z")
 
-	file, err := os.Open("default/time.json")
+	file, err := os.Open("data/time.json")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -955,25 +941,25 @@ type FileResponse struct {
 	DoNotCache bool `json:"doNotCache"`
 }
 
-func CloudFilesSystem(c *gin.Context) {
+func SystemCloudFilesList(c *gin.Context) {
 	var files []FileResponse
 
-	err := AddCloudFile("DefaultEngine.ini", &files)
+	err := AddCloudFile("data/storage/DefaultEngine.ini", &files)
 	if err != nil {
 		common.ErrorBadRequest(c)
 		return
 	}
-	err = AddCloudFile("DefaultGame.ini", &files)
+	err = AddCloudFile("data/storage/DefaultGame.ini", &files)
 	if err != nil {
 		common.ErrorBadRequest(c)
 		return
 	}
-	err = AddCloudFile("DefaultInput.ini", &files)
+	err = AddCloudFile("data/storage/DefaultInput.ini", &files)
 	if err != nil {
 		common.ErrorBadRequest(c)
 		return
 	}
-	err = AddCloudFile("DefaultRuntimeOptions.ini", &files)
+	err = AddCloudFile("data/storage/DefaultRuntimeOptions.ini", &files)
 	if err != nil {
 		common.ErrorBadRequest(c)
 		return
@@ -982,8 +968,80 @@ func CloudFilesSystem(c *gin.Context) {
 	c.JSON(http.StatusOK, files)
 }
 
-func AddCloudFile(fileName string, files *[]FileResponse) error {
-	path := "default/storage/" + fileName
+func SystemCloudFile(c *gin.Context) {
+	fileName := c.Param("fileName")
+	path := "data/storage/" + fileName
+	file, err := os.Open(path)
+	if err != nil {
+		common.ErrorBadRequest(c)
+		return
+	}
+
+	fileData, err := io.ReadAll(file)
+	if err != nil {
+		common.ErrorBadRequest(c)
+		return
+	}
+
+	c.Data(http.StatusOK, "application/octet-stream", fileData)
+}
+
+func UserCloudFilesList(c *gin.Context) {
+	var user = c.MustGet("user").(models.User)
+	files := []FileResponse{}
+	
+	AddCloudFile("data/settings/" + user.AccountId + ".sav", &files)
+	
+	c.JSON(http.StatusOK, files)
+}
+
+func UserCloudFile(c *gin.Context) {
+	var user = c.MustGet("user").(models.User)
+	path := "data/settings/" + user.AccountId + ".sav"
+
+	file, err := os.Open(path)
+	if err != nil {
+		c.Status(http.StatusNoContent)
+		return
+	}
+
+	fileData, err := io.ReadAll(file)
+	if err != nil {
+		common.ErrorBadRequest(c)
+		return
+	}
+
+	c.Data(http.StatusOK, "application/octet-stream", fileData)
+}
+
+func SaveUserCloudFile(c *gin.Context) {
+	var user = c.MustGet("user").(models.User)
+	path := "data/settings/" + user.AccountId + ".sav"
+	var fileData []byte
+
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, 1024 * 1024 * 10)
+	fileData, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		common.ErrorBadRequest(c)
+		return
+	}
+
+	file, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+	if err != nil {
+		common.ErrorBadRequest(c)
+		return
+	}
+
+	_, err = file.Write(fileData)
+	if err != nil {
+		common.ErrorBadRequest(c)
+		return
+	}
+	c.Status(http.StatusNoContent)
+}
+
+func AddCloudFile(filePath string, files *[]FileResponse) error {
+	path := filePath
 	file, err := os.Open(path)
 	if err != nil {
 		return err
@@ -996,6 +1054,11 @@ func AddCloudFile(fileName string, files *[]FileResponse) error {
 
 	hash := sha1.Sum(fileData)
 	hash256 := sha256.Sum256(fileData)
+
+	fileName := strings.Split(filePath, "/")[len(strings.Split(filePath, "/")) - 1]
+	if strings.Split(filePath, ".")[1] == "sav" {
+		fileName = "ClientSettings.Sav"
+	}
 
 	*files = append(*files, FileResponse{
 		UniqueFilename: fileName,
@@ -1013,22 +1076,4 @@ func AddCloudFile(fileName string, files *[]FileResponse) error {
 	})
 
 	return nil
-}
-
-func SendCloudFile(c *gin.Context) {
-	fileName := c.Param("fileName")
-	path := "default/storage/" + fileName
-	file, err := os.Open(path)
-	if err != nil {
-		common.ErrorBadRequest(c)
-		return
-	}
-
-	fileData, err := io.ReadAll(file)
-	if err != nil {
-		common.ErrorBadRequest(c)
-		return
-	}
-
-	c.Data(http.StatusOK, "application/octet-stream", fileData)
 }

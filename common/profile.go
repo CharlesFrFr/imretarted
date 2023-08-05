@@ -12,7 +12,7 @@ import (
 )
 
 func AddProfileToUser(user models.User, profileId string) {
-	pathToProfile := "default/" + profileId + ".json"
+	pathToProfile := "data/" + profileId + ".json"
 
 	file, err := os.Open(pathToProfile)
 	if err != nil {
@@ -93,7 +93,7 @@ func SaveProfileToUser(accountId string, profile models.Profile) error {
 }
 
 func CreateLoadoutForUser(accountId string, loadoutName string) {
-	file, err := os.Open("default/loadout.json")
+	file, err := os.Open("data/loadout.json")
 	if err != nil {
 		return
 	}
@@ -242,7 +242,7 @@ func AddItemsToProfile(profile *models.Profile, itemIds []string, accountId stri
 }
 
 func AddEverythingToProfile(profile *models.Profile, accountId string) {
-	pathToAllItems := "default/items.json"
+	pathToAllItems := "data/items.json"
 
 	file, err := os.Open(pathToAllItems)
 	if err != nil {

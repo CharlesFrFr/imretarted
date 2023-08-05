@@ -1,3 +1,4 @@
 .env
 server.exe
 server.exe~
+data/settings/*

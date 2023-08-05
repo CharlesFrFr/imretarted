@@ -69,7 +69,7 @@ func StorefrontCatalog(c *gin.Context) {
 	}
 
 	if (common.LoadShopFromJson) {
-		pathToProfile := "default/shop.json"
+		pathToProfile := "data/shop.json"
 
 		file, err := os.Open(pathToProfile)
 		if err != nil {
@@ -150,6 +150,7 @@ func GenerateRandomItemShop() {
 }
 
 func GenerateRandomCatalogEntry(f int, items *[]models.BeforeStoreItem) models.CatalogEntry {
+	endOfDay := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 23, 59, 59, 999999999, time.Now().Location()).Format("2006-01-02T15:04:05.999Z")
 	randomItem := (*items)[rand.Intn(len(*items) - 1)]
 	price := Prices[randomItem.BackendType][randomItem.Rarity]
 	id := all.HashString(randomItem.ID)
@@ -168,7 +169,7 @@ func GenerateRandomCatalogEntry(f int, items *[]models.BeforeStoreItem) models.C
 			CurrencySubType: "CurrencySource",
 			RegularPrice: price,
 			FinalPrice: price,
-			SaleExpiration: time.Now().Add(time.Hour * 24).Format("2006-01-02T15:04:05.999Z"),
+			SaleExpiration: endOfDay,
 			BasePrice: price,
 		}},
 		MatchFilter: "",
@@ -209,7 +210,7 @@ func GenerateRandomCatalogEntry(f int, items *[]models.BeforeStoreItem) models.C
 }
 
 func SaveItemShop() {
-	file, err := os.OpenFile("default/shop.json", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+	file, err := os.OpenFile("data/shop.json", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
 	if err != nil {
 		return
 	}

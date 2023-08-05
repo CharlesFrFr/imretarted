@@ -41,7 +41,7 @@ func main() {
   {
     account.GET("/public/account", controllers.UserAccountPublic)
     account.GET("/public/account/:accountId", middleware.VerifyAccessToken, controllers.UserAccountPrivate)
-    account.GET("/public/account/:accountId/externalAuths", func(c *gin.Context) { c.JSON(http.StatusOK, []string{}) })
+    account.GET("/public/account/:accountId/externalAuths", controllers.EmptyArray)
     account.DELETE("/oauth/sessions/kill/:token", controllers.KillSessionWithToken)
     account.DELETE("/oauth/sessions/kill", controllers.KillSession)
   }
@@ -49,14 +49,17 @@ func main() {
   fortnite := r.Group("/fortnite/api")
   {
     fortnite.POST("/game/v2/profile/:accountId/client/:action", middleware.VerifyAccessToken, controllers.ProfileActionHandler)
-    fortnite.POST("/game/v2/tryPlayOnPlatform/account/*accountId", controllers.True)
-    fortnite.GET("/game/v2/enabled_features", controllers.EmptyArray)
-    fortnite.GET("/receipts/v1/account/:accountId/receipts", controllers.EmptyArray)
-    fortnite.GET("/storefront/v2/keychain", controllers.StorefrontKeychain)
+    fortnite.POST("/game/v2/tryPlayOnPlatform/account/*accountId", middleware.VerifyAccessToken, controllers.True)
+    fortnite.GET("/game/v2/enabled_features", middleware.VerifyAccessToken, controllers.EmptyArray)
+    fortnite.GET("/receipts/v1/account/:accountId/receipts", middleware.VerifyAccessToken, controllers.EmptyArray)
+    fortnite.GET("/storefront/v2/keychain", middleware.VerifyAccessToken, controllers.StorefrontKeychain)
     fortnite.GET("/calendar/v1/timeline", controllers.CalendarTimeline)
 
-    fortnite.GET("/cloudstorage/system", controllers.CloudFilesSystem)
-    fortnite.GET("/cloudstorage/system/:fileName", controllers.SendCloudFile)
+    fortnite.GET("/cloudstorage/system", controllers.SystemCloudFilesList)
+    fortnite.GET("/cloudstorage/system/:fileName", controllers.SystemCloudFile)
+    fortnite.GET("/cloudstorage/user/:accountId", middleware.VerifyAccessToken, controllers.UserCloudFilesList)
+    fortnite.GET("/cloudstorage/user/:accountId/:fileName", middleware.VerifyAccessToken, controllers.UserCloudFile)
+    fortnite.PUT("/cloudstorage/user/:accountId/ClientSettings.Sav", middleware.VerifyAccessToken, controllers.SaveUserCloudFile)
 
     store := fortnite.Group("/storefront")
     {
@@ -66,7 +69,7 @@ func main() {
 
   blank := r.Group("/")
   {
-    blank.GET("/content/api/pages/*contentPageName", controllers.ContentPage)
+    blank.GET("/content/api/pages/*contentPageName", middleware.VerifyAccessToken, controllers.ContentPage)
     blank.GET("/waitingroom/api/waitingroom", controllers.NoResponse)
     blank.POST("/datarouter/*api", controllers.NoResponse)
     blank.GET("/lightswitch/api/service/bulk/status", controllers.Lightswitch)
