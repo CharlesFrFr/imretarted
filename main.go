@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/zombman/server/all"
 	"github.com/zombman/server/controllers"
@@ -32,6 +33,8 @@ func main() {
 
     c.Next()
   })
+
+  r.Use(static.Serve("/", static.LocalFile("./public", true)))
 
   r.POST("/api/user/login", controllers.UserLogin)
   r.POST("/api/user/create", controllers.UserCreate)
