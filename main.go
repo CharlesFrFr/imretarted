@@ -69,7 +69,7 @@ func main() {
 
   blank := r.Group("/")
   {
-    blank.GET("/content/api/pages/*contentPageName", middleware.VerifyAccessToken, controllers.ContentPage)
+    blank.GET("/content/api/pages/*contentPageName", controllers.ContentPage)
     blank.GET("/waitingroom/api/waitingroom", controllers.NoResponse)
     blank.POST("/datarouter/*api", controllers.NoResponse)
     blank.GET("/lightswitch/api/service/bulk/status", controllers.Lightswitch)
