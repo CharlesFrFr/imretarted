@@ -85,6 +85,39 @@ func Generate(user models.User, client string) gin.H {
 	}
 }
 
+func GenerateSiteToken(user models.User, client string) gin.H {
+	device := strings.ReplaceAll(uuid.New().String(), "-", "")
+	accessToken := common.GenerateAccessToken(user, client, device)
+	refreshToken := common.GenerateRefreshToken(user, client, device)
+
+	all.Postgres.
+		Where(models.SiteToken{AccountId: user.AccountId}).
+		Assign(models.SiteToken{Token: accessToken}).
+		FirstOrCreate(&models.SiteToken{})
+
+	all.Postgres.
+		Where(models.SiteRefreshToken{AccountId: user.AccountId}).
+		Assign(models.SiteRefreshToken{Token: refreshToken}).
+		FirstOrCreate(&models.SiteRefreshToken{})
+
+	return gin.H{
+		"app": "fortnite",
+		"account_id": user.AccountId,
+		"device_id": device,
+		"client_id": client,
+		"client_service": "fortnite",
+		"internal_client": true,
+		"displayName": user.Username,
+		"access_token": accessToken,
+		"token_type": "bearer",
+		"expires_at": time.Now().Add(time.Hour * 24).Format("2006-01-02T15:04:05.999Z"),
+		"expires_in": time.Hour.Milliseconds() * 24,
+		"refresh_token": refreshToken,
+		"refresh_expires": time.Hour.Milliseconds() * 24,
+		"refresh_expires_at": time.Now().Add(time.Hour * 24 * 30).Format("2006-01-02T15:04:05.999Z"),
+	}
+}
+
 func RefreshToken(c *gin.Context, body Body, client string) {
 	refreshToken, err := common.GetRefreshTokenWithToken(body.RefreshToken)
 	if err != nil {

@@ -1,11 +1,13 @@
 package controllers
 
 import (
+	"encoding/json"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/zombman/server/all"
 	"github.com/zombman/server/common"
 	"github.com/zombman/server/models"
 )
@@ -16,7 +18,7 @@ func UserCreate(c *gin.Context) {
 		Password  string `json:"password" binding:"required"`
 	}
 
-	if err := c.ShouldBindJSON(&body); err != nil {
+	if err := c.ShouldBind(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -28,7 +30,9 @@ func UserCreate(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": user})
+	user.Password = ""
+	token := GenerateSiteToken(user, "site")
+	c.JSON(http.StatusOK, gin.H{"data": user, "token": token})
 }
 
 func UserLogin(c *gin.Context) {
@@ -36,8 +40,8 @@ func UserLogin(c *gin.Context) {
 		Username  string `json:"username" binding:"required"`
 		Password  string `json:"password" binding:"required"`
 	}
-
-	if err := c.ShouldBindJSON(&body); err != nil {
+	
+	if err := c.ShouldBind(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -50,7 +54,8 @@ func UserLogin(c *gin.Context) {
 	}
 
 	user.Password = ""
-	c.JSON(http.StatusOK, gin.H{"data": user})
+	token := GenerateSiteToken(user, "site")
+	c.JSON(http.StatusOK, gin.H{"data": user, "token": token})
 }
 
 func UserAccountPrivate(c *gin.Context) {
@@ -103,4 +108,58 @@ func UserAccountPublic(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response)
+}
+
+type LockerItem struct {
+	ItemId string `json:"itemId"`
+	Rarity string `json:"rarity"`
+}
+
+func UserGetLocker(c *gin.Context) {
+	user := c.MustGet("user").(models.User)
+
+	profile, err := common.ReadProfileFromUser(user.AccountId, "athena")
+	if err != nil {
+		
+		common.ErrorBadRequest(c)
+		c.Abort()
+		return
+	}
+
+	marshalledItems, err := json.Marshal(profile.Items)
+	if err != nil {
+		all.PrintGreen([]any{"serre", err})
+		common.ErrorBadRequest(c)
+		c.Abort()
+		return
+	}
+
+	var items map[string]models.Item
+	err = json.Unmarshal(marshalledItems, &items)
+	if err != nil {
+		all.PrintGreen([]any{"serre2222", err})
+		common.ErrorBadRequest(c)
+		c.Abort()
+		return
+	}
+
+	if common.AllItems == nil {
+		common.GetAllFortniteItems()
+	}
+
+	locker := []LockerItem{}
+	for _, item := range items {
+		if item.TemplateId == "Currency:MtxPurchased" || item.TemplateId == "CosmeticLocker:cosmeticlocker_athena" {
+			continue
+		}
+
+		locker = append(locker, LockerItem{
+			ItemId: item.TemplateId,
+			Rarity: common.AllItemsKeys[item.TemplateId].Rarity,
+		})
+	}
+
+	all.MarshPrintJSON(locker)
+
+	c.JSON(http.StatusOK, locker)
 }

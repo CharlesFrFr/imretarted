@@ -19,3 +19,15 @@ type RefreshToken struct {
 	AccountId string `json:"accountId"`
 	Token string `json:"token"`
 }
+
+type SiteToken struct {
+	gorm.Model
+	AccountId string `json:"accountId"`
+	Token string `json:"token"`
+}
+
+type SiteRefreshToken struct {
+	gorm.Model
+	AccountId string `json:"accountId"`
+	Token string `json:"token"`
+}

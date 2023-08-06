@@ -32,7 +32,7 @@ func AddProfileToUser(user models.User, profileId string) {
 		return
 	}
 
-	if profileId == "athena"{
+	if profileId == "common_core"{
 		SetUserVBucks(user.AccountId, &unmarshaledProfile, 1000000)
 	}
 

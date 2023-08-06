@@ -10,34 +10,47 @@ import (
 	"github.com/zombman/server/models"
 )
 
+var AllItemsKeys map[string]models.BeforeStoreItem
+var AllItems []models.BeforeStoreItem
+var AllItemsItemShop []models.BeforeStoreItem
+
 func GetAllFortniteItems() ([]models.BeforeStoreItem, error) {
-	pathToProfile := "data/items.json"
+	if len(AllItems) == 0 {
+		pathToProfile := "data/items.json"
 
-	file, err := os.Open(pathToProfile)
-	if err != nil {
-		return []models.BeforeStoreItem{}, err
+		file, err := os.Open(pathToProfile)
+		if err != nil {
+			return []models.BeforeStoreItem{}, err
+		}
+		defer file.Close()
+
+		fileData, err := io.ReadAll(file)
+		if err != nil {
+			return []models.BeforeStoreItem{}, err
+		}
+		str := string(bytes.ReplaceAll(bytes.ReplaceAll(fileData, []byte("\n"), []byte("")), []byte("\t"), []byte("")))
+
+		err = json.Unmarshal([]byte(str), &AllItems)
+		if err != nil {
+			return []models.BeforeStoreItem{}, err
+		}
+
+		AllItemsItemShop = AllItems
+
+		tempAllItemsKey := make(map[string]models.BeforeStoreItem)
+		for _, item := range AllItems {
+			tempAllItemsKey[item.BackendType + ":" + item.ID] = item
+		}
+		AllItemsKeys = tempAllItemsKey
 	}
-	defer file.Close()
 
-	fileData, err := io.ReadAll(file)
-	if err != nil {
-		return []models.BeforeStoreItem{}, err
-	}
-	str := string(bytes.ReplaceAll(bytes.ReplaceAll(fileData, []byte("\n"), []byte("")), []byte("\t"), []byte("")))
+	ExcludeType(&AllItemsItemShop, "AthenaSpray")
+	ExcludeType(&AllItemsItemShop, "AthenaEmoji")
+	ExcludeType(&AllItemsItemShop, "AthenaToy")
+	ExcludeType(&AllItemsItemShop, "AthenaBackpack")
+	ExcludeType(&AllItemsItemShop, "AthenaPetCarrier")
 
-	var itemsData []models.BeforeStoreItem
-	err = json.Unmarshal([]byte(str), &itemsData)
-	if err != nil {
-		return []models.BeforeStoreItem{}, err
-	}
-
-	ExcludeType(&itemsData, "AthenaSpray")
-	ExcludeType(&itemsData, "AthenaEmoji")
-	ExcludeType(&itemsData, "AthenaToy")
-	ExcludeType(&itemsData, "AthenaBackpack")
-	ExcludeType(&itemsData, "AthenaPetCarrier")
-
-	return itemsData, nil
+	return AllItemsItemShop, nil
 }
 
 func GetItemsFromSeason(season int) ([]models.BeforeStoreItem, error) {

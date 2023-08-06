@@ -79,6 +79,18 @@ func GetAccessToken(accountId string) (models.AccessToken, error) {
 	return accessToken, nil
 }
 
+func GetSiteToken(accountId string) (models.SiteToken, error) {
+	var siteToken models.SiteToken
+
+	result := all.Postgres.Where("account_id = ?", accountId).First(&siteToken)
+
+	if result.Error != nil {
+		return models.SiteToken{}, result.Error
+	}
+
+	return siteToken, nil
+}
+
 func GenerateRefreshToken(user models.User, clientId string, device string) string {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": user.AccountId,
