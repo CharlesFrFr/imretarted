@@ -112,5 +112,9 @@ func main() {
     blank.GET("/lightswitch/api/service/Fortnite/status", controllers.Lightswitch)
   }
 
+  r.NoRoute(func(c *gin.Context) {
+    c.File("./public/index.html")
+  })
+
   r.Run()
 }
