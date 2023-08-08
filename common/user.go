@@ -8,11 +8,12 @@ import (
 	"github.com/zombman/server/models"
 )
 
-func CreateUser(username string, password string) (models.User, error) {
+func CreateUser(username string, password string, level int) (models.User, error) {
 	user := models.User{
 		Username:  username,
 		Password:  all.HashString(password),
 		AccountId: uuid.New().String(),
+		AccessLevel: level,
 	}
 
 	result := all.Postgres.Create(&user)

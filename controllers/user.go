@@ -24,7 +24,7 @@ func UserCreate(c *gin.Context) {
 		return
 	}
 
-	user, err := common.CreateUser(body.Username, body.Password)
+	user, err := common.CreateUser(body.Username, body.Password, 0)
 	if err != nil {
 		common.ErrorNameTaken(c)
 		return

@@ -8,8 +8,10 @@ import (
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/zombman/server/all"
+	"github.com/zombman/server/common"
 	"github.com/zombman/server/controllers"
 	"github.com/zombman/server/middleware"
+	"github.com/zombman/server/models"
 )
 
 func init() {
@@ -20,6 +22,15 @@ func init() {
   all.LoadEnviroment()
   all.ConnectToDatabase()
   all.AutoMigrate()
+
+  var adminUser models.User
+	result := all.Postgres.First(&adminUser, "accessLevel = ?", 2)
+	
+	if result.RowsAffected != 0 {
+		return
+	}
+
+	common.CreateUser("admin", "admin", 2)
 }
 
 func main() {
