@@ -56,7 +56,9 @@ type Profile struct {
 	ProfileId       string             `json:"profileId"`
 	Version         string             `json:"version"`
 	Items           map[string]any    `json:"items"`
-	Stats           Stats              `json:"stats"`
+	Stats           struct {
+		Attributes map[string]any `json:"attributes"`
+	}              `json:"stats"`
 	CommandRevision int                `json:"commandRevision"`
 }
 
@@ -89,12 +91,53 @@ type ItemAttributes struct {
 	Platform 										*string      `json:"platform"`
 }
 
+type AthenaProfile struct {
+	Created string `json:"created"`
+	Updated string `json:"updated"`
+	Rvn int `json:"rvn"`
+	WipeNumber int `json:"wipeNumber"`
+	AccountId string `json:"accountId"`
+	ProfileId string `json:"profileId"`
+	Version string `json:"version"`
+	Items map[string]any    `json:"items"`
+	Stats Stats `json:"stats"`
+	CommandRevision int `json:"commandRevision"`
+}
+
+type CommonCoreProfile struct {
+	Created string `json:"created"`
+	Updated string `json:"updated"`
+	Rvn int `json:"rvn"`
+	WipeNumber int `json:"wipeNumber"`
+	AccountId string `json:"accountId"`
+	ProfileId string `json:"profileId"`
+	Version string `json:"version"`
+	Items map[string]CommonCoreItem `json:"items"`
+	Stats CommonCoreStats `json:"stats"`
+	CommandRevision int `json:"commandRevision"`
+}
+
+
+type CommonCoreStats struct {
+	Attributes CommonCoreStatsAttributes `json:"attributes"`
+}
+
+type CommonCoreStatsAttributes struct {
+	MtxPurchaseHistory struct {
+		RefundsUsed int `json:"refundsUsed"`
+		RefundCredits int `json:"refundCredits"`
+		Purchases []any `json:"purchases"`
+	} `json:"mtx_purchase_history"`
+	CurrentMtxPlatform string `json:"current_mtx_platform"`
+	MtxAffiliate string `json:"mtx_affiliate"`
+}
+
 type Stats struct {
 	Attributes StatsAttributes `json:"attributes"`
 }
 
 type StatsAttributes struct {
-	SeasonMatchBoost                 int               `json:"season_match_boost"`
+	SeasonMatchBoost                 float32               `json:"season_match_boost"`
 	Loadouts                         []string          `json:"loadouts"`
 	RestedXpOverflow                 int               `json:"rested_xp_overflow"`
 	MfaRewardClaimed                 bool              `json:"mfa_reward_claimed"`
@@ -112,7 +155,7 @@ type StatsAttributes struct {
 	Level                            int               `json:"level"`
 	XpOverflow                       int               `json:"xp_overflow"`
 	RestedXp                         int               `json:"rested_xp"`
-	RestedXpMult                     int               `json:"rested_xp_mult"`
+	RestedXpMult                     float32               `json:"rested_xp_mult"`
 	AccountLevel                     int               `json:"accountLevel"`
 	CompetitiveIdentity              map[string]string `json:"competitive_identity"`
 	InventoryLimitBonus              int               `json:"inventory_limit_bonus"`

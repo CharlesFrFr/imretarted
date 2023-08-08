@@ -76,6 +76,66 @@ func ReadProfileFromUser(accountId string, profileId string) (models.Profile, er
 	return profileData, nil
 }
 
+func ConvertProfileToCommonCore(profile models.Profile) (models.CommonCoreProfile, error) {
+	marshalledProfile, err := json.Marshal(profile)
+	if err != nil {
+		return models.CommonCoreProfile{}, err
+	}
+
+	var newProfile models.CommonCoreProfile
+	err = json.Unmarshal(marshalledProfile, &newProfile)
+	if err != nil {
+		return models.CommonCoreProfile{}, err
+	}
+
+	return newProfile, nil
+}
+
+func ConvertProfileToAthena(profile models.Profile) (models.AthenaProfile, error) {
+	marshalledProfile, err := json.Marshal(profile)
+	if err != nil {
+		return models.AthenaProfile{}, err
+	}
+
+	var newProfile models.AthenaProfile
+	err = json.Unmarshal(marshalledProfile, &newProfile)
+	if err != nil {
+		return models.AthenaProfile{}, err
+	}
+
+	return newProfile, nil
+}
+
+func ConvertAthenaToDefault(profile models.AthenaProfile) (models.Profile, error) {
+	marshalledProfile, err := json.Marshal(profile)
+	if err != nil {
+		return models.Profile{}, err
+	}
+
+	var newProfile models.Profile
+	err = json.Unmarshal(marshalledProfile, &newProfile)
+	if err != nil {
+		return models.Profile{}, err
+	}
+
+	return newProfile, nil
+}
+
+func ConvertCommonCoreToDefault(profile models.CommonCoreProfile) (models.Profile, error) {
+	marshalledProfile, err := json.Marshal(profile)
+	if err != nil {
+		return models.Profile{}, err
+	}
+
+	var newProfile models.Profile
+	err = json.Unmarshal(marshalledProfile, &newProfile)
+	if err != nil {
+		return models.Profile{}, err
+	}
+
+	return newProfile, nil
+}
+
 func SaveProfileToUser(accountId string, profile models.Profile) error {
 	profileData, err := json.Marshal(profile)
 	if err != nil {
@@ -159,6 +219,8 @@ func AppendLoadoutsToProfileNoSave(profile *models.Profile, accountId string) {
 
 	loadoutIds := []string{}
 
+
+
 	for _, loadout := range loadouts {
 		var loadoutData models.Loadout
 		err := json.Unmarshal([]byte(loadout.Loadout), &loadoutData)
@@ -169,9 +231,9 @@ func AppendLoadoutsToProfileNoSave(profile *models.Profile, accountId string) {
 		loadoutIds = append(loadoutIds, loadoutData.Attributes.LockerName)
 
 		profile.Items[loadoutData.Attributes.LockerName] = loadoutData
-		profile.Stats.Attributes.Loadouts = loadoutIds
-		profile.Stats.Attributes.ActiveLoadoutIndex = len(loadoutIds) - 1
-		profile.Stats.Attributes.LastAppliedLoadout = loadoutData.Attributes.LockerName
+		profile.Stats.Attributes["loadouts"] = loadoutIds
+		profile.Stats.Attributes["active_loadout_index"] = len(loadoutIds) - 1
+		profile.Stats.Attributes["last_applied_loadout"] = loadoutData.Attributes.LockerName
 	}
 }
 
@@ -241,6 +303,18 @@ func AddItemsToProfile(profile *models.Profile, itemIds []string, accountId stri
 	AppendLoadoutsToProfileNoSave(profile, accountId)
 }
 
+func RemoveItemFromProfile(profile *models.Profile, itemId string, accountId string) {
+	delete(profile.Items, itemId)
+	AppendLoadoutsToProfileNoSave(profile, accountId)
+}
+
+func RemoveItemsFromProfile(profile *models.Profile, itemIds []string, accountId string) {
+	for _, itemId := range itemIds {
+		delete(profile.Items, itemId)
+	}
+	AppendLoadoutsToProfileNoSave(profile, accountId)
+}
+
 func AddEverythingToProfile(profile *models.Profile, accountId string) {
 	pathToAllItems := "data/items.json"
 
@@ -269,6 +343,13 @@ func AddEverythingToProfile(profile *models.Profile, accountId string) {
 
 	AddItemsToProfile(profile, itemIds, accountId)
 	all.PrintGreen([]any{"added all items to profile", accountId})
+}
+
+func RemoveEverythingFromProfile(profile *models.Profile, accountId string) {
+	for itemId := range profile.Items {
+		delete(profile.Items, itemId)
+	}
+	AppendLoadoutsToProfileNoSave(profile, accountId)
 }
 
 func SetUserVBucks(accountId string, profile *models.Profile, amount int) {

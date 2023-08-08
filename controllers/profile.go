@@ -45,8 +45,10 @@ func ProfileActionHandler(c *gin.Context) {
 			return
 	}
 
-	profile.Stats.Attributes.SeasonNum = common.Season
-
+	if profile.ProfileId == "athena" {
+		profile.Stats.Attributes["season_num"] = common.Season
+	}
+	
 	if queryRevision, err := strconv.Atoi(c.Query("rvn")); err == nil && queryRevision != profile.Rvn {
 		response.ProfileChanges = []models.ProfileChange{{
 			ChangeType: "fullProfileUpdate",
@@ -150,7 +152,7 @@ func PurchaseCatalogEntry(c *gin.Context, user models.User, profile *models.Prof
 	common.AddItemToProfile(&athenaProfile, offer.ItemGrants[0].TemplateID, user.AccountId)
 	common.TakeUserVBucks(user.AccountId, profile, offer.Prices[0].FinalPrice)
 
-	athenaProfile.Stats.Attributes.SeasonNum = common.Season
+	athenaProfile.Stats.Attributes["season_num"] = common.Season
 	athenaProfile.Rvn += 1
 	athenaProfile.CommandRevision = athenaProfile.Rvn
 	athenaProfile.AccountId = user.AccountId
@@ -215,7 +217,14 @@ func EquipBattleRoyaleCustomization(c *gin.Context, user models.User, profile *m
 		return
 	}
 
-	activeLoadoutId := profile.Stats.Attributes.Loadouts[profile.Stats.Attributes.ActiveLoadoutIndex]
+	athenaProfile,err := common.ConvertProfileToAthena(*profile)
+	if err != nil {
+		common.ErrorBadRequest(c)
+		c.Abort()
+		return
+	}
+
+	activeLoadoutId := athenaProfile.Stats.Attributes.Loadouts[athenaProfile.Stats.Attributes.ActiveLoadoutIndex]
 	activeLoadout, err := common.GetLoadout(activeLoadoutId, user.AccountId)
 	if err != nil {
 		common.ErrorItemNotFound(c)
@@ -228,47 +237,56 @@ func EquipBattleRoyaleCustomization(c *gin.Context, user models.User, profile *m
 
 	switch lowercaseItemType {
 		case "character":
-			profile.Stats.Attributes.FavoriteCharacter = body.ItemToSlot
+			athenaProfile.Stats.Attributes.FavoriteCharacter = body.ItemToSlot
 			activeLoadout.Attributes.LockerSlotsData.Slots["Character"].Items[0] = body.ItemToSlot
-			valueChanged = profile.Stats.Attributes.FavoriteCharacter
+			valueChanged = athenaProfile.Stats.Attributes.FavoriteCharacter
 		case "backpack":
-			profile.Stats.Attributes.FavoriteBackpack = body.ItemToSlot
+			athenaProfile.Stats.Attributes.FavoriteBackpack = body.ItemToSlot
 			activeLoadout.Attributes.LockerSlotsData.Slots["Backpack"].Items[0] = body.ItemToSlot
-			valueChanged = profile.Stats.Attributes.FavoriteBackpack
+			valueChanged = athenaProfile.Stats.Attributes.FavoriteBackpack
 		case "pickaxe":
-			profile.Stats.Attributes.FavoritePickaxe = body.ItemToSlot
+			athenaProfile.Stats.Attributes.FavoritePickaxe = body.ItemToSlot
 			activeLoadout.Attributes.LockerSlotsData.Slots["Pickaxe"].Items[0] = body.ItemToSlot
-			valueChanged = profile.Stats.Attributes.FavoritePickaxe
+			valueChanged = athenaProfile.Stats.Attributes.FavoritePickaxe
 		case "glider":
-			profile.Stats.Attributes.FavoriteGlider = body.ItemToSlot
+			athenaProfile.Stats.Attributes.FavoriteGlider = body.ItemToSlot
 			activeLoadout.Attributes.LockerSlotsData.Slots["Glider"].Items[0] = body.ItemToSlot
-			valueChanged = profile.Stats.Attributes.FavoriteGlider
+			valueChanged = athenaProfile.Stats.Attributes.FavoriteGlider
 		case "skydivecontrail":
-			profile.Stats.Attributes.FavoriteSkyDiveContrail = body.ItemToSlot
+			athenaProfile.Stats.Attributes.FavoriteSkyDiveContrail = body.ItemToSlot
 			activeLoadout.Attributes.LockerSlotsData.Slots["SkyDiveContrail"].Items[0] = body.ItemToSlot
-			valueChanged = profile.Stats.Attributes.FavoriteSkyDiveContrail
+			valueChanged = athenaProfile.Stats.Attributes.FavoriteSkyDiveContrail
 		case "loadingscreen":
-			profile.Stats.Attributes.FavoriteLoadingScreen = body.ItemToSlot
+			athenaProfile.Stats.Attributes.FavoriteLoadingScreen = body.ItemToSlot
 			activeLoadout.Attributes.LockerSlotsData.Slots["LoadingScreen"].Items[0] = body.ItemToSlot
-			valueChanged = profile.Stats.Attributes.FavoriteLoadingScreen
+			valueChanged = athenaProfile.Stats.Attributes.FavoriteLoadingScreen
 		case "musicpack":
-			profile.Stats.Attributes.FavoriteMusicPack = body.ItemToSlot
+			athenaProfile.Stats.Attributes.FavoriteMusicPack = body.ItemToSlot
 			activeLoadout.Attributes.LockerSlotsData.Slots["MusicPack"].Items[0] = body.ItemToSlot
-			valueChanged = profile.Stats.Attributes.FavoriteMusicPack
+			valueChanged = athenaProfile.Stats.Attributes.FavoriteMusicPack
 		case "dance":
-			profile.Stats.Attributes.FavoriteDance[body.IndexWithinSlot] = body.ItemToSlot
+			athenaProfile.Stats.Attributes.FavoriteDance[body.IndexWithinSlot] = body.ItemToSlot
 			activeLoadout.Attributes.LockerSlotsData.Slots["Dance"].Items[body.IndexWithinSlot] = body.ItemToSlot
-			valueChanged = profile.Stats.Attributes.FavoriteDance
+			valueChanged = athenaProfile.Stats.Attributes.FavoriteDance
 		case "itemwrap":
-			profile.Stats.Attributes.FavoriteItemWraps[body.IndexWithinSlot] = body.ItemToSlot
+			athenaProfile.Stats.Attributes.FavoriteItemWraps[body.IndexWithinSlot] = body.ItemToSlot
 			activeLoadout.Attributes.LockerSlotsData.Slots["ItemWrap"].Items[body.IndexWithinSlot] = body.ItemToSlot
-			valueChanged = profile.Stats.Attributes.FavoriteItemWraps
+			valueChanged = athenaProfile.Stats.Attributes.FavoriteItemWraps
 			lowercaseItemType = "itemwraps"
 		default:
 			all.PrintRed([]any{"unknown item type", lowercaseItemType})
 			common.ErrorBadRequest(c)
 			c.Abort()
 	}
+
+	defaultProfile, err := common.ConvertAthenaToDefault(athenaProfile)
+	if err != nil {
+		common.ErrorBadRequest(c)
+		c.Abort()
+		return
+	}
+
+	profile.Items = defaultProfile.Items
 
 	response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
 		ChangeType: "statModified",
@@ -296,7 +314,7 @@ func EquipBattleRoyaleCustomization(c *gin.Context, user models.User, profile *m
 		variantFound.Active = variant.Active
 		variantFound.Owned = []string{variant.Active}
 		common.SetVariantInItem(&itemWithVariant, variantFound)
-		profile.Items[body.ItemToSlot] = itemWithVariant
+		athenaProfile.Items[body.ItemToSlot] = itemWithVariant
 
 		response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
 			ChangeType: "itemAttrChanged",
@@ -306,7 +324,7 @@ func EquipBattleRoyaleCustomization(c *gin.Context, user models.User, profile *m
 		})
 	}
 
-	profile.Stats.Attributes.LastAppliedLoadout = activeLoadoutId
+	athenaProfile.Stats.Attributes.LastAppliedLoadout = activeLoadoutId
 
 	common.AppendLoadoutToProfileNoSave(profile, &activeLoadout, user.AccountId)
 }
@@ -324,10 +342,17 @@ func SetBattleRoyaleBanner(c *gin.Context, user models.User, profile *models.Pro
 		return
 	}
 
-	profile.Stats.Attributes.BannerIcon = body.HomebaseBannerIconId
-	profile.Stats.Attributes.BannerColor = body.HomebaseBannerColorId
+	athenaProfile,err := common.ConvertProfileToAthena(*profile)
+	if err != nil {
+		common.ErrorBadRequest(c)
+		c.Abort()
+		return
+	}
 
-	activeLoadoutId := profile.Stats.Attributes.Loadouts[profile.Stats.Attributes.ActiveLoadoutIndex]
+	athenaProfile.Stats.Attributes.BannerIcon = body.HomebaseBannerIconId
+	athenaProfile.Stats.Attributes.BannerColor = body.HomebaseBannerColorId
+
+	activeLoadoutId := athenaProfile.Stats.Attributes.Loadouts[athenaProfile.Stats.Attributes.ActiveLoadoutIndex]
 	activeLoadout, err := common.GetLoadout(activeLoadoutId, user.AccountId)
 	if err != nil {
 		common.ErrorItemNotFound(c)
@@ -337,6 +362,15 @@ func SetBattleRoyaleBanner(c *gin.Context, user models.User, profile *models.Pro
 
 	activeLoadout.Attributes.BannerIconTemplate = body.HomebaseBannerIconId
 	activeLoadout.Attributes.BannerColorTemplate = body.HomebaseBannerColorId
+
+	defaultProfile, err := common.ConvertAthenaToDefault(athenaProfile)
+	if err != nil {
+		common.ErrorBadRequest(c)
+		c.Abort()
+		return
+	}
+
+	profile.Items = defaultProfile.Items
 
 	common.AppendLoadoutToProfileNoSave(profile, &activeLoadout, user.AccountId)
 

@@ -823,7 +823,7 @@ func StorefrontKeychain(c *gin.Context) {
 	})
 }
 
-func NoResponse(c *gin.Context) {
+func NoContent(c *gin.Context) {
 		c.Status(204)
 		c.Abort()
 }

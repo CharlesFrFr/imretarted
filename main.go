@@ -41,8 +41,8 @@ func main() {
     c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 
     if c.Request.Method == "OPTIONS" {
-        c.AbortWithStatus(204)
-        return
+      c.AbortWithStatus(204)
+      return
     }
 
     c.Next()
@@ -50,13 +50,29 @@ func main() {
 
   r.Use(static.Serve("/", static.LocalFile("./public", true)))
 
-  r.POST("/api/user/login", controllers.UserLogin)
-  r.POST("/api/user/create", controllers.UserCreate)
-  r.GET("/api/user/locker", middleware.VerifySiteToken, controllers.UserGetLocker)
-  r.POST("/account/api/oauth/token", controllers.OAuthMain)
+  site := r.Group("/api")
+  {
+    site.POST("/user/login", controllers.UserLogin)
+    site.POST("/user/create", controllers.UserCreate)
+    site.POST("/user/refresh", controllers.SiteRefresh)
+    site.POST("/user/update", middleware.VerifySiteToken, controllers.UserUpdate)
+    site.GET("/user/locker", middleware.VerifySiteToken, controllers.UserGetLocker)
 
+    site.GET("/admin/users", middleware.VerifySiteToken, controllers.AdminGetAllUsers)
+    site.GET("/admin/locker/:accountId", middleware.VerifySiteToken, controllers.AdminGetLocker)
+    site.POST("/admin/user/:accountId/give/admin", middleware.VerifySiteToken, controllers.AdminGiveUserAdmin)
+    site.POST("/admin/user/:accountId/take/admin", middleware.VerifySiteToken, controllers.AdminTakeUserAdmin)
+    site.GET("/admin/profile/accountId/:accountId/:profileId", middleware.VerifySiteToken, controllers.AdminGetProfile)
+    site.POST("/admin/profile/accountId/:accountId", middleware.VerifySiteToken, controllers.AdminSaveProfile)
+    site.POST("/admin/profile/accountId/:accountId/give/all", middleware.VerifySiteToken, controllers.AdminGiveAllSkins)
+    site.POST("/admin/profile/accountId/:accountId/give/:itemId", middleware.VerifySiteToken, controllers.AdminGiveItem)
+    site.POST("/admin/profile/accountId/:accountId/take/all", middleware.VerifySiteToken, controllers.AdminTakeAllSkins)
+    site.POST("/admin/profile/accountId/:accountId/take/:itemId", middleware.VerifySiteToken, controllers.AdminTakeItem)
+  }
+  
   account := r.Group("/account/api")
   {
+    account.POST("/oauth/token", controllers.OAuthMain)
     account.GET("/public/account", controllers.UserAccountPublic)
     account.GET("/public/account/:accountId", middleware.VerifyAccessToken, controllers.UserAccountPrivate)
     account.GET("/public/account/:accountId/externalAuths", controllers.EmptyArray)
@@ -66,6 +82,8 @@ func main() {
 
   fortnite := r.Group("/fortnite/api")
   {
+    fortnite.GET("/game/v2/profileToken/verify/*accountId", controllers.NoContent)
+
     fortnite.POST("/game/v2/profile/:accountId/client/:action", middleware.VerifyAccessToken, controllers.ProfileActionHandler)
     fortnite.POST("/game/v2/tryPlayOnPlatform/account/*accountId", middleware.VerifyAccessToken, controllers.True)
     fortnite.GET("/game/v2/enabled_features", middleware.VerifyAccessToken, controllers.EmptyArray)
@@ -88,8 +106,8 @@ func main() {
   blank := r.Group("/")
   {
     blank.GET("/content/api/pages/*contentPageName", controllers.ContentPage)
-    blank.GET("/waitingroom/api/waitingroom", controllers.NoResponse)
-    blank.POST("/datarouter/*api", controllers.NoResponse)
+    blank.GET("/waitingroom/api/waitingroom", controllers.NoContent)
+    blank.POST("/datarouter/*api", controllers.NoContent)
     blank.GET("/lightswitch/api/service/bulk/status", controllers.Lightswitch)
     blank.GET("/lightswitch/api/service/Fortnite/status", controllers.Lightswitch)
   }
