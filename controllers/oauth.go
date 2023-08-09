@@ -137,8 +137,11 @@ func RefreshToken(c *gin.Context, body Body, client string) {
 func Password(c *gin.Context, body Body, client string) {
 	user, err := common.GetUserByUsernameAndPlainPassword(strings.Replace(body.Username, "@.", "", -1), body.Password)
 	if err != nil {
-		common.ErrorInvalidCredentials(c)
-		return
+		user, err = common.GetUserByUsernameAndHashPassword(strings.Replace(body.Username, "@.", "", -1), body.Password)
+		if err != nil {
+			common.ErrorInvalidCredentials(c)
+			return
+		}
 	}
 
 	c.JSON(http.StatusOK, Generate(user, client))

@@ -85,3 +85,19 @@ func GetUserByUsernameAndPlainPassword(username string, password string) (models
 
 	return user, nil
 }
+
+func GetUserByUsernameAndHashPassword(username string, password string) (models.User, error) {
+	var user models.User
+
+	result := all.Postgres.Where("username = ? AND password = ? AND banned = false", username, password).First(&user)
+
+	if result.Error != nil {
+		return models.User{}, result.Error
+	}
+
+	if user.ID == 0 {
+		return models.User{}, errors.New("user not found")
+	}
+
+	return user, nil
+}
