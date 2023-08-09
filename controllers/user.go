@@ -30,7 +30,6 @@ func UserCreate(c *gin.Context) {
 		return
 	}
 
-	user.Password = ""
 	token := GenerateSiteToken(user, "site")
 	c.JSON(http.StatusOK, gin.H{"data": user, "token": token})
 }
@@ -53,7 +52,6 @@ func UserLogin(c *gin.Context) {
 		return
 	}
 
-	user.Password = ""
 	token := GenerateSiteToken(user, "site")
 	c.JSON(http.StatusOK, gin.H{"data": user, "token": token})
 }
