@@ -1,8 +1,13 @@
 # ![Zombie Server](./public/icon.png)
 
-An open source, performant fortnite backend server with a built in web-interface and desktop launcher! [View the frontend development here!](https://github.com/zombman/server/tree/frontend)
+An open source, performant fortnite backend server with a built in web-interface and desktop launcher!
 
 _Note: Some features are not yet implemented, please see the [Roadmap](#roadmap) for more information._
+
+# Branches
+
+- **[Frontend](https://github.com/zombman/server/tree/frontend)** - Launcher and web interface for backend.
+- **[CLI](https://github.com/zombman/server/tree/cli)** - The CLI that the launcher interacts with to launch the game.
 
 ## Features
 
@@ -20,6 +25,7 @@ _Note: Some features are not yet implemented, please see the [Roadmap](#roadmap)
 - [x] Buy from item shop
 - [x] Equip items and variants
 - [x] Cloud storage for settings
+- [x] Control panel for server admins
+- [x] Game launcher and web interface
+- [ ] Xmpp (matchmaker)
 - [ ] All required fortnite responses
-- [ ] Xmpp
-- [ ] Control panel for server admins
