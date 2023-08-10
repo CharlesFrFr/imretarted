@@ -6,6 +6,7 @@ import (
 	"errors"
 	"io"
 	"os"
+	"strconv"
 
 	"github.com/zombman/server/all"
 	"github.com/zombman/server/models"
@@ -32,8 +33,12 @@ func AddProfileToUser(user models.User, profileId string) {
 		return
 	}
 
-	if profileId == "common_core"{
-		SetUserVBucks(user.AccountId, &unmarshaledProfile, 1000000)
+	if profileId == "common_core" {
+		vbucksAmount, err := strconv.Atoi(os.Getenv("USER_STARTING_VBUCKS"))
+		if err == nil { 
+			SetUserVBucks(user.AccountId, &unmarshaledProfile, vbucksAmount)
+			all.PrintGreen([]any{"gave user", user.Username, "vbucks amount of", vbucksAmount})
+		}
 	}
 
 	profileData, err := json.Marshal(unmarshaledProfile)

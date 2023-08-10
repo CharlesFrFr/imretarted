@@ -55,7 +55,7 @@ var Prices = models.Prices{
 }
 
 var ItemShop models.StorePage
-var ShouldRefresh int64
+var ShouldRefresh int64 = 0
 
 func StorefrontCatalog(c *gin.Context) {
 	timeNow := time.Now().Unix()
@@ -103,6 +103,7 @@ func RefreshItemShop() {
 }
 
 func GenerateRandomItemShop() {
+	endOfDay := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 23, 59, 59, 999999999, time.Now().Location()).Format("2006-01-02T15:04:05.999Z")
 	allItems, err := common.GetItemsFromSeason(common.Season + (common.Chapter * 10))
 	if err != nil {
 		return
@@ -116,7 +117,7 @@ func GenerateRandomItemShop() {
 	ItemShop = models.StorePage{
 		RefreshIntervalHrs: 24,
 		DailyPurchaseHrs:  24,
-		Expiration: time.Now().Add(time.Hour * 24).Format("2006-01-02T15:04:05.999Z"),
+		Expiration: endOfDay,
 		Storefronts: []models.Storefront{
 			{
 				Name: "BRDailyStorefront",

@@ -39,6 +39,39 @@ func PrintYellow(strings []any) {
 	fmt.Println()
 }
 
+func PrintBlue(strings []any) {
+	if (os.Getenv("PRODUCTION") == "true") {
+		return
+	}
+
+	for _, str := range strings {
+		fmt.Print("\033[34m" + fmt.Sprint(str) + "\033[0m ")
+	}
+	fmt.Println()
+}
+
+func PrintCyan(strings []any) {
+	if (os.Getenv("PRODUCTION") == "true") {
+		return
+	}
+
+	for _, str := range strings {
+		fmt.Print("\033[36m" + fmt.Sprint(str) + "\033[0m ")
+	}
+	fmt.Println()
+}
+
+func PrintMagenta(strings []any) {
+	if (os.Getenv("PRODUCTION") == "true") {
+		return
+	}
+
+	for _, str := range strings {
+		fmt.Print("\033[35m" + fmt.Sprint(str) + "\033[0m ")
+	}
+	fmt.Println()
+}
+
 func MarshPrintJSON(obj interface{}) {
 	if (os.Getenv("PRODUCTION") == "true") {
 		return

@@ -274,11 +274,12 @@ func EquipBattleRoyaleCustomization(c *gin.Context, user models.User, profile *m
 			valueChanged = athenaProfile.Stats.Attributes.FavoriteItemWraps
 			lowercaseItemType = "itemwraps"
 		default:
-			all.PrintRed([]any{"unknown item type", lowercaseItemType})
+			all.PrintRed([]any{"unknown item type", athenaProfile.Stats.Attributes})
 			common.ErrorBadRequest(c)
 			c.Abort()
 	}
 
+	
 	defaultProfile, err := common.ConvertAthenaToDefault(athenaProfile)
 	if err != nil {
 		common.ErrorBadRequest(c)
@@ -287,6 +288,7 @@ func EquipBattleRoyaleCustomization(c *gin.Context, user models.User, profile *m
 	}
 
 	profile.Items = defaultProfile.Items
+	profile.Stats = defaultProfile.Stats
 
 	response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
 		ChangeType: "statModified",

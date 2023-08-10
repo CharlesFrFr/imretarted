@@ -5,13 +5,13 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/zombman/server/all"
 	"github.com/zombman/server/common"
 	"github.com/zombman/server/controllers"
 	"github.com/zombman/server/middleware"
 	"github.com/zombman/server/models"
+	"github.com/zombman/server/socket"
 )
 
 func init() {
@@ -24,7 +24,7 @@ func init() {
   all.AutoMigrate()
 
   var adminUser models.User
-	result := all.Postgres.First(&adminUser, "accessLevel = ?", 2)
+	result := all.Postgres.First(&adminUser, "access_level = ?", 2)
 	
 	if result.RowsAffected != 0 {
 		return
@@ -59,7 +59,7 @@ func main() {
     c.Next()
   })
 
-  r.Use(static.Serve("/", static.LocalFile("./public", true)))
+  // r.Use(static.Serve("/", static.LocalFile("./public", true)))
 
   site := r.Group("/api")
   {
@@ -112,6 +112,12 @@ func main() {
     {
       store.GET("/v2/catalog", controllers.StorefrontCatalog)
     }
+
+    fortnite.GET("/fortnite/api/v2/versioncheck/Windows", func (c *gin.Context) {
+      c.JSON(200, gin.H{
+        "type": "NO_UPDATE",
+      })
+    })
   }
 
   blank := r.Group("/")
@@ -122,6 +128,15 @@ func main() {
     blank.GET("/lightswitch/api/service/bulk/status", controllers.Lightswitch)
     blank.GET("/lightswitch/api/service/Fortnite/status", controllers.Lightswitch)
   }
+
+  r.GET("/", func(c *gin.Context) {
+    if c.Request.Header.Get("Upgrade") == "websocket" {
+      socket.Handler(c.Writer, c.Request)
+      return
+    }
+
+    c.File("./public/index.html")
+  })
 
   r.NoRoute(func(c *gin.Context) {
     c.File("./public/index.html")

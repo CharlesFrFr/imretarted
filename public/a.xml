@@ -1,0 +1,23 @@
+<stream:features xmlns:stream="http://etherx.jabber.org/streams">
+  <mechanisms xmlns="urn:ietf:params:xml:ns:xmpp-sasl">
+    <mechanism>PLAIN</mechanism>
+  </mechanisms>
+  <ver xmlns="urn:xmpp:features:rosterver" />
+  <starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls" />
+  <compression xmlns="http://jabber.org/features/compress">
+    <method>zlib</method>
+  </compression>
+  <auth xmlns="http://jabber.org/features/iq-auth" />
+</stream:features>
+
+<stream:features xmlns:stream="http://etherx.jabber.org/streams">
+  <mechanisms xmlns="urn:ietf:params:xml:ns:xmpp-sasl">
+    <mechanism>PLAIN</mechanism>
+  </mechanisms>
+  <ver xmlns="urn:xmpp:features:rosterver"></ver>
+  <starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls"></starttls>
+  <compression xmlns="http://jabber.org/features/compress">
+    <method>zlib</method>
+  </compression>
+  <auth xmlns="http://jabber.org/features/iq-auth"></auth>
+</stream:features>
