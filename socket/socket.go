@@ -2,6 +2,7 @@ package socket
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"encoding/xml"
 	"net/http"
 	"strings"
@@ -20,6 +21,7 @@ var (
 	}
 
 	clients = make(map[string]*ClientInfo)
+	accountIdToRemoteAddress = make(map[string]string)
 )
 
 type ClientInfo struct {
@@ -27,7 +29,10 @@ type ClientInfo struct {
 	Authenticated bool
 	User models.User
 	SocketID string
+	Connection *websocket.Conn
 }
+
+
 
 func Handler(w http.ResponseWriter, r *http.Request){
 	conn, err := wsupgrader.Upgrade(w, r, nil)
@@ -44,10 +49,16 @@ func Handler(w http.ResponseWriter, r *http.Request){
 		Authenticated: false,
 		User: models.User{},
 		SocketID: "",
+		Connection: conn,
 	}
 	clients[remoteAddress] = clientInfo
 
 	for {
+		_, ok := accountIdToRemoteAddress[clientInfo.User.AccountId]
+		if clientInfo.Authenticated && !ok {
+			accountIdToRemoteAddress[clientInfo.User.AccountId] = remoteAddress
+		}
+
 		messageType, messageData, err := conn.ReadMessage()
 		if err != nil {
 			break
@@ -94,7 +105,6 @@ func Handler(w http.ResponseWriter, r *http.Request){
 			continue
 		}
 
-
 		all.PrintRed([]any{"unknown message type"})
 
 		conn.WriteMessage(messageType, []byte(`CRASH`))
@@ -102,6 +112,7 @@ func Handler(w http.ResponseWriter, r *http.Request){
 
 	defer func() {
 		delete(clients, remoteAddress)
+		delete(accountIdToRemoteAddress, clientInfo.User.AccountId)
 		conn.Close()
 	}()
 }
@@ -111,10 +122,7 @@ func HandlePresence(conn *websocket.Conn, message []byte, messageType int, clien
 
 	var presence models.PresenceXML
 	xml.Unmarshal([]byte(message), &presence)
-
-	
 }
-
 
 func HandleMessage(conn *websocket.Conn, message []byte, messageType int, clientInfo *ClientInfo) {
 	all.PrintYellow([]any{"HandleMessage"})
@@ -225,3 +233,45 @@ func HandleAuth(conn *websocket.Conn, message []byte, messageType int, clientInf
 		[]byte(`<success xmlns="urn:ietf:params:xml:ns:xmpp-sasl" />`),
 	)
 }	
+
+func XMPPSendBodyToAll(body map[string]interface{}) {
+	data, err := json.Marshal(body)
+	if err != nil {
+		all.PrintRed([]any{"failed to marshal body", err})
+		return
+	}
+
+	for _, client := range clients {
+		client.Connection.WriteMessage(1, []byte(`
+			<message xmlns="jabber:client" from="xmpp-admin@prod.ol.epicgames.com" to="`+ client.SocketID +`">
+				<body>`+ string(data) +`</body>
+			</message>
+		`))
+	}
+}
+
+func XMPPSendBody(body map[string]interface{}, accountId string) {
+	data, err := json.Marshal(body)
+	if err != nil {
+		all.PrintRed([]any{"failed to marshal body", err})
+		return
+	}
+
+	clientRemoteAddress, ok := accountIdToRemoteAddress[accountId]
+	if !ok {
+		all.PrintRed([]any{"failed to find client remote address", accountId})
+		return
+	}
+
+	client, ok := clients[clientRemoteAddress]
+	if !ok {
+		all.PrintRed([]any{"failed to find client", clientRemoteAddress})
+		return
+	}
+
+	client.Connection.WriteMessage(1, []byte(`
+		<message xmlns="jabber:client" from="xmpp-admin@prod.ol.epicgames.com" to="`+ client.SocketID +`">
+			<body>`+ string(data) +`</body>
+		</message>
+	`))
+}

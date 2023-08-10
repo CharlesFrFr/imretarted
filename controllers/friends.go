@@ -1,10 +1,13 @@
 package controllers
 
 import (
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/zombman/server/all"
 	"github.com/zombman/server/common"
 	"github.com/zombman/server/models"
+	"github.com/zombman/server/socket"
 )
 
 func FriendsPublic(c *gin.Context) {
@@ -35,61 +38,137 @@ func FriendsBlocked(c *gin.Context) {
 
 
 func CreateFriend(c *gin.Context) {
-	all.PrintMagenta([]any{
-		"CREATE FRIENF for",
-		c.MustGet("user").(models.User).AccountId,
-	})
 	user := c.MustGet("user").(models.User)
 	wantedFriend := c.Param("friendId")
 
 	if wantedFriend == user.AccountId {
-		all.PrintRed([]any{
-			"tried to friend self",
-			user.AccountId,
-		})
 		common.ErrorBadRequest(c)
 		return
 	}
 
 	if common.IsFriend(user.AccountId, wantedFriend) {
-		all.PrintRed([]any{
-			"already friends with",
-			wantedFriend,
-		})
 		common.ErrorBadRequest(c)
 		return
 	}
 
 	if common.IsBlocked(user.AccountId, wantedFriend) {
-		all.PrintRed([]any{
-			"blocked",
-			wantedFriend,
-		})
 		common.ErrorBadRequest(c)
 		return
 	}
 
 	if common.IsPending(user.AccountId, wantedFriend) {
-		all.PrintRed([]any{
-			"already pending",
-			wantedFriend,
-		})
 		common.ErrorBadRequest(c)
 		return
 	}
 
-	common.CreateFriend(user.AccountId, wantedFriend)
-	// if err != nil {
-	// 	common.ErrorInternalServer(c)
-	// 	return
-	// }
+	res := common.CreateFriend(user.AccountId, wantedFriend)
 
-	all.PrintMagenta([]any{
-		"sent friend request from",
-		user.AccountId,
-		"to",
-		wantedFriend,
-		})
+	if res == "ACCEPTED" {
+		socket.XMPPSendBody(gin.H{
+			"timestamp": time.Now().Format("2006-01-02T15:04:05.999Z"),
+			"type": "com.epicgames.friends.core.apiobjects.Friend",
+			"payload": gin.H{
+				"accountId": user.AccountId,
+				"status": "ACCEPTED",
+				"direction": "INBOUND",
+				"favorite": false,
+				"created": time.Now().Format("2006-01-02T15:04:05.999Z"),
+			},
+		}, wantedFriend)
 
+		socket.XMPPSendBody(gin.H{
+			"timestamp": time.Now().Format("2006-01-02T15:04:05.999Z"),
+			"type": "com.epicgames.friends.core.apiobjects.Friend",
+			"payload": gin.H{
+				"accountId": wantedFriend,
+				"status": "ACCEPTED",
+				"direction": "INBOUND",
+				"favorite": false,
+				"created": time.Now().Format("2006-01-02T15:04:05.999Z"),
+			},
+		}, user.AccountId)
+	}
+
+	c.Status(204)
+}
+
+func DeleteFriend(c *gin.Context) {
+	user := c.MustGet("user").(models.User)
+	wantedFriend := c.Param("friendId")
+
+	if wantedFriend == user.AccountId {
+		all.PrintRed([]any{"TRYING TO DELETE HIMSELF"})
+
+		common.ErrorBadRequest(c)
+		return
+	}
+
+	if !common.IsFriend(user.AccountId, wantedFriend) {
+		all.PrintRed([]any{"NOT FRIENDS"})
+
+		common.ErrorBadRequest(c)
+		return
+	}
+
+	res := common.DeleteFriend(user.AccountId, wantedFriend)
+	if res == "DELETED" {
+		socket.XMPPSendBody(gin.H{
+			"timestamp": time.Now().Format("2006-01-02T15:04:05.999Z"),
+			"type": "com.epicgames.friends.core.apiobjects.FriendRemoval",
+			"payload": gin.H{
+				"accountId": user.AccountId,
+				"reason": "DELETED",
+			},
+		}, wantedFriend)
+
+		socket.XMPPSendBody(gin.H{
+			"timestamp": time.Now().Format("2006-01-02T15:04:05.999Z"),
+			"type": "com.epicgames.friends.core.apiobjects.FriendRemoval",
+			"payload": gin.H{
+				"accountId": wantedFriend,
+				"reason": "DELETED",
+			},
+		}, user.AccountId)
+	}
+
+	c.Status(204)
+}
+
+func BlockFriend(c *gin.Context) {
+	user := c.MustGet("user").(models.User)
+	wantedFriend := c.Param("friendId")
+
+	if wantedFriend == user.AccountId {
+		all.PrintRed([]any{"TRYING TO DELETE HIMSELF"})
+
+		common.ErrorBadRequest(c)
+		return
+	}
+
+	if !common.IsFriend(user.AccountId, wantedFriend) {
+		all.PrintRed([]any{"NOT FRIENDS"})
+
+		common.ErrorBadRequest(c)
+		return
+	}
+
+	common.BlockFriend(user.AccountId, wantedFriend)
+	
+	c.Status(204)
+}
+
+func UnBlockFriend(c *gin.Context) {
+	user := c.MustGet("user").(models.User)
+	wantedFriend := c.Param("friendId")
+
+	if wantedFriend == user.AccountId {
+		all.PrintRed([]any{"TRYING TO DELETE HIMSELF"})
+
+		common.ErrorBadRequest(c)
+		return
+	}
+
+	common.UnBlockFriend(user.AccountId, wantedFriend)
+	
 	c.Status(204)
 }

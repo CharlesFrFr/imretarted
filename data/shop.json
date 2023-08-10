@@ -1,194 +1,14 @@
 {
 	"refreshIntervalHrs": 24,
 	"dailyPurchaseHrs": 24,
-	"expiration": "2023-08-10T23:59:59.999Z",
+	"expiration": "2023-08-11T23:59:59.999Z",
 	"storefronts": [
 		{
 			"name": "BRDailyStorefront",
 			"catalogEntries": [
 				{
-					"devName": "d5c65c611f51f6f800858917bad955184f87a8ce",
-					"offerId": "d5c65c611f51f6f800858917bad955184f87a8ce",
-					"fulfillmentIds": [],
-					"dailyLimit": -1,
-					"weeklyLimit": -1,
-					"monthlyLimit": -1,
-					"categories": [],
-					"prices": [
-						{
-							"currencyType": "MtxCurrency",
-							"currencySubType": "CurrencySource",
-							"regularPrice": 1200,
-							"finalPrice": 1200,
-							"saleExpiration": "2023-08-10T23:59:59.999Z",
-							"basePrice": 1200
-						}
-					],
-					"meta": {
-						"SectionId": "Featured",
-						"TileSize": "Small"
-					},
-					"matchFilter": "",
-					"filterWeight": 1,
-					"appStoreId": [],
-					"requirements": [
-						{
-							"requirementType": "DenyOnItemOwnership",
-							"requiredId": "AthenaCharacter:CID_382_Athena_Commando_M_BaseballKitbash",
-							"minQuantity": 1
-						}
-					],
-					"offerType": "StaticPrice",
-					"giftInfo": {
-						"bIsEnabled": false,
-						"forcedGiftBoxTemplateId": "",
-						"giftRecordIds": [],
-						"purchaseRequirements": []
-					},
-					"refundable": false,
-					"metaInfo": [
-						{
-							"key": "SectionId",
-							"value": "Featured"
-						},
-						{
-							"key": "TileSize",
-							"value": "Small"
-						}
-					],
-					"displayAssetPath": "",
-					"itemGrants": [
-						{
-							"templateId": "AthenaCharacter:CID_382_Athena_Commando_M_BaseballKitbash",
-							"quantity": 1
-						}
-					],
-					"sortPriority": 1,
-					"catalogGroupPriority": 0
-				},
-				{
-					"devName": "41af758bac3f19657cf051d3642e4dde51f207f4",
-					"offerId": "41af758bac3f19657cf051d3642e4dde51f207f4",
-					"fulfillmentIds": [],
-					"dailyLimit": -1,
-					"weeklyLimit": -1,
-					"monthlyLimit": -1,
-					"categories": [],
-					"prices": [
-						{
-							"currencyType": "MtxCurrency",
-							"currencySubType": "CurrencySource",
-							"regularPrice": 0,
-							"finalPrice": 0,
-							"saleExpiration": "2023-08-10T23:59:59.999Z",
-							"basePrice": 0
-						}
-					],
-					"meta": {
-						"SectionId": "Featured",
-						"TileSize": "Small"
-					},
-					"matchFilter": "",
-					"filterWeight": 1,
-					"appStoreId": [],
-					"requirements": [
-						{
-							"requirementType": "DenyOnItemOwnership",
-							"requiredId": "AthenaItemWrap:Wrap_039_PilotWolf",
-							"minQuantity": 1
-						}
-					],
-					"offerType": "StaticPrice",
-					"giftInfo": {
-						"bIsEnabled": false,
-						"forcedGiftBoxTemplateId": "",
-						"giftRecordIds": [],
-						"purchaseRequirements": []
-					},
-					"refundable": false,
-					"metaInfo": [
-						{
-							"key": "SectionId",
-							"value": "Featured"
-						},
-						{
-							"key": "TileSize",
-							"value": "Small"
-						}
-					],
-					"displayAssetPath": "",
-					"itemGrants": [
-						{
-							"templateId": "AthenaItemWrap:Wrap_039_PilotWolf",
-							"quantity": 1
-						}
-					],
-					"sortPriority": 1,
-					"catalogGroupPriority": 0
-				},
-				{
-					"devName": "e0c92bd70f0ce685e8fc56224d5cf9ebd7a85b3c",
-					"offerId": "e0c92bd70f0ce685e8fc56224d5cf9ebd7a85b3c",
-					"fulfillmentIds": [],
-					"dailyLimit": -1,
-					"weeklyLimit": -1,
-					"monthlyLimit": -1,
-					"categories": [],
-					"prices": [
-						{
-							"currencyType": "MtxCurrency",
-							"currencySubType": "CurrencySource",
-							"regularPrice": 800,
-							"finalPrice": 800,
-							"saleExpiration": "2023-08-10T23:59:59.999Z",
-							"basePrice": 800
-						}
-					],
-					"meta": {
-						"SectionId": "Featured",
-						"TileSize": "Small"
-					},
-					"matchFilter": "",
-					"filterWeight": 1,
-					"appStoreId": [],
-					"requirements": [
-						{
-							"requirementType": "DenyOnItemOwnership",
-							"requiredId": "AthenaGlider:Glider_ID_122_Valentines",
-							"minQuantity": 1
-						}
-					],
-					"offerType": "StaticPrice",
-					"giftInfo": {
-						"bIsEnabled": false,
-						"forcedGiftBoxTemplateId": "",
-						"giftRecordIds": [],
-						"purchaseRequirements": []
-					},
-					"refundable": false,
-					"metaInfo": [
-						{
-							"key": "SectionId",
-							"value": "Featured"
-						},
-						{
-							"key": "TileSize",
-							"value": "Small"
-						}
-					],
-					"displayAssetPath": "",
-					"itemGrants": [
-						{
-							"templateId": "AthenaGlider:Glider_ID_122_Valentines",
-							"quantity": 1
-						}
-					],
-					"sortPriority": 1,
-					"catalogGroupPriority": 0
-				},
-				{
-					"devName": "5eb015a73dcb0c774a01515fa5f7b18b1869afa8",
-					"offerId": "5eb015a73dcb0c774a01515fa5f7b18b1869afa8",
+					"devName": "b397cb73667464a155d04d2f84f0b54799c50826",
+					"offerId": "b397cb73667464a155d04d2f84f0b54799c50826",
 					"fulfillmentIds": [],
 					"dailyLimit": -1,
 					"weeklyLimit": -1,
@@ -200,7 +20,7 @@
 							"currencySubType": "CurrencySource",
 							"regularPrice": 500,
 							"finalPrice": 500,
-							"saleExpiration": "2023-08-10T23:59:59.999Z",
+							"saleExpiration": "2023-08-11T23:59:59.999Z",
 							"basePrice": 500
 						}
 					],
@@ -214,7 +34,7 @@
 					"requirements": [
 						{
 							"requirementType": "DenyOnItemOwnership",
-							"requiredId": "AthenaPickaxe:Pickaxe_ID_153_RoseLeader",
+							"requiredId": "AthenaGlider:Glider_ID_016_Tactical",
 							"minQuantity": 1
 						}
 					],
@@ -239,7 +59,7 @@
 					"displayAssetPath": "",
 					"itemGrants": [
 						{
-							"templateId": "AthenaPickaxe:Pickaxe_ID_153_RoseLeader",
+							"templateId": "AthenaGlider:Glider_ID_016_Tactical",
 							"quantity": 1
 						}
 					],
@@ -247,8 +67,68 @@
 					"catalogGroupPriority": 0
 				},
 				{
-					"devName": "b8b5f4bad4ab5ca43c4fde6b52758a2e0860edd7",
-					"offerId": "b8b5f4bad4ab5ca43c4fde6b52758a2e0860edd7",
+					"devName": "779e9c032a996ac57903dfd0ce4a5092c9b0f013",
+					"offerId": "779e9c032a996ac57903dfd0ce4a5092c9b0f013",
+					"fulfillmentIds": [],
+					"dailyLimit": -1,
+					"weeklyLimit": -1,
+					"monthlyLimit": -1,
+					"categories": [],
+					"prices": [
+						{
+							"currencyType": "MtxCurrency",
+							"currencySubType": "CurrencySource",
+							"regularPrice": 800,
+							"finalPrice": 800,
+							"saleExpiration": "2023-08-11T23:59:59.999Z",
+							"basePrice": 800
+						}
+					],
+					"meta": {
+						"SectionId": "Featured",
+						"TileSize": "Small"
+					},
+					"matchFilter": "",
+					"filterWeight": 1,
+					"appStoreId": [],
+					"requirements": [
+						{
+							"requirementType": "DenyOnItemOwnership",
+							"requiredId": "AthenaPickaxe:Pickaxe_ID_162_SkullBrite",
+							"minQuantity": 1
+						}
+					],
+					"offerType": "StaticPrice",
+					"giftInfo": {
+						"bIsEnabled": false,
+						"forcedGiftBoxTemplateId": "",
+						"giftRecordIds": [],
+						"purchaseRequirements": []
+					},
+					"refundable": false,
+					"metaInfo": [
+						{
+							"key": "SectionId",
+							"value": "Featured"
+						},
+						{
+							"key": "TileSize",
+							"value": "Small"
+						}
+					],
+					"displayAssetPath": "",
+					"itemGrants": [
+						{
+							"templateId": "AthenaPickaxe:Pickaxe_ID_162_SkullBrite",
+							"quantity": 1
+						}
+					],
+					"sortPriority": 1,
+					"catalogGroupPriority": 0
+				},
+				{
+					"devName": "5a4baaa3ec1501f2a38523ee3733c6282e1d6b24",
+					"offerId": "5a4baaa3ec1501f2a38523ee3733c6282e1d6b24",
 					"fulfillmentIds": [],
 					"dailyLimit": -1,
 					"weeklyLimit": -1,
@@ -260,7 +140,7 @@
 							"currencySubType": "CurrencySource",
 							"regularPrice": 0,
 							"finalPrice": 0,
-							"saleExpiration": "2023-08-10T23:59:59.999Z",
+							"saleExpiration": "2023-08-11T23:59:59.999Z",
 							"basePrice": 0
 						}
 					],
@@ -274,7 +154,7 @@
 					"requirements": [
 						{
 							"requirementType": "DenyOnItemOwnership",
-							"requiredId": "AthenaLoadingScreen:LSID_093_S7Cumulative10",
+							"requiredId": "AthenaItemWrap:Wrap_048_Bunny2",
 							"minQuantity": 1
 						}
 					],
@@ -299,7 +179,7 @@
 					"displayAssetPath": "",
 					"itemGrants": [
 						{
-							"templateId": "AthenaLoadingScreen:LSID_093_S7Cumulative10",
+							"templateId": "AthenaItemWrap:Wrap_048_Bunny2",
 							"quantity": 1
 						}
 					],
@@ -307,8 +187,8 @@
 					"catalogGroupPriority": 0
 				},
 				{
-					"devName": "67404d19f397ea0ea3129427d8eb1531344e38fc",
-					"offerId": "67404d19f397ea0ea3129427d8eb1531344e38fc",
+					"devName": "c70bb4939854abebc8b3d19a444d14b54b9260d0",
+					"offerId": "c70bb4939854abebc8b3d19a444d14b54b9260d0",
 					"fulfillmentIds": [],
 					"dailyLimit": -1,
 					"weeklyLimit": -1,
@@ -320,7 +200,7 @@
 							"currencySubType": "CurrencySource",
 							"regularPrice": 1200,
 							"finalPrice": 1200,
-							"saleExpiration": "2023-08-10T23:59:59.999Z",
+							"saleExpiration": "2023-08-11T23:59:59.999Z",
 							"basePrice": 1200
 						}
 					],
@@ -334,7 +214,7 @@
 					"requirements": [
 						{
 							"requirementType": "DenyOnItemOwnership",
-							"requiredId": "AthenaCharacter:CID_171_Athena_Commando_M_SharpDresser",
+							"requiredId": "AthenaCharacter:CID_296_Athena_Commando_M_Math",
 							"minQuantity": 1
 						}
 					],
@@ -359,7 +239,127 @@
 					"displayAssetPath": "",
 					"itemGrants": [
 						{
-							"templateId": "AthenaCharacter:CID_171_Athena_Commando_M_SharpDresser",
+							"templateId": "AthenaCharacter:CID_296_Athena_Commando_M_Math",
+							"quantity": 1
+						}
+					],
+					"sortPriority": 1,
+					"catalogGroupPriority": 0
+				},
+				{
+					"devName": "4d46970e315ae14887c1dde1246148b2c191d3a8",
+					"offerId": "4d46970e315ae14887c1dde1246148b2c191d3a8",
+					"fulfillmentIds": [],
+					"dailyLimit": -1,
+					"weeklyLimit": -1,
+					"monthlyLimit": -1,
+					"categories": [],
+					"prices": [
+						{
+							"currencyType": "MtxCurrency",
+							"currencySubType": "CurrencySource",
+							"regularPrice": 300,
+							"finalPrice": 300,
+							"saleExpiration": "2023-08-11T23:59:59.999Z",
+							"basePrice": 300
+						}
+					],
+					"meta": {
+						"SectionId": "Featured",
+						"TileSize": "Small"
+					},
+					"matchFilter": "",
+					"filterWeight": 1,
+					"appStoreId": [],
+					"requirements": [
+						{
+							"requirementType": "DenyOnItemOwnership",
+							"requiredId": "AthenaSkyDiveContrail:Trails_ID_021_Bling",
+							"minQuantity": 1
+						}
+					],
+					"offerType": "StaticPrice",
+					"giftInfo": {
+						"bIsEnabled": false,
+						"forcedGiftBoxTemplateId": "",
+						"giftRecordIds": [],
+						"purchaseRequirements": []
+					},
+					"refundable": false,
+					"metaInfo": [
+						{
+							"key": "SectionId",
+							"value": "Featured"
+						},
+						{
+							"key": "TileSize",
+							"value": "Small"
+						}
+					],
+					"displayAssetPath": "",
+					"itemGrants": [
+						{
+							"templateId": "AthenaSkyDiveContrail:Trails_ID_021_Bling",
+							"quantity": 1
+						}
+					],
+					"sortPriority": 1,
+					"catalogGroupPriority": 0
+				},
+				{
+					"devName": "6daafaff827c1e0063f81e09ac77739a7c4f8941",
+					"offerId": "6daafaff827c1e0063f81e09ac77739a7c4f8941",
+					"fulfillmentIds": [],
+					"dailyLimit": -1,
+					"weeklyLimit": -1,
+					"monthlyLimit": -1,
+					"categories": [],
+					"prices": [
+						{
+							"currencyType": "MtxCurrency",
+							"currencySubType": "CurrencySource",
+							"regularPrice": 0,
+							"finalPrice": 0,
+							"saleExpiration": "2023-08-11T23:59:59.999Z",
+							"basePrice": 0
+						}
+					],
+					"meta": {
+						"SectionId": "Featured",
+						"TileSize": "Small"
+					},
+					"matchFilter": "",
+					"filterWeight": 1,
+					"appStoreId": [],
+					"requirements": [
+						{
+							"requirementType": "DenyOnItemOwnership",
+							"requiredId": "AthenaLoadingScreen:LSID_094_HolidaySpecial",
+							"minQuantity": 1
+						}
+					],
+					"offerType": "StaticPrice",
+					"giftInfo": {
+						"bIsEnabled": false,
+						"forcedGiftBoxTemplateId": "",
+						"giftRecordIds": [],
+						"purchaseRequirements": []
+					},
+					"refundable": false,
+					"metaInfo": [
+						{
+							"key": "SectionId",
+							"value": "Featured"
+						},
+						{
+							"key": "TileSize",
+							"value": "Small"
+						}
+					],
+					"displayAssetPath": "",
+					"itemGrants": [
+						{
+							"templateId": "AthenaLoadingScreen:LSID_094_HolidaySpecial",
 							"quantity": 1
 						}
 					],
@@ -372,8 +372,8 @@
 			"name": "BRWeeklyStorefront",
 			"catalogEntries": [
 				{
-					"devName": "318191607ca4258ab373710c0901849df9fc5276",
-					"offerId": "318191607ca4258ab373710c0901849df9fc5276",
+					"devName": "0d9d6e5dce2d93f653c44fa0993e20955c646cfe",
+					"offerId": "0d9d6e5dce2d93f653c44fa0993e20955c646cfe",
 					"fulfillmentIds": [],
 					"dailyLimit": -1,
 					"weeklyLimit": -1,
@@ -385,7 +385,7 @@
 							"currencySubType": "CurrencySource",
 							"regularPrice": 2000,
 							"finalPrice": 2000,
-							"saleExpiration": "2023-08-10T23:59:59.999Z",
+							"saleExpiration": "2023-08-11T23:59:59.999Z",
 							"basePrice": 2000
 						}
 					],
@@ -399,7 +399,7 @@
 					"requirements": [
 						{
 							"requirementType": "DenyOnItemOwnership",
-							"requiredId": "AthenaCharacter:CID_140_Athena_Commando_M_Visitor",
+							"requiredId": "AthenaCharacter:CID_069_Athena_Commando_F_PinkBear",
 							"minQuantity": 1
 						}
 					],
@@ -424,7 +424,7 @@
 					"displayAssetPath": "",
 					"itemGrants": [
 						{
-							"templateId": "AthenaCharacter:CID_140_Athena_Commando_M_Visitor",
+							"templateId": "AthenaCharacter:CID_069_Athena_Commando_F_PinkBear",
 							"quantity": 1
 						}
 					],
@@ -432,8 +432,8 @@
 					"catalogGroupPriority": 0
 				},
 				{
-					"devName": "de4566a5a85ee3ed9df7d77429f2767fdd974eef",
-					"offerId": "de4566a5a85ee3ed9df7d77429f2767fdd974eef",
+					"devName": "5f88d7b4a1b13716cf59f9bbfc0195f94301621d",
+					"offerId": "5f88d7b4a1b13716cf59f9bbfc0195f94301621d",
 					"fulfillmentIds": [],
 					"dailyLimit": -1,
 					"weeklyLimit": -1,
@@ -445,7 +445,7 @@
 							"currencySubType": "CurrencySource",
 							"regularPrice": 2000,
 							"finalPrice": 2000,
-							"saleExpiration": "2023-08-10T23:59:59.999Z",
+							"saleExpiration": "2023-08-11T23:59:59.999Z",
 							"basePrice": 2000
 						}
 					],
@@ -459,7 +459,7 @@
 					"requirements": [
 						{
 							"requirementType": "DenyOnItemOwnership",
-							"requiredId": "AthenaCharacter:CID_380_Athena_Commando_F_DarkViking_Fire",
+							"requiredId": "AthenaCharacter:CID_105_Athena_Commando_F_SpaceBlack",
 							"minQuantity": 1
 						}
 					],
@@ -484,7 +484,7 @@
 					"displayAssetPath": "",
 					"itemGrants": [
 						{
-							"templateId": "AthenaCharacter:CID_380_Athena_Commando_F_DarkViking_Fire",
+							"templateId": "AthenaCharacter:CID_105_Athena_Commando_F_SpaceBlack",
 							"quantity": 1
 						}
 					],

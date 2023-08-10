@@ -20,10 +20,10 @@ func GetFriendsList(accountId string) []friendListEntry {
 	var friendList []friendListEntry
 
 	var friendActions []models.FriendAction
-	all.Postgres.Find(&friendActions, "for_account_id = ? AND action = ?", accountId, "ACCEPTED")
+	all.Postgres.Find(&friendActions, "for_account_id = ?", accountId)
 
 	var friendActions2 []models.FriendAction
-	all.Postgres.Find(&friendActions2, "account_id = ? AND action = ?", accountId, "ACCEPTED")
+	all.Postgres.Find(&friendActions2, "account_id = ?", accountId)
 	
 	for _, friendAction := range friendActions {
 		AddInFriendToResponse(accountId, friendAction, &friendList)
@@ -48,8 +48,7 @@ func AddInFriendToResponse(accountId string,friendAction models.FriendAction, re
 	direction := "INBOUND"
 
 	if friendAction.Action == "BLOCKED" {
-		status = "BLOCKED"
-		direction = "OUTBOUND"
+		return
 	}
 
 	if friendAction.AccountId == accountId {
@@ -75,8 +74,7 @@ func AddOutFriendToResponse(accountId string,friendAction models.FriendAction, r
 	direction := "INBOUND"
 
 	if friendAction.Action == "BLOCKED" {
-		status = "BLOCKED"
-		direction = "OUTBOUND"
+		return
 	}
 
 	if friendAction.AccountId == accountId {
@@ -95,24 +93,6 @@ func AddOutFriendToResponse(accountId string,friendAction models.FriendAction, r
 		Created:   time.Now().Format("2006-01-02T15:04:05.999Z"),
 		Favorite:  false,
 	})
-}
-
-func GetBlockedFriendsList(accountId string) []friendListEntry {
-	var blockedFriendActions []models.FriendAction
-	all.Postgres.Find(&blockedFriendActions, "for_account_id = ? AND action = ?", accountId, "BLOCKED")
-
-	var blockedFriends []friendListEntry
-	for _, blockedFriendAction := range blockedFriendActions {
-		blockedFriends = append(blockedFriends, friendListEntry{
-			AccountId: blockedFriendAction.AccountId,
-			Status:    "BLOCKED",
-			Direction: "OUTBOUND",
-			Created:   time.Now().Format("2006-01-02T15:04:05.999Z"),
-			Favorite:  false,
-		})
-	}
-
-	return blockedFriends
 }
 
 func IsFriend(accountId string, friendId string) bool {
@@ -155,13 +135,13 @@ func AcceptFriend(accountId string, friendId string) error {
 	return nil
 }
 
-func CreateFriend(accountId string, friendId string) {//(models.FriendAction, error) {
+func CreateFriend(accountId string, friendId string) string {//(models.FriendAction, error) {
 	var pendingRequest models.FriendAction
 	res := all.Postgres.Find(&pendingRequest, "for_account_id = ? AND account_id = ? AND action = ?", accountId, friendId, "PENDING")
 	
 	if res.RowsAffected > 0 {
 		AcceptFriend(accountId, friendId)
-		return
+		return "ACCEPTED"
 	}
 
 	friendAction := models.FriendAction{
@@ -170,4 +150,72 @@ func CreateFriend(accountId string, friendId string) {//(models.FriendAction, er
 		Action:       "PENDING",
 	}
 	all.Postgres.Create(&friendAction)
+
+	return "PENDING"
+}
+
+func DeleteFriend(accountId string, friendId string) string {
+	var friendAction models.FriendAction
+	res := all.Postgres.Find(&friendAction, "for_account_id = ? AND account_id = ?", accountId, friendId)
+	if res.RowsAffected <= 0 {
+		res2 := all.Postgres.Find(&friendAction, "for_account_id = ? AND account_id = ?", friendId, accountId)
+		if res2.RowsAffected <= 0 {
+			return ""
+		}
+		all.Postgres.Delete(&friendAction)
+		return "DELETED"
+	}
+
+	all.Postgres.Delete(&friendAction)
+
+	return "DELETED"
+}
+
+func GetBlockedFriendsList(accountId string) []friendListEntry {
+	var blockedFriendActions []models.FriendAction
+	all.Postgres.Find(&blockedFriendActions, "for_account_id = ? AND action = ?", accountId, "BLOCKED")
+
+	var blockedFriends []friendListEntry
+	for _, blockedFriendAction := range blockedFriendActions {
+		blockedFriends = append(blockedFriends, friendListEntry{
+			AccountId: blockedFriendAction.AccountId,
+			Status:    "BLOCKED",
+			Direction: "OUTBOUND",
+			Created:   time.Now().Format("2006-01-02T15:04:05.999Z"),
+			Favorite:  false,
+		})
+	}
+
+	return blockedFriends
+}
+
+func BlockFriend(accountId string, friendId string) string {
+	all.PrintMagenta([]any{"BlockFriend", accountId, friendId})
+
+	var friendData models.FriendAction
+	meToFriendRes := all.Postgres.Find(&friendData, "for_account_id = ? AND account_id = ? AND action = ?", accountId, friendId, "ACCEPTED")
+
+	if meToFriendRes.RowsAffected > 0 && friendData.Action == "ACCEPTED" {
+		friendData.Action = "BLOCKED"
+		all.Postgres.Save(&friendData)
+
+		all.PrintCyan([]any{"meToFriend", friendData})
+		return "BLOCKED"
+	}
+
+	friendToMeRes := all.Postgres.Find(&friendData, "for_account_id = ? AND account_id = ? AND action = ?", friendId, accountId, "ACCEPTED")
+
+	if friendToMeRes.RowsAffected > 0 && friendData.Action == "ACCEPTED" {
+		friendData.Action = "BLOCKED"
+		all.Postgres.Save(&friendData)
+
+		all.PrintCyan([]any{"friendToMe", friendData})
+		return "BLOCKED"
+	}
+
+	return ""
+}
+
+func UnBlockFriend(accountId string, friendId string) {
+	DeleteFriend(accountId, friendId)
 }

@@ -94,13 +94,15 @@ func main() {
 
   friends := r.Group("/friends/api")
   {
-    friends.GET("/public/friends/:accountId", middleware.VerifyAccessToken, controllers.FriendsPublic)
-    friends.GET("/public/friends/list/:accountId/recentPlayers", controllers.EmptyArray)
-    friends.GET("/public/friends/blocklist/:accountId", middleware.VerifyAccessToken, controllers.FriendsBlocked)
     friends.GET("/public/v1/:accountId/settings", middleware.VerifyAccessToken, controllers.EmptyObject)
+    friends.GET("/public/friends/list/:accountId/recentPlayers", controllers.EmptyArray)
+    friends.GET("/public/friends/:accountId", middleware.VerifyAccessToken, controllers.FriendsPublic)
     friends.POST("/public/friends/:accountId/:friendId", middleware.VerifyAccessToken, controllers.CreateFriend)
+    friends.DELETE("/public/friends/:accountId/:friendId", middleware.VerifyAccessToken, controllers.DeleteFriend)
+    friends.GET("/public/blocklist/:accountId", middleware.VerifyAccessToken, controllers.FriendsBlocked)
+    friends.POST("/public/blocklist/:accountId/:friendId", middleware.VerifyAccessToken, controllers.BlockFriend)
+    friends.DELETE("/public/blocklist/:accountId/:friendId", middleware.VerifyAccessToken, controllers.UnBlockFriend)
   }
-
 
   fortnite := r.Group("/fortnite/api")
   {
