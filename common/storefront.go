@@ -49,6 +49,7 @@ func GetAllFortniteItems() ([]models.BeforeStoreItem, error) {
 	ExcludeType(&AllItemsItemShop, "AthenaToy")
 	ExcludeType(&AllItemsItemShop, "AthenaBackpack")
 	ExcludeType(&AllItemsItemShop, "AthenaPetCarrier")
+	ExcludeType(&AllItemsItemShop, "AthenaPet")
 
 	return AllItemsItemShop, nil
 }

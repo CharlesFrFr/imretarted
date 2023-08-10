@@ -80,16 +80,27 @@ func main() {
     site.POST("/admin/profile/accountId/:accountId/take/all", middleware.VerifySiteToken, controllers.AdminTakeAllSkins)
     site.POST("/admin/profile/accountId/:accountId/take/:itemId", middleware.VerifySiteToken, controllers.AdminTakeItem)
   }
-  
+
   account := r.Group("/account/api")
   {
     account.POST("/oauth/token", controllers.OAuthMain)
     account.GET("/public/account", controllers.UserAccountPublic)
+    account.GET("/public/account/displayName/:displayName", controllers.UserAccountPublicFromDisplayName)
     account.GET("/public/account/:accountId", middleware.VerifyAccessToken, controllers.UserAccountPrivate)
     account.GET("/public/account/:accountId/externalAuths", controllers.EmptyArray)
     account.DELETE("/oauth/sessions/kill/:token", controllers.KillSessionWithToken)
     account.DELETE("/oauth/sessions/kill", controllers.KillSession)
   }
+
+  friends := r.Group("/friends/api")
+  {
+    friends.GET("/public/friends/:accountId", middleware.VerifyAccessToken, controllers.FriendsPublic)
+    friends.GET("/public/friends/list/:accountId/recentPlayers", controllers.EmptyArray)
+    friends.GET("/public/friends/blocklist/:accountId", middleware.VerifyAccessToken, controllers.FriendsBlocked)
+    friends.GET("/public/v1/:accountId/settings", middleware.VerifyAccessToken, controllers.EmptyObject)
+    friends.POST("/public/friends/:accountId/:friendId", middleware.VerifyAccessToken, controllers.CreateFriend)
+  }
+
 
   fortnite := r.Group("/fortnite/api")
   {

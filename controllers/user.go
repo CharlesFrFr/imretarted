@@ -108,6 +108,27 @@ func UserAccountPublic(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+func UserAccountPublicFromDisplayName(c *gin.Context) {
+	username := c.Param("displayName")
+	all.PrintMagenta([]any{"username", username})
+	if username != "" {
+		user, err := common.GetUserByUsername(username)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"id": user.AccountId,
+			"displayName": user.Username,
+			"externalAuths": []string{},
+		})
+		return
+	}
+
+	common.ErrorBadRequest(c)
+}
+
 type LockerItem struct {
 	ItemId string `json:"itemId"`
 	Rarity string `json:"rarity"`

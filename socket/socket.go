@@ -71,12 +71,20 @@ func Handler(w http.ResponseWriter, r *http.Request){
 
 			if iq.ID == "_xmpp_bind1" {
 				HandleBindIQ(conn, messageData, messageType, clientInfo)
+				continue
 			}
-
-			if iq.ID == "_xmpp_session1" {
-				HandleSessionIQ(conn, messageData, messageType, clientInfo)
-			}
+			HandleSessionIQ(conn, messageData, messageType, clientInfo)
 			
+			continue
+		}
+
+		if xml.Unmarshal([]byte(messageData), &models.MessageWithBodyXML{}) == nil {
+			HandleMessage(conn, messageData, messageType, clientInfo)
+			continue
+		}
+
+		if xml.Unmarshal([]byte(messageData), &models.PresenceXML{}) == nil {
+			HandlePresence(conn, messageData, messageType, clientInfo)
 			continue
 		}
 
@@ -96,6 +104,29 @@ func Handler(w http.ResponseWriter, r *http.Request){
 		delete(clients, remoteAddress)
 		conn.Close()
 	}()
+}
+
+func HandlePresence(conn *websocket.Conn, message []byte, messageType int, clientInfo *ClientInfo) {
+	all.PrintYellow([]any{"HandlePresence"})
+
+	var presence models.PresenceXML
+	xml.Unmarshal([]byte(message), &presence)
+
+	
+}
+
+
+func HandleMessage(conn *websocket.Conn, message []byte, messageType int, clientInfo *ClientInfo) {
+	all.PrintYellow([]any{"HandleMessage"})
+
+	var msg models.MessageWithBodyXML
+	xml.Unmarshal([]byte(message), &msg)
+
+	conn.WriteMessage(messageType, []byte(`
+		<message from="`+ clientInfo.SocketID +`" id="`+ msg.ID +`" to="`+ strings.Split(msg.To, "/")[0] +`" xmlns="jabber:client">
+			<body>`+ msg.Body.Value +`</body>
+		</message>
+	`))
 }
 
 func HandleSessionIQ(conn *websocket.Conn, message []byte, messageType int, clientInfo *ClientInfo) {

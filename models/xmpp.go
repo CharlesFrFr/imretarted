@@ -95,3 +95,41 @@ type IQSession struct {
 	XMLName xml.Name `xml:"session"`
 	XMLNS   string   `xml:"xmlns,attr"`
 }
+
+type MessageWithBodyXML struct {
+	XMLName xml.Name `xml:"message"`
+	ID      string   `xml:"id,attr"`
+	To      string   `xml:"to,attr"`
+	Body    MessageBody     `xml:"body"`
+}
+
+type MessageBody struct {
+	XMLName xml.Name `xml:"body"`
+	Value   string   `xml:",chardata"`
+}
+
+
+type MessageBodyPayload struct {
+	Type      string `json:"type"`
+	Payload   Party  `json:"payload"`
+	Timestamp string `json:"timestamp"`
+}
+
+type Party struct {
+	PartyID string `json:"partyId"`
+}
+
+type PresenceXML struct {
+	XMLName xml.Name `xml:"presence"`
+	Status  Status   `xml:"status"`
+	Delay   Delay    `xml:"delay"`
+}
+
+type Status struct {
+	Value string `xml:",chardata"`
+}
+
+type Delay struct {
+	Stamp string `xml:"stamp,attr"`
+	XMLNS string `xml:"xmlns,attr"`
+}

@@ -77,7 +77,7 @@ func MarshPrintJSON(obj interface{}) {
 		return
 	}
 
-	marsh, err := json.Marshal(obj)
+	marsh, err := json.MarshalIndent(obj, "", "  ")
 	if err != nil {
 		fmt.Println("could not marshal object")
 		return

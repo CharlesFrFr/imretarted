@@ -836,6 +836,10 @@ func EmptyArray(c *gin.Context) {
 	c.JSON(http.StatusOK, []string{})
 }
 
+func EmptyObject(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{})
+}
+
 func Lightswitch(c *gin.Context) {
 	c.JSON(http.StatusOK, []gin.H{{
 		"serviceInstanceId": "fortnite",

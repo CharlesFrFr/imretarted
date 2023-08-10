@@ -15,7 +15,6 @@ func CreateUser(username string, password string, level int) (models.User, error
 		AccountId: uuid.New().String(),
 		AccessLevel: level,
 	}
-
 	result := all.Postgres.Create(&user)
 	
 	if result.Error != nil {
