@@ -151,6 +151,13 @@ func main() {
     c.File("./public/index.html")
   })
 
+  r.GET("/api/clients", func(c *gin.Context) {
+    c.JSON(200, gin.H{
+      "address": socket.AccountIdToRemoteAddress,
+      "clients": socket.ActiveClients,
+    })
+  })
+
   r.NoRoute(func(c *gin.Context) {
     c.File("./public/index.html")
   })

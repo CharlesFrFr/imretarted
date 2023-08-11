@@ -1,23 +1,19 @@
-<stream:features xmlns:stream="http://etherx.jabber.org/streams">
-  <mechanisms xmlns="urn:ietf:params:xml:ns:xmpp-sasl">
-    <mechanism>PLAIN</mechanism>
-  </mechanisms>
-  <ver xmlns="urn:xmpp:features:rosterver" />
-  <starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls" />
-  <compression xmlns="http://jabber.org/features/compress">
-    <method>zlib</method>
-  </compression>
-  <auth xmlns="http://jabber.org/features/iq-auth" />
-</stream:features>
+<hello>
 
-<stream:features xmlns:stream="http://etherx.jabber.org/streams">
-  <mechanisms xmlns="urn:ietf:params:xml:ns:xmpp-sasl">
-    <mechanism>PLAIN</mechanism>
-  </mechanisms>
-  <ver xmlns="urn:xmpp:features:rosterver"></ver>
-  <starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls"></starttls>
-  <compression xmlns="http://jabber.org/features/compress">
-    <method>zlib</method>
-  </compression>
-  <auth xmlns="http://jabber.org/features/iq-auth"></auth>
-</stream:features>
+
+  <!-- TRY TO JOIN PARTY REQUEST -->
+  <message id="E9AF0F5E44641DD8993825B4A54DA29A"
+    to="16f7771f-9269-42a4-af7c-09342a47814a@prod.ol.epicgames.com">
+    <body>
+      {"type":"com.epicgames.party.queryjoinability","payload":{"partyId":"096F92D54C209C52530B5AAAA562892D","accessKey":"4C7D1A4B4487BA9B4E889181BA99537A","appid":"Fortnite","buildid":"6037427","joinData":{"Rev":0,"Attrs":{"CrossplayPreference_i":1}},"connectionType":"game"},"timestamp":"2023-08-11T14:38:38.887Z"}</body>
+  </message>
+
+  <!-- REPLY -->
+
+  <message id="7A47745D4B31C0F0B22B8B91CCB83362"
+    to="16f7771f-9269-42a4-af7c-09342a47814a@prod.ol.epicgames.com/V2:Fortnite:WIN::736C251E4497909C1AFA90A7FC1DDDAD">
+    <body>
+      {"type":"com.epicgames.party.queryjoinability.response","payload":{"partyId":"4E5F349649414A07B78A7EA4F3C7C97C","isJoinable":false,"rejectionType":32517,"resultParam":""},"timestamp":"2023-08-11T14:40:29.246Z"}</body>
+  </message>
+
+</hello>

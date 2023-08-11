@@ -22,8 +22,8 @@ var (
 		WriteBufferSize: 1024,
 	}
 
-	clients = make(map[string]*ClientInfo)
-	accountIdToRemoteAddress = make(map[string]string)
+	ActiveClients = make(map[string]*ClientInfo)
+	AccountIdToRemoteAddress = make(map[string]string)
 )
 
 type ClientInfo struct {
@@ -52,12 +52,12 @@ func Handler(w http.ResponseWriter, r *http.Request){
 		SocketID: "",
 		Connection: conn,
 	}
-	clients[remoteAddress] = clientInfo
+	ActiveClients[remoteAddress] = clientInfo
 
 	for {
-		_, ok := accountIdToRemoteAddress[clientInfo.User.AccountId]
+		_, ok := AccountIdToRemoteAddress[clientInfo.User.AccountId]
 		if clientInfo.Authenticated && !ok {
-			accountIdToRemoteAddress[clientInfo.User.AccountId] = remoteAddress
+			AccountIdToRemoteAddress[clientInfo.User.AccountId] = remoteAddress
 		}
 
 		messageType, messageData, err := conn.ReadMessage()
@@ -112,8 +112,8 @@ func Handler(w http.ResponseWriter, r *http.Request){
 	}
 
 	defer func() {
-		delete(clients, remoteAddress)
-		delete(accountIdToRemoteAddress, clientInfo.User.AccountId)
+		delete(ActiveClients, remoteAddress)
+		delete(AccountIdToRemoteAddress, clientInfo.User.AccountId)
 		conn.Close()
 	}()
 }
@@ -124,8 +124,25 @@ func HandleMessage(conn *websocket.Conn, message []byte, messageType int, client
 	var msg models.MessageWithBodyXML
 	xml.Unmarshal([]byte(message), &msg)
 
-	conn.WriteMessage(messageType, []byte(`
-		<message from="`+ clientInfo.SocketID +`" id="`+ msg.ID +`" to="`+ strings.Split(msg.To, "/")[0] +`" xmlns="jabber:client">
+	messageRecipientAccountId := strings.Split(msg.To, "@")[0]
+	recipientClient, err := GetClientFromAccountId(messageRecipientAccountId)
+
+	if err != nil {
+		all.PrintRed([]any{"recipient not online", err})
+		return
+	}
+
+	if msg.Type == "chat" {
+		recipientClient.Connection.WriteMessage(messageType, []byte(`
+			<message to="`+ recipientClient.SocketID +`" from="`+ clientInfo.SocketID +`" id="`+ msg.ID +`" xmlns="jabber:client" type="chat">
+				<body>`+ msg.Body.Value +`</body>
+			</message>
+		`))
+		return
+	}
+
+	recipientClient.Connection.WriteMessage(messageType, []byte(`
+		<message to="`+ recipientClient.SocketID +`" from="`+ clientInfo.SocketID +`" id="`+ msg.ID +`" xmlns="jabber:client">
 			<body>`+ msg.Body.Value +`</body>
 		</message>
 	`))
@@ -237,9 +254,9 @@ func HandlePresence(conn *websocket.Conn, message []byte, messageType int, clien
 	var status models.StatusJSON
 	json.Unmarshal([]byte(presence.Status.Value), &status)
 
-	if status.Status == "" {
-		GetFriendStatus(clientInfo)
-	}
+	// if status.Status == "" {
+	// }
+	GetFriendStatus(clientInfo)
 
 	clientInfo.Status = presence.Status.Value
 
@@ -247,13 +264,13 @@ func HandlePresence(conn *websocket.Conn, message []byte, messageType int, clien
 	for _, friend := range friends {
 		all.PrintMagenta([]any{"sending presence to", friend.AccountId})
 
-		client, err := GetClientFromAccountId(friend.AccountId)
+		friendClient, err := GetClientFromAccountId(friend.AccountId)
 		if err != nil {
 			continue
 		}
 
-		client.Connection.WriteMessage(1, []byte(`
-			<presence to="`+ client.SocketID +`" xmlns="jabber:client" from="`+ clientInfo.SocketID +`" type="available">
+		friendClient.Connection.WriteMessage(1, []byte(`
+			<presence to="`+ friendClient.SocketID +`" xmlns="jabber:client" from="`+ clientInfo.SocketID +`" type="available">
 				<status>`+ presence.Status.Value +`</status>
 			</presence>
 		`))
@@ -272,18 +289,24 @@ func GetFriendStatus(clientInfo *ClientInfo) {
 			continue
 		}
 
-		XMPPUpdateStatus(friendClient.User.AccountId, clientInfo.User.AccountId)
+		// XMPPUpdateStatusSingle(friendClient.User.AccountId, clientInfo.User.AccountId)
+
+		clientInfo.Connection.WriteMessage(1, []byte(`
+			<presence to="`+ clientInfo.SocketID +`" xmlns="jabber:client" from="`+ friendClient.SocketID +`" type="available">
+				<status>`+ friendClient.Status +`</status>
+			</presence>
+		`))
 	}
 }
 
 func GetClientFromAccountId(accountId string) (*ClientInfo, error) {
-	clientRemoteAddress, ok := accountIdToRemoteAddress[accountId]
+	clientRemoteAddress, ok := AccountIdToRemoteAddress[accountId]
 	if !ok {
 		all.PrintRed([]any{"failed to find client remote address", accountId})
 		return nil, fmt.Errorf("failed to find client remote address")
 	}
 
-	client, ok := clients[clientRemoteAddress]
+	client, ok := ActiveClients[clientRemoteAddress]
 	if !ok {
 		all.PrintRed([]any{"failed to find client", clientRemoteAddress})
 		return nil, fmt.Errorf("failed to find client")
@@ -299,7 +322,7 @@ func XMPPSendBodyToAll(body map[string]interface{}) {
 		return
 	}
 
-	for _, client := range clients {
+	for _, client := range ActiveClients {
 		client.Connection.WriteMessage(1, []byte(`
 			<message xmlns="jabber:client" from="xmpp-admin@prod.ol.epicgames.com" to="`+ client.SocketID +`">
 				<body>`+ string(data) +`</body>
@@ -338,13 +361,13 @@ func XMPPUpdateStatus(accountId string, friendId string) {
 		return
 	}
 
-	mainClient.Connection.WriteMessage(1, []byte(`
+	friendClient.Connection.WriteMessage(1, []byte(`
 		<presence to="`+ friendClient.SocketID +`" xmlns="jabber:client" from="`+ mainClient.SocketID +`" type="available">
 			<status>`+ mainClient.Status +`</status>
 		</presence>
 	`))
 
-	friendClient.Connection.WriteMessage(1, []byte(`
+	mainClient.Connection.WriteMessage(1, []byte(`
 		<presence to="`+ mainClient.SocketID +`" xmlns="jabber:client" from="`+ friendClient.SocketID +`" type="available">
 			<status>`+ friendClient.Status +`</status>
 		</presence>

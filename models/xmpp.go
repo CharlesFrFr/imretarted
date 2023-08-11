@@ -100,6 +100,7 @@ type MessageWithBodyXML struct {
 	XMLName xml.Name `xml:"message"`
 	ID      string   `xml:"id,attr"`
 	To      string   `xml:"to,attr"`
+	Type    string   `xml:"type,attr"`
 	Body    MessageBody     `xml:"body"`
 }
 
