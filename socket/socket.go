@@ -234,6 +234,13 @@ func HandlePresence(conn *websocket.Conn, message []byte, messageType int, clien
 	var presence models.PresenceXML
 	xml.Unmarshal([]byte(message), &presence)
 
+	var status models.StatusJSON
+	json.Unmarshal([]byte(presence.Status.Value), &status)
+
+	if status.Status == "" {
+		GetFriendStatus(clientInfo)
+	}
+
 	clientInfo.Status = presence.Status.Value
 
 	friends := common.GetAllAcceptedFriends(clientInfo.User.AccountId)
