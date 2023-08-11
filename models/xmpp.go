@@ -133,3 +133,47 @@ type Delay struct {
 	Stamp string `xml:"stamp,attr"`
 	XMLNS string `xml:"xmlns,attr"`
 }
+
+type FriendProperties struct {
+	FortBasicInfo  FortBasicInfo    `json:"FortBasicInfo_j"`
+	FortGameplayStats FortGameplayStats `json:"FortGameplayStats_j"`
+	FortLFG        string           `json:"FortLFG_I"`
+	FortPartySize  int              `json:"FortPartySize_i"`
+	FortSubGame    int              `json:"FortSubGame_i"`
+	InUnjoinableMatch bool           `json:"InUnjoinableMatch_b"`
+	JoinInfoData   JoinInfoData     `json:"party.joininfodata.286331153_j"`
+}
+
+type FortBasicInfo struct {
+	HomeBaseRating int `json:"homeBaseRating"`
+}
+
+type FortGameplayStats struct {
+	BFellToDeath bool   `json:"bFellToDeath"`
+	NumKills     int    `json:"numKills"`
+	Playlist     string `json:"playlist"`
+	State        string `json:"state"`
+}
+
+type JoinInfoData struct {
+	AppId            string `json:"appId"`
+	BuildId          string `json:"buildId"`
+	Key              string `json:"key"`
+	NotAcceptingReason int   `json:"notAcceptingReason"`
+	PartyFlags       int    `json:"partyFlags"`
+	PartyId          string `json:"partyId"`
+	PartyTypeId      int    `json:"partyTypeId"`
+	Pc               int    `json:"pc"`
+	SourceDisplayName string `json:"sourceDisplayName"`
+	SourceId         string `json:"sourceId"`
+	SourcePlatform   string `json:"sourcePlatform"`
+}
+
+type StatusJSON struct {
+	Properties FriendProperties `json:"Properties"`
+	SessionId  string          `json:"SessionId"`
+	Status     string          `json:"Status"`
+	BHasVoiceSupport bool      `json:"bHasVoiceSupport"`
+	BIsJoinable     bool      `json:"bIsJoinable"`
+	BIsPlaying      bool      `json:"bIsPlaying"`
+}

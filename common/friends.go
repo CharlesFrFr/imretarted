@@ -16,6 +16,26 @@ type friendListEntry struct {
 	Favorite  bool   `json:"favorite"`
 }
 
+func GetAllAcceptedFriends(accountId string) []friendListEntry {
+	var friendList []friendListEntry
+
+	var friendActions []models.FriendAction
+	all.Postgres.Find(&friendActions, "for_account_id = ? AND action = ?", accountId, "ACCEPTED")
+
+	var friendActions2 []models.FriendAction
+	all.Postgres.Find(&friendActions2, "account_id = ? AND action = ?", accountId, "ACCEPTED")
+
+	for _, friendAction := range friendActions {
+		AddInFriendToResponse(accountId, friendAction, &friendList)
+	}
+
+	for _, friendAction := range friendActions2 {
+		AddOutFriendToResponse(accountId, friendAction, &friendList)
+	}
+
+	return friendList
+}
+
 func GetFriendsList(accountId string) []friendListEntry {
 	var friendList []friendListEntry
 

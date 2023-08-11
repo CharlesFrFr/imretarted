@@ -4,12 +4,14 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"encoding/xml"
+	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/zombman/server/all"
+	"github.com/zombman/server/common"
 	"github.com/zombman/server/middleware"
 	"github.com/zombman/server/models"
 )
@@ -26,13 +28,12 @@ var (
 
 type ClientInfo struct {
 	UUID string
-	Authenticated bool
-	User models.User
 	SocketID string
 	Connection *websocket.Conn
+	Authenticated bool
+	User models.User
+	Status string
 }
-
-
 
 func Handler(w http.ResponseWriter, r *http.Request){
 	conn, err := wsupgrader.Upgrade(w, r, nil)
@@ -115,13 +116,6 @@ func Handler(w http.ResponseWriter, r *http.Request){
 		delete(accountIdToRemoteAddress, clientInfo.User.AccountId)
 		conn.Close()
 	}()
-}
-
-func HandlePresence(conn *websocket.Conn, message []byte, messageType int, clientInfo *ClientInfo) {
-	all.PrintYellow([]any{"HandlePresence"})
-
-	var presence models.PresenceXML
-	xml.Unmarshal([]byte(message), &presence)
 }
 
 func HandleMessage(conn *websocket.Conn, message []byte, messageType int, clientInfo *ClientInfo) {
@@ -232,7 +226,64 @@ func HandleAuth(conn *websocket.Conn, message []byte, messageType int, clientInf
 		messageType, 
 		[]byte(`<success xmlns="urn:ietf:params:xml:ns:xmpp-sasl" />`),
 	)
-}	
+}
+
+func HandlePresence(conn *websocket.Conn, message []byte, messageType int, clientInfo *ClientInfo) {
+	all.PrintYellow([]any{"HandlePresence"})
+
+	var presence models.PresenceXML
+	xml.Unmarshal([]byte(message), &presence)
+
+	clientInfo.Status = presence.Status.Value
+
+	friends := common.GetAllAcceptedFriends(clientInfo.User.AccountId)
+	for _, friend := range friends {
+		all.PrintMagenta([]any{"sending presence to", friend.AccountId})
+
+		client, err := GetClientFromAccountId(friend.AccountId)
+		if err != nil {
+			continue
+		}
+
+		client.Connection.WriteMessage(1, []byte(`
+			<presence to="`+ client.SocketID +`" xmlns="jabber:client" from="`+ clientInfo.SocketID +`" type="available">
+				<status>`+ presence.Status.Value +`</status>
+			</presence>
+		`))
+	}
+
+	XMPPUpdateStatus(clientInfo.User.AccountId, clientInfo.User.AccountId)
+}
+
+func GetFriendStatus(clientInfo *ClientInfo) {
+	friends := common.GetAllAcceptedFriends(clientInfo.User.AccountId)
+	for _, friend := range friends {
+		all.PrintMagenta([]any{"getting presence from", friend.AccountId})
+
+		friendClient, err := GetClientFromAccountId(friend.AccountId)
+		if err != nil {
+			continue
+		}
+
+		XMPPUpdateStatus(friendClient.User.AccountId, clientInfo.User.AccountId)
+	}
+}
+
+func GetClientFromAccountId(accountId string) (*ClientInfo, error) {
+	clientRemoteAddress, ok := accountIdToRemoteAddress[accountId]
+	if !ok {
+		all.PrintRed([]any{"failed to find client remote address", accountId})
+		return nil, fmt.Errorf("failed to find client remote address")
+	}
+
+	client, ok := clients[clientRemoteAddress]
+	if !ok {
+		all.PrintRed([]any{"failed to find client", clientRemoteAddress})
+		return nil, fmt.Errorf("failed to find client")
+	}
+
+	return client, nil
+}
 
 func XMPPSendBodyToAll(body map[string]interface{}) {
 	data, err := json.Marshal(body)
@@ -257,15 +308,8 @@ func XMPPSendBody(body map[string]interface{}, accountId string) {
 		return
 	}
 
-	clientRemoteAddress, ok := accountIdToRemoteAddress[accountId]
-	if !ok {
-		all.PrintRed([]any{"failed to find client remote address", accountId})
-		return
-	}
-
-	client, ok := clients[clientRemoteAddress]
-	if !ok {
-		all.PrintRed([]any{"failed to find client", clientRemoteAddress})
+	client, err := GetClientFromAccountId(accountId)
+	if err != nil {
 		return
 	}
 
@@ -273,5 +317,47 @@ func XMPPSendBody(body map[string]interface{}, accountId string) {
 		<message xmlns="jabber:client" from="xmpp-admin@prod.ol.epicgames.com" to="`+ client.SocketID +`">
 			<body>`+ string(data) +`</body>
 		</message>
+	`))
+}
+
+func XMPPUpdateStatus(accountId string, friendId string) {
+	mainClient, err := GetClientFromAccountId(accountId)
+	if err != nil {
+		return
+	}
+
+	friendClient, err := GetClientFromAccountId(friendId)
+	if err != nil {
+		return
+	}
+
+	mainClient.Connection.WriteMessage(1, []byte(`
+		<presence to="`+ friendClient.SocketID +`" xmlns="jabber:client" from="`+ mainClient.SocketID +`" type="available">
+			<status>`+ mainClient.Status +`</status>
+		</presence>
+	`))
+
+	friendClient.Connection.WriteMessage(1, []byte(`
+		<presence to="`+ mainClient.SocketID +`" xmlns="jabber:client" from="`+ friendClient.SocketID +`" type="available">
+			<status>`+ friendClient.Status +`</status>
+		</presence>
+	`))
+}
+
+func XMPPUpdateStatusSingle(accountId string, friendId string) {
+	mainClient, err := GetClientFromAccountId(accountId)
+	if err != nil {
+		return
+	}
+
+	friendClient, err := GetClientFromAccountId(friendId)
+	if err != nil {
+		return
+	}
+
+	mainClient.Connection.WriteMessage(1, []byte(`
+		<presence to="`+ friendClient.SocketID +`" xmlns="jabber:client" from="`+ mainClient.SocketID +`" type="available">
+			<status>`+ mainClient.Status +`</status>
+		</presence>
 	`))
 }
