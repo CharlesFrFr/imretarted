@@ -1,8 +1,6 @@
 package main
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/zombman/server/all"
 	"github.com/zombman/server/common"
@@ -28,32 +26,11 @@ func init() {
 }
 
 func main() {
-  all.PrintGreen([]any{"development mode"})
   r := gin.Default()
-  r.Use(func(c *gin.Context) {
-    if all.Postgres == nil {
-		  c.JSON(http.StatusInternalServerError, gin.H{"error": "database not connected"})
-		  c.Abort()
-	  }
 
-    c.Next()
-  })
-
-  r.Use(func(c *gin.Context) {
-    c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-    c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-    c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-    c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-
-    if c.Request.Method == "OPTIONS" {
-      c.AbortWithStatus(204)
-      return
-    }
-
-    c.Next()
-  })
-
-  // r.Use(static.Serve("/", static.LocalFile("./public", true)))
+  r.Use(middleware.CheckDatabase)
+  r.Use(middleware.AllowFromAnywhere)
+  r.Use(middleware.RateLimitMiddleware)
 
   site := r.Group("/api")
   {
