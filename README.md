@@ -27,5 +27,9 @@ _Note: Some features are not yet implemented, please see the [Roadmap](#roadmap)
 - [x] Cloud storage for settings
 - [x] Control panel for server admins
 - [x] Game launcher and web interface
-- [ ] Xmpp (matchmaker)
-- [ ] All required fortnite responses
+- [x] Friends
+- [x] Matchmaker
+  - [ ] Not smart atm. Currently making a custom game server so that the backend can talk to each game server and retrieve the required information to make a smart matchmaker. (e.g. only let first 100 in the queue enter match, properly calculated eta, etc.)
+- [x] Xmpp
+- [x] Parties
+- [ ] Party v2
