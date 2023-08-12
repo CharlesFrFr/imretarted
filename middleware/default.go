@@ -33,15 +33,18 @@ func AllowFromAnywhere(c *gin.Context) {
 	c.Next()
 }
 
-var Limit = tollbooth.NewLimiter(30, &limiter.ExpirableOptions{ DefaultExpirationTTL: time.Minute })
 
-func RateLimitMiddleware(c *gin.Context) {
-	httpError := tollbooth.LimitByRequest(Limit, c.Writer, c.Request)
-	if httpError != nil {
-		c.JSON(httpError.StatusCode, gin.H{"error": httpError.Message})
-		c.Abort()
-		return
+func RateLimitMiddleware(reqs int, mins int) gin.HandlerFunc {
+	var limit = tollbooth.NewLimiter(float64(reqs), &limiter.ExpirableOptions{ DefaultExpirationTTL: time.Duration(1000 * 60 * mins) })
+
+	return func(c *gin.Context) {
+		httpError := tollbooth.LimitByRequest(limit, c.Writer, c.Request)
+		if httpError != nil {
+			c.JSON(httpError.StatusCode, gin.H{"error": httpError.Message})
+			c.Abort()
+			return
+		}
+
+		c.Next()
 	}
-
-	c.Next()
 }

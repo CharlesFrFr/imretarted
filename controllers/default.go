@@ -1100,8 +1100,9 @@ func XMPP(c *gin.Context) {
 
 func XMPPClients(c *gin.Context) {
 	c.JSON(200, gin.H{
-		"address": socket.AccountIdToXMPPRemoteAddress,
-		"clients": socket.ActiveXMPPClients,
+		// "address": socket.AccountIdToXMPPRemoteAddress,
+		// "clients": socket.ActiveXMPPClients,
+		"count": len(socket.ActiveXMPPClients),
 	})
 }
 
@@ -1112,4 +1113,12 @@ func Matchmaker(c *gin.Context) {
 	}
 
 	c.File("./public/index.html")
+}
+
+func MatchmakerClients(c *gin.Context) {
+	c.JSON(200, gin.H{
+		// "address": socket.RemoteAddressToAccountId,
+		// "clients": socket.ActiveMatchmakerClients,
+		"queue": len(socket.MatchmakeQueue),
+	})
 }

@@ -30,12 +30,12 @@ func main() {
 
   r.Use(middleware.CheckDatabase)
   r.Use(middleware.AllowFromAnywhere)
-  r.Use(middleware.RateLimitMiddleware)
+  r.Use(middleware.RateLimitMiddleware(30, 1))
 
   site := r.Group("/api")
   {
     site.POST("/user/login", controllers.UserLogin)
-    site.POST("/user/create", controllers.UserCreate)
+    site.POST("/user/create", middleware.RateLimitMiddleware(1, 1), controllers.UserCreate)
     site.POST("/user/refresh", controllers.SiteRefresh)
     site.POST("/user/update", middleware.VerifySiteToken, controllers.UserUpdate)
     site.GET("/user/locker", middleware.VerifySiteToken, controllers.UserGetLocker)
@@ -111,7 +111,8 @@ func main() {
 
   r.GET("/", controllers.XMPP)
   r.GET("/match", controllers.Matchmaker)
-  r.GET("/api/clients", controllers.XMPPClients)
+  r.GET("/api/count/players", controllers.XMPPClients)
+  r.GET("/api/count/queue", controllers.MatchmakerClients)
 
   r.NoRoute(func(c *gin.Context) {
     c.File("./public/index.html")
