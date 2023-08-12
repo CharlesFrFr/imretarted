@@ -17,13 +17,13 @@ import (
 )
 
 var (
-	wsupgrader = websocket.Upgrader{
+	xmppUpgrader = websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 	}
 
-	ActiveClients = make(map[string]*ClientInfo)
-	AccountIdToRemoteAddress = make(map[string]string)
+	ActiveXMPPClients = make(map[string]*ClientInfo)
+	AccountIdToXMPPRemoteAddress = make(map[string]string)
 )
 
 type ClientInfo struct {
@@ -35,15 +35,13 @@ type ClientInfo struct {
 	Status string
 }
 
-func Handler(w http.ResponseWriter, r *http.Request){
-	conn, err := wsupgrader.Upgrade(w, r, nil)
+func XMPPHandler(w http.ResponseWriter, r *http.Request){
+	conn, err := xmppUpgrader.Upgrade(w, r, nil)
 	if err != nil {
-		all.PrintRed([]any{ "Failed to set websocket upgrade: ", err, })
 		return
 	}
 
 	remoteAddress := conn.RemoteAddr().String()
-	all.PrintMagenta([]any{ "new client connected:", remoteAddress, })
 
 	clientInfo := &ClientInfo{
 		UUID: uuid.New().String(),
@@ -52,12 +50,12 @@ func Handler(w http.ResponseWriter, r *http.Request){
 		SocketID: "",
 		Connection: conn,
 	}
-	ActiveClients[remoteAddress] = clientInfo
+	ActiveXMPPClients[remoteAddress] = clientInfo
 
 	for {
-		_, ok := AccountIdToRemoteAddress[clientInfo.User.AccountId]
+		_, ok := AccountIdToXMPPRemoteAddress[clientInfo.User.AccountId]
 		if clientInfo.Authenticated && !ok {
-			AccountIdToRemoteAddress[clientInfo.User.AccountId] = remoteAddress
+			AccountIdToXMPPRemoteAddress[clientInfo.User.AccountId] = remoteAddress
 		}
 
 		messageType, messageData, err := conn.ReadMessage()
@@ -65,15 +63,13 @@ func Handler(w http.ResponseWriter, r *http.Request){
 			break
 		}
 
-		all.PrintCyan([]any{string(messageData)})
-
 		if xml.Unmarshal([]byte(messageData), &models.OpenXML{}) == nil {
-			HandleOpen(conn, messageData, messageType, clientInfo)
+			XHandleOpen(conn, messageData, messageType, clientInfo)
 			continue
 		}
 
 		if xml.Unmarshal([]byte(messageData), &models.AuthXML{}) == nil {
-			HandleAuth(conn, messageData, messageType, clientInfo)
+			XHandleAuth(conn, messageData, messageType, clientInfo)
 			continue
 		}
 
@@ -82,53 +78,49 @@ func Handler(w http.ResponseWriter, r *http.Request){
 			xml.Unmarshal([]byte(messageData), &iq)
 
 			if iq.ID == "_xmpp_bind1" {
-				HandleBindIQ(conn, messageData, messageType, clientInfo)
+				XHandleBindIQ(conn, messageData, messageType, clientInfo)
 				continue
 			}
-			HandleSessionIQ(conn, messageData, messageType, clientInfo)
+			
+			XHandleSessionIQ(conn, messageData, messageType, clientInfo, iq.ID)
 			
 			continue
 		}
 
 		if xml.Unmarshal([]byte(messageData), &models.MessageWithBodyXML{}) == nil {
-			HandleMessage(conn, messageData, messageType, clientInfo)
+			XHandleMessage(conn, messageData, messageType, clientInfo)
 			continue
 		}
 
 		if xml.Unmarshal([]byte(messageData), &models.PresenceXML{}) == nil {
-			HandlePresence(conn, messageData, messageType, clientInfo)
+			XHandlePresence(conn, messageData, messageType, clientInfo)
 			continue
 		}
 
 		if xml.Unmarshal([]byte(messageData), &models.CloseXML{}) == nil {
-			all.PrintYellow([]any{"HandleCloseMessage"})
 			conn.Close()
 			continue
 		}
 
-		all.PrintRed([]any{"unknown message type"})
-
-		conn.WriteMessage(messageType, []byte(`CRASH`))
+		conn.WriteMessage(messageType, []byte(""))
 	}
 
 	defer func() {
-		delete(ActiveClients, remoteAddress)
-		delete(AccountIdToRemoteAddress, clientInfo.User.AccountId)
+		all.PrintGreen([]any{"user logged out:", clientInfo.User.Username})
+		delete(ActiveXMPPClients, remoteAddress)
+		delete(AccountIdToXMPPRemoteAddress, clientInfo.User.AccountId)
 		conn.Close()
 	}()
 }
 
-func HandleMessage(conn *websocket.Conn, message []byte, messageType int, clientInfo *ClientInfo) {
-	all.PrintYellow([]any{"HandleMessage"})
-
+func XHandleMessage(conn *websocket.Conn, message []byte, messageType int, clientInfo *ClientInfo) {
 	var msg models.MessageWithBodyXML
 	xml.Unmarshal([]byte(message), &msg)
 
 	messageRecipientAccountId := strings.Split(msg.To, "@")[0]
-	recipientClient, err := GetClientFromAccountId(messageRecipientAccountId)
+	recipientClient, err := XGetClientFromAccountId(messageRecipientAccountId)
 
 	if err != nil {
-		all.PrintRed([]any{"recipient not online", err})
 		return
 	}
 
@@ -148,21 +140,17 @@ func HandleMessage(conn *websocket.Conn, message []byte, messageType int, client
 	`))
 }
 
-func HandleSessionIQ(conn *websocket.Conn, message []byte, messageType int, clientInfo *ClientInfo) {
-	all.PrintYellow([]any{"HandleSessionIQ"})
-		conn.WriteMessage(messageType, []byte(`
-		<iq to="`+ clientInfo.SocketID +`" from="prod.ol.epicgames.com" id="_xmpp_session1" xmlns="jabber:client" type="result" />
+func XHandleSessionIQ(conn *websocket.Conn, message []byte, messageType int, clientInfo *ClientInfo, id string) {
+	conn.WriteMessage(messageType, []byte(`
+		<iq to="`+ clientInfo.SocketID +`" from="prod.ol.epicgames.com" id="`+ id +`" xmlns="jabber:client" type="result" />
 	`))
 }
 
-func HandleBindIQ(conn *websocket.Conn, message []byte, messageType int, clientInfo *ClientInfo) {
-	all.PrintYellow([]any{"HandleBindIQ"})
-
+func XHandleBindIQ(conn *websocket.Conn, message []byte, messageType int, clientInfo *ClientInfo) {
 	var iq models.BindIQXML
 	xml.Unmarshal([]byte(message), &iq)
 
 	clientInfo.SocketID = clientInfo.User.AccountId + "@prod.ol.epicgames.com/" + iq.Bind.Resource
-	all.PrintMagenta([]any{"user socket id:", clientInfo.SocketID})
 	
 	conn.WriteMessage(messageType, []byte(`
 		<iq to="` + clientInfo.SocketID + `" id="_xmpp_bind1" xmlns="jabber:client" type="result">
@@ -173,9 +161,7 @@ func HandleBindIQ(conn *websocket.Conn, message []byte, messageType int, clientI
 	`))
 }
 
-func HandleOpen(conn *websocket.Conn, message []byte, messageType int, clientInfo *ClientInfo) {
-	all.PrintYellow([]any{"HandleOpenMessage"})
-
+func XHandleOpen(conn *websocket.Conn, message []byte, messageType int, clientInfo *ClientInfo) {
 	conn.WriteMessage(messageType, []byte(`
 		<open xmlns="urn:ietf:params:xml:ns:xmpp-framing" from="prod.ol.epicgames.com" version="1.0" id="` + clientInfo.UUID  + `" />
 	`))
@@ -207,20 +193,16 @@ func HandleOpen(conn *websocket.Conn, message []byte, messageType int, clientInf
 	var xmlDataToMarshal []byte
 
 	if clientInfo.Authenticated { xmlDataToMarshal, _ = xml.Marshal(dataAuth) } else  { xmlDataToMarshal, _ = xml.Marshal(dataNeedAuth) }
-	all.PrintRed([]any{"sending auth data", clientInfo.Authenticated})
 
 	conn.WriteMessage(messageType, xmlDataToMarshal)
 }
 
-func HandleAuth(conn *websocket.Conn, message []byte, messageType int, clientInfo *ClientInfo) {
-	all.PrintYellow([]any{"HandleAuth"})
-
+func XHandleAuth(conn *websocket.Conn, message []byte, messageType int, clientInfo *ClientInfo) {
 	var auth models.AuthXML
 	xml.Unmarshal([]byte(message), &auth)
 
 	decoded, err := base64.StdEncoding.DecodeString(auth.Value)
 	if err != nil {
-		all.PrintRed([]any{"failed to decode base64", err})
 		conn.Close()
 	}
 	authData := strings.Split(string(decoded), "eg1~")
@@ -236,8 +218,6 @@ func HandleAuth(conn *websocket.Conn, message []byte, messageType int, clientInf
 	clientInfo.User = user
 
 	all.PrintGreen([]any{"user logged in:", user.Username})
-
-	// auth.Value
 	
 	conn.WriteMessage(
 		messageType, 
@@ -245,9 +225,7 @@ func HandleAuth(conn *websocket.Conn, message []byte, messageType int, clientInf
 	)
 }
 
-func HandlePresence(conn *websocket.Conn, message []byte, messageType int, clientInfo *ClientInfo) {
-	all.PrintYellow([]any{"HandlePresence"})
-
+func XHandlePresence(conn *websocket.Conn, message []byte, messageType int, clientInfo *ClientInfo) {
 	var presence models.PresenceXML
 	xml.Unmarshal([]byte(message), &presence)
 
@@ -256,15 +234,13 @@ func HandlePresence(conn *websocket.Conn, message []byte, messageType int, clien
 
 	// if status.Status == "" {
 	// }
-	GetFriendStatus(clientInfo)
+	XGetFriendStatus(clientInfo)
 
 	clientInfo.Status = presence.Status.Value
 
 	friends := common.GetAllAcceptedFriends(clientInfo.User.AccountId)
 	for _, friend := range friends {
-		all.PrintMagenta([]any{"sending presence to", friend.AccountId})
-
-		friendClient, err := GetClientFromAccountId(friend.AccountId)
+		friendClient, err := XGetClientFromAccountId(friend.AccountId)
 		if err != nil {
 			continue
 		}
@@ -279,12 +255,10 @@ func HandlePresence(conn *websocket.Conn, message []byte, messageType int, clien
 	XMPPUpdateStatus(clientInfo.User.AccountId, clientInfo.User.AccountId)
 }
 
-func GetFriendStatus(clientInfo *ClientInfo) {
+func XGetFriendStatus(clientInfo *ClientInfo) {
 	friends := common.GetAllAcceptedFriends(clientInfo.User.AccountId)
 	for _, friend := range friends {
-		all.PrintMagenta([]any{"getting presence from", friend.AccountId})
-
-		friendClient, err := GetClientFromAccountId(friend.AccountId)
+		friendClient, err := XGetClientFromAccountId(friend.AccountId)
 		if err != nil {
 			continue
 		}
@@ -299,16 +273,14 @@ func GetFriendStatus(clientInfo *ClientInfo) {
 	}
 }
 
-func GetClientFromAccountId(accountId string) (*ClientInfo, error) {
-	clientRemoteAddress, ok := AccountIdToRemoteAddress[accountId]
+func XGetClientFromAccountId(accountId string) (*ClientInfo, error) {
+	clientRemoteAddress, ok := AccountIdToXMPPRemoteAddress[accountId]
 	if !ok {
-		all.PrintRed([]any{"failed to find client remote address", accountId})
 		return nil, fmt.Errorf("failed to find client remote address")
 	}
 
-	client, ok := ActiveClients[clientRemoteAddress]
+	client, ok := ActiveXMPPClients[clientRemoteAddress]
 	if !ok {
-		all.PrintRed([]any{"failed to find client", clientRemoteAddress})
 		return nil, fmt.Errorf("failed to find client")
 	}
 
@@ -318,11 +290,10 @@ func GetClientFromAccountId(accountId string) (*ClientInfo, error) {
 func XMPPSendBodyToAll(body map[string]interface{}) {
 	data, err := json.Marshal(body)
 	if err != nil {
-		all.PrintRed([]any{"failed to marshal body", err})
 		return
 	}
 
-	for _, client := range ActiveClients {
+	for _, client := range ActiveXMPPClients {
 		client.Connection.WriteMessage(1, []byte(`
 			<message xmlns="jabber:client" from="xmpp-admin@prod.ol.epicgames.com" to="`+ client.SocketID +`">
 				<body>`+ string(data) +`</body>
@@ -334,11 +305,10 @@ func XMPPSendBodyToAll(body map[string]interface{}) {
 func XMPPSendBody(body map[string]interface{}, accountId string) {
 	data, err := json.Marshal(body)
 	if err != nil {
-		all.PrintRed([]any{"failed to marshal body", err})
 		return
 	}
 
-	client, err := GetClientFromAccountId(accountId)
+	client, err := XGetClientFromAccountId(accountId)
 	if err != nil {
 		return
 	}
@@ -351,12 +321,12 @@ func XMPPSendBody(body map[string]interface{}, accountId string) {
 }
 
 func XMPPUpdateStatus(accountId string, friendId string) {
-	mainClient, err := GetClientFromAccountId(accountId)
+	mainClient, err := XGetClientFromAccountId(accountId)
 	if err != nil {
 		return
 	}
 
-	friendClient, err := GetClientFromAccountId(friendId)
+	friendClient, err := XGetClientFromAccountId(friendId)
 	if err != nil {
 		return
 	}
@@ -375,12 +345,12 @@ func XMPPUpdateStatus(accountId string, friendId string) {
 }
 
 func XMPPUpdateStatusSingle(accountId string, friendId string) {
-	mainClient, err := GetClientFromAccountId(accountId)
+	mainClient, err := XGetClientFromAccountId(accountId)
 	if err != nil {
 		return
 	}
 
-	friendClient, err := GetClientFromAccountId(friendId)
+	friendClient, err := XGetClientFromAccountId(friendId)
 	if err != nil {
 		return
 	}

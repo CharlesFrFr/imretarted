@@ -2,8 +2,6 @@ package main
 
 import (
 	"net/http"
-	"os"
-	"os/exec"
 
 	"github.com/gin-gonic/gin"
 	"github.com/zombman/server/all"
@@ -11,17 +9,13 @@ import (
 	"github.com/zombman/server/controllers"
 	"github.com/zombman/server/middleware"
 	"github.com/zombman/server/models"
-	"github.com/zombman/server/socket"
 )
 
 func init() {
-  cmd := exec.Command("cmd", "/c", "cls")
-  cmd.Stdout = os.Stdout
-  cmd.Run()
-
   all.LoadEnviroment()
   all.ConnectToDatabase()
   all.AutoMigrate()
+  common.InitGameServers()
 
   var adminUser models.User
 	result := all.Postgres.First(&adminUser, "access_level = ?", 2)
@@ -114,6 +108,7 @@ func main() {
     fortnite.GET("/receipts/v1/account/:accountId/receipts", middleware.VerifyAccessToken, controllers.EmptyArray)
     fortnite.GET("/storefront/v2/keychain", middleware.VerifyAccessToken, controllers.StorefrontKeychain)
     fortnite.GET("/calendar/v1/timeline", controllers.CalendarTimeline)
+    fortnite.GET("/storefront/v2/catalog", controllers.StorefrontCatalog)
 
     fortnite.GET("/cloudstorage/system", controllers.SystemCloudFilesList)
     fortnite.GET("/cloudstorage/system/:fileName", controllers.SystemCloudFile)
@@ -121,16 +116,11 @@ func main() {
     fortnite.GET("/cloudstorage/user/:accountId/:fileName", middleware.VerifyAccessToken, controllers.UserCloudFile)
     fortnite.PUT("/cloudstorage/user/:accountId/ClientSettings.Sav", middleware.VerifyAccessToken, controllers.SaveUserCloudFile)
 
-    store := fortnite.Group("/storefront")
-    {
-      store.GET("/v2/catalog", controllers.StorefrontCatalog)
-    }
+    fortnite.GET("/game/v2/matchmakingservice/ticket/player/:accountId", middleware.VerifyAccessToken, controllers.MatchmakingTicket)
+    fortnite.GET("/game/v2/matchmaking/account/:accountId/session/:sessionId", middleware.VerifyAccessToken, controllers.GetMatchmakingKey)
+    fortnite.GET("/matchmaking/session/:sessionId", middleware.VerifyAccessToken, controllers.GetMatchmakeSession)
 
-    fortnite.GET("/fortnite/api/v2/versioncheck/Windows", func (c *gin.Context) {
-      c.JSON(200, gin.H{
-        "type": "NO_UPDATE",
-      })
-    })
+    fortnite.GET("/fortnite/api/v2/versioncheck/Windows", controllers.UpdateCheck)
   }
 
   blank := r.Group("/")
@@ -142,21 +132,9 @@ func main() {
     blank.GET("/lightswitch/api/service/Fortnite/status", controllers.Lightswitch)
   }
 
-  r.GET("/", func(c *gin.Context) {
-    if c.Request.Header.Get("Upgrade") == "websocket" {
-      socket.Handler(c.Writer, c.Request)
-      return
-    }
-
-    c.File("./public/index.html")
-  })
-
-  r.GET("/api/clients", func(c *gin.Context) {
-    c.JSON(200, gin.H{
-      "address": socket.AccountIdToRemoteAddress,
-      "clients": socket.ActiveClients,
-    })
-  })
+  r.GET("/", controllers.XMPP)
+  r.GET("/match", controllers.Matchmaker)
+  r.GET("/api/clients", controllers.XMPPClients)
 
   r.NoRoute(func(c *gin.Context) {
     c.File("./public/index.html")

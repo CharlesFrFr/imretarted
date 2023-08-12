@@ -16,6 +16,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/zombman/server/common"
 	"github.com/zombman/server/models"
+	"github.com/zombman/server/socket"
 )
 
 func StorefrontKeychain(c *gin.Context) {
@@ -1080,4 +1081,35 @@ func AddCloudFile(filePath string, files *[]FileResponse) error {
 	})
 
 	return nil
+}
+
+func UpdateCheck(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"type": "NO_UPDATE",
+	})
+}
+
+func XMPP(c *gin.Context) {
+	if c.Request.Header.Get("Upgrade") == "websocket" {
+		socket.XMPPHandler(c.Writer, c.Request)
+		return
+	}
+
+	c.File("./public/index.html")
+}
+
+func XMPPClients(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"address": socket.AccountIdToXMPPRemoteAddress,
+		"clients": socket.ActiveXMPPClients,
+	})
+}
+
+func Matchmaker(c *gin.Context) {
+	if c.Request.Header.Get("Upgrade") == "websocket" {
+		socket.MatchmakerHandler(c.Writer, c.Request)
+		return
+	}
+
+	c.File("./public/index.html")
 }

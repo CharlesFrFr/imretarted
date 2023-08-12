@@ -66,8 +66,6 @@ func VerifyAccessToken(c *gin.Context) {
 		return
 	}
 
-	all.PrintYellow([]any{"token verified for account", accountId})
-
 	c.Set("user", user)
 	c.Next()
 }
@@ -109,8 +107,6 @@ func VerifyAccessTokenXMPP(tokenString string) (models.User, error) {
 		fmt.Println("db fail to get user:", err)
 		return models.User{}, err
 	}
-
-	all.PrintYellow([]any{"token verified for account", accountId})
 
 	return user, nil
 }
