@@ -2,3 +2,5 @@
 server.exe
 server.exe~
 data/settings/*
+
+public/custom_cid_preview/*

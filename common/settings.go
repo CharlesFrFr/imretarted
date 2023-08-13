@@ -17,7 +17,7 @@ var LoadShopFromJson bool = false
 var GameServers = make(map[string]GameServer)
 
 func InitGameServers() {
-	addGameServer("playlist_defaultsolo", "EU", "127.0.0.1", 7777)
+	addGameServer("playlist_defaultsolo", "EU", "158.178.203.104", 7777)
 }
 
 func addGameServer(playlist string, region string, ip string, port int) {

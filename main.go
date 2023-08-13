@@ -113,6 +113,14 @@ func main() {
   r.GET("/match", controllers.Matchmaker)
   r.GET("/api/count/players", controllers.XMPPClients)
   r.GET("/api/count/queue", controllers.MatchmakerClients)
+  
+  r.Static("/assets", "./public/assets")
+  r.StaticFile("api.json", "./public/api.json")
+  r.StaticFile("data.json", "./public/data.json")
+
+  r.GET("/cid/:cid", func(c *gin.Context) {
+    c.File("./public/custom_cid_preview/" + c.Param("cid") + ".png")
+  })
 
   r.NoRoute(func(c *gin.Context) {
     c.File("./public/index.html")
