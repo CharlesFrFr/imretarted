@@ -1,4 +1,4 @@
-# ![Zombie Server](./public/icon.png)
+# Zombie Backend
 
 An open source, performant fortnite backend server with a built in web-interface and desktop launcher!
 
