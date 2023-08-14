@@ -100,6 +100,12 @@ func main() {
     fortnite.GET("/fortnite/api/v2/versioncheck/Windows", controllers.UpdateCheck)
   }
 
+  party := r.Group("/party/api/v1/Fortnite")
+  {
+    party.GET("/user/:accountId/pings/:friendId/parties", middleware.VerifyAccessToken, controllers.PartyGetFriendPartyPings)
+    party.DELETE("/parties/:partyId/members/:accountId", middleware.VerifyAccessToken, controllers.PartyLeave)
+  }
+
   blank := r.Group("/")
   {
     blank.GET("/content/api/pages/*contentPageName", controllers.ContentPage)
