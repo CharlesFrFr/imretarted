@@ -11,6 +11,24 @@ var (
 	AccountIdToPartyId = make(map[string]string)
 )
 
+func PartyGetUser(c *gin.Context) {
+	user := c.MustGet("user").(models.User)
+
+	partyId, ok := AccountIdToPartyId[user.AccountId]
+	if !ok {
+		c.JSON(400, gin.H{"error": "User not in party"})
+		return
+	}
+
+	party, ok := ActiveParties[partyId]
+	if !ok {
+		c.JSON(400, gin.H{"error": "Party not found"})
+		return
+	}
+
+	c.JSON(200, party)
+}
+
 func PartyGetFriendPartyPings(c *gin.Context) {
 	friend, err := common.GetUserByAccountId(c.Param("friendId"))
 	if err != nil {
@@ -30,7 +48,7 @@ func PartyGetFriendPartyPings(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{"pings": party})
+	c.JSON(200, []models.V2Party{party})
 }
 
 func PartyLeave(c *gin.Context) {
@@ -58,6 +76,5 @@ func PartyLeave(c *gin.Context) {
 	}
 
 	ActiveParties[partyId] = party
-
 	c.Status(204)
 }

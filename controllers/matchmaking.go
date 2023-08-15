@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/zombman/server/all"
 	"github.com/zombman/server/common"
 	"github.com/zombman/server/models"
 	"github.com/zombman/server/socket"
@@ -40,12 +41,14 @@ func MatchmakingTicket(c *gin.Context) {
 	accountId := c.Param("accountId")
 
 	if accountId != user.AccountId {
+		all.PrintRed([]any{"account id not match"})
 		common.ErrorBadRequest(c)
 		return
 	}
 
 	customKey := c.Param("player.option.customKey")
 	if customKey != "" {
+		all.PrintRed([]any{"custom key"})
 		common.ErrorBadRequest(c)
 		return
 	}
@@ -62,6 +65,8 @@ func MatchmakingTicket(c *gin.Context) {
 
 	_, ok := common.GameServers[bucket.PlaylistName + ":" + bucket.Region]
 	if !ok {
+		all.PrintRed([]any{"servers not found", bucket.PlaylistName + ":" + bucket.Region})
+		all.MarshPrintJSON(common.GameServers)
 		common.ErrorBadRequest(c)
 		return
 	}

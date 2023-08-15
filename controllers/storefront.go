@@ -3,7 +3,6 @@ package controllers
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"math/rand"
 	"net/http"
@@ -91,7 +90,7 @@ func StorefrontCatalog(c *gin.Context) {
 			return
 		}
 
-		all.PrintGreen([]any{"loaded shop from json", fmt.Sprint(ItemShop)})
+		// all.PrintGreen([]any{"loaded shop from json", fmt.Sprint(ItemShop)})
 	}
 
 	c.JSON(http.StatusOK, ItemShop)

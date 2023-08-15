@@ -12,7 +12,7 @@ type GameServer struct {
 var IP string = "127.0.0.1:3000"
 var Season int = 8
 var Chapter int = 1
-var LoadShopFromJson bool = false
+var LoadShopFromJson bool = true
 
 var GameServers = make(map[string]GameServer)
 
