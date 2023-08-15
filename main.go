@@ -108,7 +108,6 @@ func main() {
   party := r.Group("/party/api/v1/Fortnite")
   {
     party.GET("/user/:accountId", middleware.VerifyAccessToken, controllers.PartyGetUser)
-
     party.GET("/user/:accountId/pings/:friendId/parties", middleware.VerifyAccessToken, controllers.PartyGetFriendPartyPings)
     party.DELETE("/parties/:partyId/members/:accountId", middleware.VerifyAccessToken, controllers.PartyLeave)
   }

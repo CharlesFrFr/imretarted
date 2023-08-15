@@ -26,7 +26,7 @@ var (
 	RemoteAddressToAccountId = make(map[string]string)
 
 	secondTimer = 0
-	fakePlayersToInflateETA = 1000
+	fakePlayersToInflateETA = 0
 )
 
 type MatchmakeInfo struct {
@@ -127,7 +127,7 @@ func sendStatusUpdates() {
 				"payload": gin.H{
 					"state": "Queued",
 					"ticketId": "ticketId",
-					"estimatedWaitSec": etaSeconds,
+					"estimatedWaitSec": etaSeconds + 1,
 					"queuedPlayers": infront,
 					"status": gin.H{},
 				},
@@ -138,7 +138,7 @@ func sendStatusUpdates() {
 
 			gameServerWantingToJoin := common.GetGameServer(matchmakeInfo.PlaylistName, matchmakeInfo.Region)
 			if gameServerWantingToJoin.Joinable && gameServerWantingToJoin.PlayersLeft < 100 && infront < 1 {
-				etaSeconds = 0
+				etaSeconds = 1
 				shouldLoad = true
 			}
 
