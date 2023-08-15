@@ -4,6 +4,8 @@ An open source, performant fortnite backend server with a built in web-interface
 
 _Note: Some features are not yet implemented, please see the [Roadmap](#roadmap) for more information._
 
+[How to setup](https://www.youtube.com/watch?v=WvWrgmEH6ZI&t=189s&ab_channel=ulnk)
+
 # Branches
 
 - **[Frontend](https://github.com/zombman/server/tree/frontend)** - Launcher and web interface for backend.
