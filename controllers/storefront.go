@@ -90,7 +90,7 @@ func StorefrontCatalog(c *gin.Context) {
 			return
 		}
 
-		// all.PrintGreen([]any{"loaded shop from json", fmt.Sprint(ItemShop)})
+		ItemShop.Expiration = time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 23, 59, 59, 999999999, time.Now().Location()).Format("2006-01-02T15:04:05.999Z")
 	}
 
 	c.JSON(http.StatusOK, ItemShop)

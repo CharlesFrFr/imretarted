@@ -7,6 +7,7 @@ import (
 	"github.com/zombman/server/controllers"
 	"github.com/zombman/server/middleware"
 	"github.com/zombman/server/models"
+	"github.com/zombman/server/socket"
 )
 
 func init() {
@@ -14,6 +15,7 @@ func init() {
   all.ConnectToDatabase()
   all.AutoMigrate()
   common.InitGameServers()
+  socket.InitMatchmaker()
 
   var adminUser models.User
 	result := all.Postgres.First(&adminUser, "access_level = ?", 2)
@@ -96,6 +98,9 @@ func main() {
     fortnite.GET("/game/v2/matchmakingservice/ticket/player/:accountId", middleware.VerifyAccessToken, controllers.MatchmakingTicket)
     fortnite.GET("/game/v2/matchmaking/account/:accountId/session/:sessionId", middleware.VerifyAccessToken, controllers.GetMatchmakingKey)
     fortnite.GET("/matchmaking/session/:sessionId", middleware.VerifyAccessToken, controllers.GetMatchmakeSession)
+
+    fortnite.POST("/matchmaking/zomb/server", middleware.ServerSecret, controllers.AddNewGameServer)
+    fortnite.DELETE("/matchmaking/zomb/server", middleware.ServerSecret, controllers.RemoveGameServer)
 
     fortnite.GET("/fortnite/api/v2/versioncheck/Windows", controllers.UpdateCheck)
   }

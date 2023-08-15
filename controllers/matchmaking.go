@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -13,20 +14,6 @@ import (
 	"github.com/zombman/server/models"
 	"github.com/zombman/server/socket"
 )
-
-/*
-	fortnite/api/game/v2/matchmakingservice/ticket/player/e8f8db85-6a07-411f-80e2-260f4d7f6302
-	?partyPlayerIds=e8f8db85-6a07-411f-80e2-260f4d7f6302
-	&bucketId=6037427%3A0%3ANAE%3Aplaylist_defaultsolo
-	&player.platform=Windows&player.subregions=VA%2COH
-	&player.option.crossplayOptOut=false
-	&party.WIN=true
-	&input.KBM=true
-	&player.input=KBM
-	&player.playerGroups=e8f8db85-6a07-411f-80e2-260f4d7f6302
-*/
-
-// bucket 6037427:0:NAE:playlist_defaultsolo
 
 type TicketBucket struct {
 	PlaylistName string `json:"playlistName"`
@@ -54,7 +41,7 @@ func MatchmakingTicket(c *gin.Context) {
 	}
 
 	bucketInformation := strings.Split(c.Query("bucketId"), ":")
-
+	fmt.Println(bucketInformation[2])
 	bucket := TicketBucket{
 		PlaylistName: bucketInformation[3],
 		Region: bucketInformation[2],
@@ -96,8 +83,8 @@ func GetMatchmakeSession(c *gin.Context) {
 		return
 	}
 
-	gameServer, ok := common.GameServers[matchmakeInfo.PlaylistName + ":" + matchmakeInfo.Region]
-	if !ok {
+	gameServer := common.GetGameServer(matchmakeInfo.PlaylistName, matchmakeInfo.Region)
+	if gameServer.IP == "" {
 		common.ErrorBadRequest(c)
 		return
 	}
@@ -180,5 +167,65 @@ func GetMatchmakingKey(c *gin.Context) {
 		"key": "none",
 		"accountId": user.AccountId,
 		"sessionId": sessionId,
+	})
+}
+
+func AddNewGameServer(c *gin.Context) {
+	var body struct {
+		IP string `json:"ip"`
+		Port int `json:"port"`
+		Region string `json:"region"`
+		PlaylistName string `json:"playlistName"`
+		MaxPlayers int `json:"maxPlayers"`
+		PlayersLeft int `json:"playersLeft"`
+		Joinable bool `json:"joinable"`
+	}
+
+	if err := c.ShouldBindJSON(&body); err != nil {
+		common.ErrorBadRequest(c)
+		return
+	}
+
+	for idx, gameServerArray := range common.GameServers[body.PlaylistName + ":" + body.Region] {
+		if gameServerArray.IP == body.IP && gameServerArray.Port == body.Port {
+			common.GameServers[body.PlaylistName + ":" + body.Region] = append(common.GameServers[body.PlaylistName + ":" + body.Region][:idx], common.GameServers[body.PlaylistName + ":" + body.Region][idx+1:]...)
+		}
+	}
+
+	common.GameServers[body.PlaylistName + ":" + body.Region] = append(common.GameServers[body.PlaylistName + ":" + body.Region], common.GameServer{
+		IP: body.IP,
+		Port: body.Port,
+		Region: body.Region,
+		Playlist: body.PlaylistName,
+		PlayersLeft: body.PlayersLeft,
+		Joinable: body.Joinable,
+	})
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": "success",
+	})
+}
+
+func RemoveGameServer(c *gin.Context) {
+	var body struct {
+		IP string `json:"ip"`
+		Port int `json:"port"`
+		Region string `json:"region"`
+		PlaylistName string `json:"playlistName"`
+	}
+
+	if err := c.ShouldBindJSON(&body); err != nil {
+		common.ErrorBadRequest(c)
+		return
+	}
+
+	for idx, gameServerArray := range common.GameServers[body.PlaylistName + ":" + body.Region] {
+		if gameServerArray.IP == body.IP && gameServerArray.Port == body.Port {
+			common.GameServers[body.PlaylistName + ":" + body.Region] = append(common.GameServers[body.PlaylistName + ":" + body.Region][:idx], common.GameServers[body.PlaylistName + ":" + body.Region][idx+1:]...)
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": "success",
 	})
 }

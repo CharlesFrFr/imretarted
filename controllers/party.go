@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/zombman/server/all"
 	"github.com/zombman/server/common"
 	"github.com/zombman/server/models"
 )
@@ -22,9 +23,11 @@ func PartyGetUser(c *gin.Context) {
 
 	party, ok := ActiveParties[partyId]
 	if !ok {
-		c.JSON(400, gin.H{"error": "Party not found"})
-		return
+		party = common.CreateParty(&ActiveParties, &AccountIdToPartyId, user.AccountId)
 	}
+
+	all.PrintMagenta([]any{"PartyGetUser"})
+	all.MarshPrintJSON(party)
 
 	c.JSON(200, party)
 }
