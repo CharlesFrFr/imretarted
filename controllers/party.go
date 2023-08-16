@@ -16,20 +16,15 @@ func PartyGetUser(c *gin.Context) {
 	user := c.MustGet("user").(models.User)
 
 	all.PrintMagenta([]any{"PartyGetUser"})
-	all.MarshPrintJSON(user)
-
-	partyId, ok := AccountIdToPartyId[user.AccountId]
-	if !ok {
-		c.JSON(400, gin.H{"error": "User not in party"})
-		return
-	}
-
+	
+	partyId := AccountIdToPartyId[user.AccountId]
 	party, ok := ActiveParties[partyId]
 	if !ok {
-		party = common.CreateParty(&ActiveParties, &AccountIdToPartyId, user.AccountId)
+		party = common.CreateParty(&ActiveParties, &AccountIdToPartyId, user)
 	}
-
+	
 	c.JSON(200, party)
+	all.MarshPrintJSON(party)
 }
 
 func PartyGetFriendPartyPings(c *gin.Context) {

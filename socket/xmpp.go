@@ -150,6 +150,8 @@ func XHandleBindIQ(conn *websocket.Conn, message []byte, messageType int, client
 	var iq models.BindIQXML
 	xml.Unmarshal([]byte(message), &iq)
 
+	fmt.Println(iq.Bind.Resource)
+
 	clientInfo.SocketID = clientInfo.User.AccountId + "@prod.ol.epicgames.com/" + iq.Bind.Resource
 	
 	conn.WriteMessage(messageType, []byte(`
