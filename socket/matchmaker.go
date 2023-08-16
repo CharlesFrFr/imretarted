@@ -2,7 +2,7 @@ package socket
 
 import (
 	"encoding/json"
-	"math/rand"
+	"math"
 	"net/http"
 	"strings"
 	"time"
@@ -25,8 +25,8 @@ var (
 	Sessions = make(map[string]MatchmakeInfo)
 	RemoteAddressToAccountId = make(map[string]string)
 
-	secondTimer = 0
-	fakePlayersToInflateETA = 0
+	playerWaitTime = 10
+	FakePlayersToInflateETA = 1200
 )
 
 type MatchmakeInfo struct {
@@ -44,6 +44,110 @@ type TicketBucket struct {
 	PlaylistName string `json:"playlistName"`
 	Region string `json:"region"`
 	BuildId string `json:"buildId"`
+}
+
+func calculateETA(matchmakeInfo *MatchmakeInfo) int {
+	playersQueued := len(MatchmakeQueue) + FakePlayersToInflateETA
+	infront := playersQueued - matchmakeInfo.PositionInQueue
+
+	gameServers := common.SortGameServersByPlayersLeft(matchmakeInfo.PlaylistName, matchmakeInfo.Region)
+	all.MarshPrintJSON(gameServers)
+
+	eta := 0
+	serversToGo := int(math.Round(float64(infront) / 100)) + 1
+
+	idx := 0
+	serverIdx := 0
+
+	all.PrintGreen([]any{"[Matchmaker] ", "serversToGo: ", serversToGo, "position:", infront})
+
+	for {
+		if serverIdx >= len(gameServers) {
+			serverIdx = -1
+		}
+
+		if idx >= serversToGo {
+			break
+		}
+
+		if serverIdx >= 0 {
+			eta += gameServers[serverIdx].PlayersLeft * playerWaitTime
+		} else {
+			eta += 100 * playerWaitTime
+		}
+
+		idx++
+		if serverIdx >= 0 {
+			serverIdx++
+		}
+	}
+
+	eta += int((infront * playerWaitTime) / len(gameServers))
+
+	return eta
+}
+
+func sendStatusUpdates() {
+	for {
+		time.Sleep(250 * time.Millisecond)
+
+		for _, matchmakeInfo := range MatchmakeQueue {
+			shouldLoad := false
+			etaSeconds := calculateETA(&matchmakeInfo)
+			playersQueued := len(MatchmakeQueue)
+
+			if matchmakeInfo.PositionInQueue < 0 {
+				matchmakeInfo.PositionInQueue = playersQueued
+				MatchmakeQueue[matchmakeInfo.User.AccountId] = matchmakeInfo
+			}
+
+			infront := playersQueued - matchmakeInfo.PositionInQueue
+			
+			SendStringJSONToClient(matchmakeInfo.Connection, websocket.TextMessage, gin.H{
+				"payload": gin.H{
+					"state": "Queued",
+					"ticketId": "ticketId",
+					"estimatedWaitSec": etaSeconds + 1,
+					"queuedPlayers": infront,
+					"status": gin.H{},
+				},
+				"name": "StatusUpdate",
+			})
+
+			gameServerWantingToJoin := common.GetGameServer(matchmakeInfo.PlaylistName, matchmakeInfo.Region)
+			if gameServerWantingToJoin.Joinable && gameServerWantingToJoin.PlayersLeft < 100 && infront < 1 {
+				etaSeconds = 1
+				shouldLoad = true
+			}
+
+			if shouldLoad {
+				sendPlayMessage(&matchmakeInfo)
+				continue
+			}
+		}
+	}
+}
+
+func sendPlayMessage(matchmakeInfo *MatchmakeInfo) {
+	SendStringJSONToClient(matchmakeInfo.Connection, websocket.TextMessage, gin.H{
+		"payload": gin.H{
+			"state": "SessionAssignment",
+			"matchId": matchmakeInfo.PlaylistName + ":" + matchmakeInfo.Region,
+		},
+		"name": "StatusUpdate",
+	})
+
+	matchmakeInfo.PositionInQueue = -1
+	MatchmakeQueue[matchmakeInfo.User.AccountId] = *matchmakeInfo
+
+	SendStringJSONToClient(matchmakeInfo.Connection, websocket.TextMessage, gin.H{
+		"payload": gin.H{
+			"matchId": matchmakeInfo.PlaylistName + ":" + matchmakeInfo.Region,
+			"sessionId": matchmakeInfo.SessionId,
+			"joinDelaySec": 0,
+		},
+		"name": "Play",
+	})
 }
 
 func MatchmakerHandler(w http.ResponseWriter, r *http.Request) {
@@ -90,86 +194,6 @@ func MatchmakerHandler(w http.ResponseWriter, r *http.Request) {
 		delete(MatchmakeQueue, accountId)
 		delete(RemoteAddressToAccountId, conn.RemoteAddr().String())
 	}()
-}
-
-func calculateETA(matchmakeInfo *MatchmakeInfo) int {
-	gameServers := common.GetAllGameServers(matchmakeInfo.PlaylistName, matchmakeInfo.Region)
-	playersQueued := len(MatchmakeQueue) + fakePlayersToInflateETA
-	infront := playersQueued - matchmakeInfo.PositionInQueue
-	
-	return int((infront * 10) / len(gameServers))
-}
-
-func sendStatusUpdates() {
-	for {
-		time.Sleep(250 * time.Millisecond)
-		secondTimer += 250
-
-		if secondTimer % 10000 == 0 {
-			secondTimer = 0
-			fakePlayersToInflateETA -= rand.Intn(10)
-		}
-
-		for _, matchmakeInfo := range MatchmakeQueue {
-			shouldLoad := false
-			etaSeconds := calculateETA(&matchmakeInfo)
-			all.MarshPrintJSON(RemoteAddressToAccountId)
-			playersQueued := len(MatchmakeQueue)
-
-			if matchmakeInfo.PositionInQueue < 0 {
-				matchmakeInfo.PositionInQueue = playersQueued
-				MatchmakeQueue[matchmakeInfo.User.AccountId] = matchmakeInfo
-			}
-
-			infront := playersQueued - matchmakeInfo.PositionInQueue
-			
-			SendStringJSONToClient(matchmakeInfo.Connection, websocket.TextMessage, gin.H{
-				"payload": gin.H{
-					"state": "Queued",
-					"ticketId": "ticketId",
-					"estimatedWaitSec": etaSeconds + 1,
-					"queuedPlayers": infront,
-					"status": gin.H{},
-				},
-				"name": "StatusUpdate",
-			})
-			
-			all.PrintMagenta([]any{"[Matchmaker] ", "Queued: ", infront, " ETA: ", etaSeconds})
-
-			gameServerWantingToJoin := common.GetGameServer(matchmakeInfo.PlaylistName, matchmakeInfo.Region)
-			if gameServerWantingToJoin.Joinable && gameServerWantingToJoin.PlayersLeft < 100 && infront < 1 {
-				etaSeconds = 1
-				shouldLoad = true
-			}
-
-			if shouldLoad {
-				sendPlayMessage(&matchmakeInfo)
-				continue
-			}
-		}
-	}
-}
-
-func sendPlayMessage(matchmakeInfo *MatchmakeInfo) {
-	SendStringJSONToClient(matchmakeInfo.Connection, websocket.TextMessage, gin.H{
-		"payload": gin.H{
-			"state": "SessionAssignment",
-			"matchId": matchmakeInfo.PlaylistName + ":" + matchmakeInfo.Region,
-		},
-		"name": "StatusUpdate",
-	})
-
-	matchmakeInfo.PositionInQueue = -1
-	MatchmakeQueue[matchmakeInfo.User.AccountId] = *matchmakeInfo
-
-	SendStringJSONToClient(matchmakeInfo.Connection, websocket.TextMessage, gin.H{
-		"payload": gin.H{
-			"matchId": matchmakeInfo.PlaylistName + ":" + matchmakeInfo.Region,
-			"sessionId": matchmakeInfo.SessionId,
-			"joinDelaySec": 0,
-		},
-		"name": "Play",
-	})
 }
 
 func MHandleInit(authHeader string, client *websocket.Conn) error {

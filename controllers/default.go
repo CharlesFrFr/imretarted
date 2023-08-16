@@ -1119,6 +1119,6 @@ func MatchmakerClients(c *gin.Context) {
 	c.JSON(200, gin.H{
 		// "address": socket.RemoteAddressToAccountId,
 		// "clients": socket.ActiveMatchmakerClients,
-		"queue": len(socket.MatchmakeQueue),
+		"queue": len(socket.MatchmakeQueue) + socket.FakePlayersToInflateETA,
 	})
 }

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"io"
+
 	"github.com/gin-gonic/gin"
 	"github.com/zombman/server/all"
 	"github.com/zombman/server/common"
@@ -107,7 +109,21 @@ func main() {
 
   party := r.Group("/party/api/v1/Fortnite")
   {
-    party.GET("/user/:accountId", middleware.VerifyAccessToken, controllers.PartyGetUser)
+    party.Use(func(c* gin.Context) {
+      authHeader := c.Request.Header.Get(("Authorization"))
+      body := c.Request.Body
+      bodyBytes, _ := io.ReadAll(body)
+
+      all.PrintMagenta([]any{
+        "Party API Request",
+        c.Request.URL,
+        authHeader,
+        string(bodyBytes),
+      })
+    })
+    party.Use(middleware.VerifyAccessToken)
+
+    party.GET("/user/:accountId", controllers.PartyGetUser)
     party.GET("/user/:accountId/pings/:friendId/parties", middleware.VerifyAccessToken, controllers.PartyGetFriendPartyPings)
     party.DELETE("/parties/:partyId/members/:accountId", middleware.VerifyAccessToken, controllers.PartyLeave)
   }

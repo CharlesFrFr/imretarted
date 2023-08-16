@@ -1,12 +1,17 @@
 package common
 
+import (
+	"math/rand"
+	"sort"
+)
+
 type GameServer struct {
 	IP          string `json:"ip"`
 	Port        int    `json:"port"`
 	Playlist    string `json:"platform"`
 	Region      string `json:"region"`
 	PlayersLeft int    `json:"playersLeft"`
-	Joinable    bool   `json:"busLeft"`
+	Joinable    bool   `json:"joinable"`
 }
 
 var (
@@ -19,8 +24,9 @@ var (
 
 func InitGameServers() {
 	addGameServer("playlist_defaultsolo", "EU", "158.178.203.104", 7777)
-	addGameServer("playlist_defaultsolo", "NAE", "158.178.203.104", 7777)
-	addGameServer("playlist_defaultsolo", "NAW", "158.178.203.104", 7777)
+	addGameServer("playlist_defaultsolo", "EU", "158.178.203.104", 7777)
+	addGameServer("playlist_defaultsolo", "EU", "158.178.203.104", 7777)
+	addGameServer("playlist_defaultsolo", "EU", "158.178.203.104", 7777)
 }
 
 func GetGameServer(playlist string, region string) GameServer {
@@ -38,13 +44,22 @@ func GetAllGameServers(playlist string, region string) []GameServer {
 	return GameServers[playlist+":"+region]
 }
 
+func SortGameServersByPlayersLeft(playlist string, region string) []GameServer {
+	gameServerClone := GetAllGameServers(playlist, region)
+	sort.SliceStable(gameServerClone, func(i, j int) bool {
+		return gameServerClone[i].PlayersLeft < gameServerClone[j].PlayersLeft
+	})
+
+	return gameServerClone
+}
+
 func addGameServer(playlist string, region string, ip string, port int) {
 	GameServers[playlist+":"+region] = append(GameServers[playlist+":"+region], GameServer{
 		IP:          ip,
 		Port:        port,
 		Playlist:    playlist,
 		Region:      region,
-		PlayersLeft: 10,
+		PlayersLeft: rand.Intn(100 - 43) + 43,
 		Joinable:    false,
 	})
 }

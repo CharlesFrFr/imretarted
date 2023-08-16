@@ -55,6 +55,26 @@ func AddProfileToUser(user models.User, profileId string) {
 	if profileId == "athena" {
 		CreateLoadoutForUser(user.AccountId, "sandbox_loadout")
 		CreateLoadoutForUser(user.AccountId, "zombie_loadout")
+
+		athenaProfile, err := ReadProfileFromUser(user.AccountId, "athena")
+		if err != nil {
+			return
+		}
+
+		newAthenaProfile, err := ConvertProfileToAthena(athenaProfile)
+		if err != nil {
+			return
+		}
+
+		newAthenaProfile.Stats.Attributes.Level = 1
+		newAthenaProfile.Stats.Attributes.Xp = 0
+		newAthenaProfile.Stats.Attributes.BookLevel = 1
+		newAthenaProfile.Stats.Attributes.BookXp = 0
+		newAthenaProfile.Stats.Attributes.LifetimeWins = 10
+
+		defaultProfile, err := ConvertAthenaToDefault(newAthenaProfile)
+
+		SaveProfileToUser(user.AccountId, defaultProfile)
 	}
 
 	all.PrintGreen([]any{profileId, "profile added to", user.Username})
