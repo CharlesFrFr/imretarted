@@ -1,8 +1,6 @@
 package main
 
 import (
-	"io"
-
 	"github.com/gin-gonic/gin"
 	"github.com/zombman/server/all"
 	"github.com/zombman/server/common"
@@ -34,7 +32,7 @@ func main() {
 
   r.Use(middleware.CheckDatabase)
   r.Use(middleware.AllowFromAnywhere)
-  r.Use(middleware.RateLimitMiddleware(30, 1))
+  // r.Use(middleware.RateLimitMiddleware(30, 1))
 
   site := r.Group("/api")
   {
@@ -63,7 +61,7 @@ func main() {
     account.GET("/public/account/displayName/:displayName", controllers.UserAccountPublicFromDisplayName)
     account.GET("/public/account/:accountId", middleware.VerifyAccessToken, controllers.UserAccountPrivate)
     account.GET("/public/account/:accountId/externalAuths", controllers.EmptyArray)
-    account.DELETE("/oauth/sessions/kill/:token", controllers.KillSessionWithToken)
+    account.DELETE("/oauth/sessions/kill/:token", middleware.VerifyAccessToken, controllers.KillSessionWithToken)
     account.DELETE("/oauth/sessions/kill", controllers.KillSession)
   }
 
@@ -109,23 +107,17 @@ func main() {
 
   party := r.Group("/party/api/v1/Fortnite")
   {
-    party.Use(func(c* gin.Context) {
-      authHeader := c.Request.Header.Get(("Authorization"))
-      body := c.Request.Body
-      bodyBytes, _ := io.ReadAll(body)
-
-      all.PrintMagenta([]any{
-        "Party API Request",
-        c.Request.URL,
-        authHeader,
-        string(bodyBytes),
-      })
-    })
     party.Use(middleware.VerifyAccessToken)
 
+    party.POST("/parties", controllers.PartyPost)
+    party.GET("/parties/:partyId", controllers.PartyGet)
+    party.PATCH("/parties/:partyId", controllers.PartyPatch)
+    party.PATCH("/parties/:partyId/members/:memberId/meta", controllers.PartyPatchMemberMeta)
+    party.DELETE("/parties/:partyId/members/:memberId", controllers.PartyDeleteMember)
+
+
     party.GET("/user/:accountId", controllers.PartyGetUser)
-    party.GET("/user/:accountId/pings/:friendId/parties", middleware.VerifyAccessToken, controllers.PartyGetFriendPartyPings)
-    party.DELETE("/parties/:partyId/members/:accountId", middleware.VerifyAccessToken, controllers.PartyLeave)
+    party.GET("/user/:accountId/pings/:friendId/parties", controllers.PartyGetFriendPartyPings)
   }
 
   blank := r.Group("/")
@@ -141,6 +133,7 @@ func main() {
   r.GET("/match", controllers.Matchmaker)
   r.GET("/api/count/players", controllers.XMPPClients)
   r.GET("/api/count/queue", controllers.MatchmakerClients)
+  r.GET("/api/count/party", controllers.Parties)
   
   r.Static("/assets", "./public/assets")
   r.StaticFile("api.json", "./public/api.json")

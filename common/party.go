@@ -8,29 +8,6 @@ import (
 )
 
 func CreateParty(activeParties *map[string]models.V2Party, accountIdToPartyId *map[string]string, captain models.User) models.V2Party {
-	captainConnectionMeta := make(map[string]interface{})
-	captainConnectionMeta["urn:epic:conn:platform_s"] = "WIN"
-	captainConnection := models.V2PartyConnection{
-		ID: captain.AccountId + "@prod.ol.epicgames.com",
-		Meta: captainConnectionMeta,
-		YieldLeadership: false,
-		ConnectedAt: time.Now().Format("2006-01-02T15:04:05.999Z"),
-		UpdatedAt: time.Now().Format("2006-01-02T15:04:05.999Z"),
-	}
-
-	partyMemberMeta := make(map[string]interface{})
-	partyMemberMeta["urn:epic:member:dn_s"] = captain.Username
-	partyMemberMeta["urn:epic:member:joinrequestusers_j"] = "{\"users\":[{\"id\":\""+ captain.AccountId +"\",\"dn\":\""+ captain.Username +"\",\"plat\":\"WIN\",\"data\":\"{\\\"CrossplayPreference_i\\\":\\\"1\\\",\\\"SubGame_u\\\":\\\"1\\\"}\"}]}"
-	partyMember := models.V2PartyMember{
-		AccountId: captain.AccountId,
-		Meta: partyMemberMeta,
-		Connections: []models.V2PartyConnection{captainConnection},
-		Role: "CAPTAIN",
-		Revision: 0,
-		JoinedAt: time.Now().Format("2006-01-02T15:04:05.999Z"),
-		UpdatedAt: time.Now().Format("2006-01-02T15:04:05.999Z"),
-	}
-
 	partyMeta := make(map[string]interface{})
 	partyMeta["urn:epic:cfg:build-id_s"] = "1:1:1"
 	partyMeta["urn:epic:cfg:party-type-id_s"] = "default"
@@ -47,9 +24,9 @@ func CreateParty(activeParties *map[string]models.V2Party, accountIdToPartyId *m
 			Joinability: "OPEN",
 			Discoverability: "ALL",
 			InviteTtl: 86400,
-			JoinConfirmation: "false",
+			JoinConfirmation: false,
 		},
-		Members: []models.V2PartyMember{partyMember},
+		Members: []models.V2PartyMember{},
 		Revision: 0,
 		Invites: []any{},
 		Intentions: []any{},	

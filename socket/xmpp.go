@@ -102,6 +102,12 @@ func XMPPHandler(w http.ResponseWriter, r *http.Request){
 			continue
 		}
 
+
+		all.PrintRed([]any{
+			"unkown message type",
+			string(messageData),
+		})
+
 		conn.WriteMessage(messageType, []byte(""))
 	}
 

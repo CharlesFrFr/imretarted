@@ -19,7 +19,7 @@ type V2PartyConfig struct {
 	MaxSize          int    `json:"max_size"`
 	Discoverability  string `json:"discoverability"`
 	InviteTtl        int    `json:"invite_ttl"`
-	JoinConfirmation string `json:"join_confirmation"`
+	JoinConfirmation bool   `json:"join_confirmation"`
 }
 
 type V2PartyMember struct {

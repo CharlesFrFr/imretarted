@@ -1122,3 +1122,11 @@ func MatchmakerClients(c *gin.Context) {
 		"queue": len(socket.MatchmakeQueue) + socket.FakePlayersToInflateETA,
 	})
 }
+
+func Parties(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"parties": ActiveParties,
+		"accountsToParties": AccountIdToPartyId,
+		"count": len(ActiveParties),
+	})
+}

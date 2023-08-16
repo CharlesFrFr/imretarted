@@ -1,0 +1,52 @@
+{
+  "config": {
+    "join_confirmation": true,
+    "joinability": "INVITE_ONLY",
+    "max_size": 4
+  },
+  "meta": {
+    "delete": [],
+    "update": {
+      "PrimaryGameSessionId_s": "",
+      "PartyState_s": "BattleRoyaleView",
+      "LobbyConnectionStarted_b": "false",
+      "MatchmakingResult_s": "NoResults",
+      "MatchmakingState_s": "NotMatchmaking",
+      "SessionIsCriticalMission_b": "false",
+      "ZoneTileIndex_U": "-1",
+      "ZoneInstanceId_s": "",
+      "TheaterId_s": "",
+      "TileStates_j": "{\"TileStates\":[]}",
+      "MatchmakingInfoString_s": "",
+      "CustomMatchKey_s": "",
+      "PlaylistData_j": "{\"PlaylistData\":{\"playlistName\":\"Playlist_DefaultSolo\",\"tournamentId\":\"\",\"eventWindowId\":\"\",\"regionId\":\"EU\"}}",
+      "AllowJoinInProgress_b": "false",
+      "LFGTime_s": "0001-01-01T00:00:00.000Z",
+      "AthenaSquadFill_b": "false",
+      "PartyIsJoinedInProgress_b": "false",
+      "GameSessionKey_s": "",
+      "VoiceChannelGuid_s": "D1F18CE4420E43FF517F4EA3D96DE43E",
+      "RawSquadAssignments_j": "{\"RawSquadAssignments\":[{\"memberId\":\"ad15005c-1a3a-4b3e-9e61-5296f1cb0176\",\"absoluteMemberIdx\":0}]}",
+      "PrivacySettings_j": "{\"PrivacySettings\":{\"partyType\":\"FriendsOnly\",\"partyInviteRestriction\":\"AnyMember\",\"bOnlyLeaderFriendsCanJoin\":false}}",
+      "PlatformSessions_j": "{\"PlatformSessions\":[]}"
+    }
+  },
+  "revision": 1
+}
+
+{
+  "config": {
+    "join_confirmation": true,
+    "joinability": "OPEN",
+    "max_size": 4
+  },
+  "meta": {
+    "delete": [],
+    "update": {
+      "urn:epic:cfg:invite-perm_s": "Noone",
+      "urn:epic:cfg:accepting-members_b": "false",
+      "urn:epic:cfg:not-accepting-members-reason_i": "33"
+    }
+  },
+  "revision": 4
+}
