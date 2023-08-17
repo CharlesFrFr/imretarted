@@ -1,6 +1,10 @@
 package main
 
 import (
+	"fmt"
+	"os"
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	"github.com/zombman/server/all"
 	"github.com/zombman/server/common"
@@ -28,6 +32,35 @@ func init() {
 }
 
 func main() {
+  args := strings.Join(os.Args, ";")
+  if strings.Contains(args, "-reset_admin_password") {
+    var adminUser models.User
+    result := all.Postgres.First(&adminUser, "access_level = ?", 2)
+
+    if result.RowsAffected == 0 {
+      fmt.Println("No admin user found!")
+    }
+
+    adminUser.Password = all.HashString("admin")
+    all.Postgres.Save(&adminUser)
+
+    fmt.Println("Admin password reset!")
+
+    return
+  }
+
+  if strings.Contains(args, "-reset_database") {
+    all.Postgres.Exec("DROP SCHEMA public CASCADE;")
+    all.Postgres.Exec("CREATE SCHEMA public;")
+    all.Postgres.Exec("GRANT ALL ON SCHEMA public TO postgres;")
+    all.Postgres.Exec("GRANT ALL ON SCHEMA public TO public;")
+    all.Postgres.Exec("COMMENT ON SCHEMA public IS 'standard public schema';")
+    all.AutoMigrate()
+    return
+  }
+  
+  fmt.Println(args)
+
   r := gin.Default()
 
   r.Use(middleware.CheckDatabase)
