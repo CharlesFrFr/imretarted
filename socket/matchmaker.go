@@ -46,12 +46,14 @@ type TicketBucket struct {
 	BuildId string `json:"buildId"`
 }
 
-func calculateETA(matchmakeInfo *MatchmakeInfo) int {
+func calculateETA(matchmakeInfo *MatchmakeInfo) int64 {
 	playersQueued := len(MatchmakeQueue) + FakePlayersToInflateETA
 	infront := playersQueued - matchmakeInfo.PositionInQueue
 
 	gameServers := common.SortGameServersByPlayersLeft(matchmakeInfo.PlaylistName, matchmakeInfo.Region)
-	all.MarshPrintJSON(gameServers)
+	if len(gameServers) < 1 {
+		return 9999999999
+	}
 
 	eta := 0
 	serversToGo := int(math.Round(float64(infront) / 100)) + 1
@@ -84,7 +86,7 @@ func calculateETA(matchmakeInfo *MatchmakeInfo) int {
 
 	eta += int((infront * playerWaitTime) / len(gameServers))
 
-	return eta
+	return int64(eta)
 }
 
 func sendStatusUpdates() {

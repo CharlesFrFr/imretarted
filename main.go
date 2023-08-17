@@ -127,6 +127,7 @@ func main() {
     blank.POST("/datarouter/*api", controllers.NoContent)
     blank.GET("/lightswitch/api/service/bulk/status", controllers.Lightswitch)
     blank.GET("/lightswitch/api/service/Fortnite/status", controllers.Lightswitch)
+    blank.GET("/fortnite/api/game/v2/chat/:accountId/:chatRoomType/:area/pc", controllers.ChatRooms)
   }
 
   r.GET("/", controllers.XMPP)

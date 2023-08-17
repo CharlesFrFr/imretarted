@@ -269,8 +269,19 @@ func EquipBattleRoyaleCustomization(c *gin.Context, user models.User, profile *m
 			activeLoadout.Attributes.LockerSlotsData.Slots["Dance"].Items[body.IndexWithinSlot] = body.ItemToSlot
 			valueChanged = athenaProfile.Stats.Attributes.FavoriteDance
 		case "itemwrap":
-			athenaProfile.Stats.Attributes.FavoriteItemWraps[body.IndexWithinSlot] = body.ItemToSlot
-			activeLoadout.Attributes.LockerSlotsData.Slots["ItemWrap"].Items[body.IndexWithinSlot] = body.ItemToSlot
+			if body.IndexWithinSlot >= 0 {
+				athenaProfile.Stats.Attributes.FavoriteItemWraps[body.IndexWithinSlot] = body.ItemToSlot
+				activeLoadout.Attributes.LockerSlotsData.Slots["ItemWrap"].Items[body.IndexWithinSlot] = body.ItemToSlot
+			} 
+			if body.IndexWithinSlot == -1 {
+				for i := range activeLoadout.Attributes.LockerSlotsData.Slots["ItemWrap"].Items {
+					activeLoadout.Attributes.LockerSlotsData.Slots["ItemWrap"].Items[i] = body.ItemToSlot
+				}
+				for i := range athenaProfile.Stats.Attributes.FavoriteItemWraps {
+					athenaProfile.Stats.Attributes.FavoriteItemWraps[i] = body.ItemToSlot
+				}
+			}
+
 			valueChanged = athenaProfile.Stats.Attributes.FavoriteItemWraps
 			lowercaseItemType = "itemwraps"
 		default:
@@ -373,6 +384,7 @@ func SetBattleRoyaleBanner(c *gin.Context, user models.User, profile *models.Pro
 	}
 
 	profile.Items = defaultProfile.Items
+	profile.Stats = defaultProfile.Stats
 
 	common.AppendLoadoutToProfileNoSave(profile, &activeLoadout, user.AccountId)
 

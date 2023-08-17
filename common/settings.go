@@ -23,10 +23,10 @@ var (
 )
 
 func InitGameServers() {
-	addGameServer("playlist_defaultsolo", "EU", "158.178.203.104", 7777)
-	addGameServer("playlist_defaultsolo", "EU", "158.178.203.104", 7777)
-	addGameServer("playlist_defaultsolo", "EU", "158.178.203.104", 7777)
-	addGameServer("playlist_defaultsolo", "EU", "158.178.203.104", 7777)
+	addGameServer("playlist_defaultsolo", "EU", "127.0.0.1", 7777)
+	// addGameServer("playlist_defaultsolo", "EU", "158.178.203.104", 7777)
+	// addGameServer("playlist_defaultsolo", "EU", "158.178.203.104", 7777)
+	// addGameServer("playlist_defaultsolo", "EU", "158.178.203.104", 7777)
 }
 
 func GetGameServer(playlist string, region string) GameServer {
@@ -60,6 +60,6 @@ func addGameServer(playlist string, region string, ip string, port int) {
 		Playlist:    playlist,
 		Region:      region,
 		PlayersLeft: rand.Intn(100 - 43) + 43,
-		Joinable:    false,
+		Joinable:    true,
 	})
 }
