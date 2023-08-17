@@ -1101,7 +1101,7 @@ func XMPP(c *gin.Context) {
 func XMPPClients(c *gin.Context) {
 	c.JSON(200, gin.H{
 		// "address": socket.AccountIdToXMPPRemoteAddress,
-		// "clients": socket.ActiveXMPPClients,
+		"clients": socket.ActiveXMPPClients,
 		"count": len(socket.ActiveXMPPClients),
 	})
 }
@@ -1125,9 +1125,9 @@ func MatchmakerClients(c *gin.Context) {
 
 func Parties(c *gin.Context) {
 	c.JSON(200, gin.H{
-		"parties": ActiveParties,
-		"accountsToParties": AccountIdToPartyId,
-		"count": len(ActiveParties),
+		"parties": common.ActiveParties,
+		"accountsToParties": common.AccountIdToPartyId,
+		"count": len(common.ActiveParties),
 	})
 }
 

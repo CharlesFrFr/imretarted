@@ -7,6 +7,11 @@ import (
 	"github.com/zombman/server/models"
 )
 
+var (
+	ActiveParties = make(map[string]models.V2Party)
+	AccountIdToPartyId = make(map[string]string)
+)
+
 func CreateParty(activeParties *map[string]models.V2Party, accountIdToPartyId *map[string]string, captain models.User) models.V2Party {
 	partyMeta := make(map[string]interface{})
 	partyMeta["urn:epic:cfg:build-id_s"] = "1:1:1"

@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/zombman/server/all"
@@ -29,6 +30,7 @@ var (
 type ClientInfo struct {
 	UUID string
 	SocketID string
+	Resource string
 	Connection *websocket.Conn
 	Authenticated bool
 	User models.User
@@ -63,6 +65,10 @@ func XMPPHandler(w http.ResponseWriter, r *http.Request){
 			break
 		}
 
+		all.PrintGreen([]any{
+			string(messageData),
+		})
+
 		if xml.Unmarshal([]byte(messageData), &models.OpenXML{}) == nil {
 			XHandleOpen(conn, messageData, messageType, clientInfo)
 			continue
@@ -92,8 +98,16 @@ func XMPPHandler(w http.ResponseWriter, r *http.Request){
 			continue
 		}
 
-		if xml.Unmarshal([]byte(messageData), &models.PresenceXML{}) == nil {
-			XHandlePresence(conn, messageData, messageType, clientInfo)
+		if xml.Unmarshal([]byte(messageData), &models.PartyPresenceXML{}) == nil {
+			var presence models.PartyPresenceXML
+			xml.Unmarshal([]byte(messageData), &presence)
+
+			if presence.To == "" {
+				XHandlePresence(conn, messageData, messageType, clientInfo)
+				continue
+			}
+	
+			XHandlePartyPresence(conn, messageData, messageType, clientInfo)
 			continue
 		}
 
@@ -101,7 +115,6 @@ func XMPPHandler(w http.ResponseWriter, r *http.Request){
 			conn.Close()
 			continue
 		}
-
 
 		all.PrintRed([]any{
 			"unkown message type",
@@ -159,6 +172,7 @@ func XHandleBindIQ(conn *websocket.Conn, message []byte, messageType int, client
 	fmt.Println(iq.Bind.Resource)
 
 	clientInfo.SocketID = clientInfo.User.AccountId + "@prod.ol.epicgames.com/" + iq.Bind.Resource
+
 	
 	conn.WriteMessage(messageType, []byte(`
 		<iq to="` + clientInfo.SocketID + `" id="_xmpp_bind1" xmlns="jabber:client" type="result">
@@ -234,6 +248,7 @@ func XHandleAuth(conn *websocket.Conn, message []byte, messageType int, clientIn
 }
 
 func XHandlePresence(conn *websocket.Conn, message []byte, messageType int, clientInfo *ClientInfo) {
+	all.PrintRed([]any{"normal presence"})
 	var presence models.PresenceXML
 	xml.Unmarshal([]byte(message), &presence)
 
@@ -262,6 +277,119 @@ func XHandlePresence(conn *websocket.Conn, message []byte, messageType int, clie
 
 	XMPPUpdateStatus(clientInfo.User.AccountId, clientInfo.User.AccountId)
 }
+
+func XHandlePartyPresence(conn *websocket.Conn, message []byte, messageType int, clientInfo *ClientInfo) {
+	var presence models.PartyPresenceXML
+	xml.Unmarshal([]byte(message), &presence)
+	
+	all.PrintMagenta([]any{"party presence", presence})
+	// Party-2ad8b220-4f13-4456-a0a3-cbde2bcbfcfd@muc.prod.ol.epicgames.com/admin:571f16e7-c6aa-41f5-b24c-edc70fc88406:V2:Fortnite:WIN::E0EB415645D78EC5C252798418B1548A
+	// to := strings.Split(presence.To, "/")
+
+	// clientInfo.Connection.WriteMessage(1, []byte(`
+	// 	<presence to="`+ clientInfo.SocketID +`" from="`+ presence.To +`" xmlns="jabber:client" type="unavailable">
+	// 		<x xmlns="http://jabber.org/protocol/muc#user">
+	// 			<item nick="`+ clientInfo.User.Username +`" jid="`+ clientInfo.SocketID +`" role="participant"/>
+	// 			<status code="110"/>
+	// 			<status code="100"/>
+	// 			<status code="170"/>
+	// 		</x>
+	// 	</presence>
+	// `))
+
+	foundPartyId, ok := common.AccountIdToPartyId[clientInfo.User.AccountId]
+	if !ok {
+		return
+	}
+
+	// party, ok := common.ActiveParties[foundPartyId]
+	// if !ok {
+	// 	return
+	// }
+
+	if presence.Type == "unavailable" {
+		clientInfo.Connection.WriteMessage(1, []byte(`
+			<presence to="`+ clientInfo.SocketID +`" from="`+ presence.To +`" xmlns="jabber:client" type="unavailable">
+				<x xmlns="http://jabber.org/protocol/muc#user">
+					<item nick="`+ partyNick(clientInfo.User, clientInfo.SocketID) +`" jid="`+ partySocketId(foundPartyId, partyNick(clientInfo.User, clientInfo.SocketID)) +`" role="none"/>
+					<status code="110"/>
+					<status code="100"/>
+					<status code="170"/>
+				</x>
+			</presence>
+		`))
+		return
+	}
+
+		clientInfo.Connection.WriteMessage(1, []byte(`
+		<presence to="`+ clientInfo.SocketID +`" from="`+ presence.To +`" xmlns="jabber:client">
+			<x xmlns="http://jabber.org/protocol/muc#user">
+				<item nick="`+ partyNick(clientInfo.User, clientInfo.SocketID) +`" jid="`+ partySocketId(foundPartyId, partyNick(clientInfo.User, clientInfo.SocketID)) +`" role="none"/>
+				<status code="110"/>
+				<status code="100"/>
+				<status code="170"/>
+			</x>
+		</presence>
+	`))
+
+	party, ok := common.ActiveParties[foundPartyId]
+	if !ok {
+		return
+	}
+
+	for _, member := range party.Members {
+		partyMemberClient, err := XGetClientFromAccountId(member.AccountId)
+		if err != nil {
+			continue
+		}
+				
+		clientInfo.Connection.WriteMessage(1, []byte(`
+			<presence to="`+ clientInfo.SocketID +`" from="`+ partyMemberClient.SocketID +`" xmlns="jabber:client">
+				<x xmlns="http://jabber.org/protocol/muc#user">
+					<item nick="`+ partyNick(partyMemberClient.User, partyMemberClient.SocketID) +`" jid="`+ partyMemberClient.SocketID +`" role="participant" affiliation="none"/>
+				</x>
+			</presence>
+		`))
+
+		all.PrintMagenta([]any{`
+			<presence to="`+ clientInfo.SocketID +`" from="`+ clientInfo.SocketID +`" xmlns="jabber:client">
+				<x xmlns="http://jabber.org/protocol/muc#user">
+					<item nick="`+ partyNick(partyMemberClient.User, partyMemberClient.SocketID) +`" jid="`+ partyMemberClient.SocketID +`" role="participant" affiliation="none"/>
+				</x>
+			</presence>
+		`})
+
+		if partyMemberClient.User.AccountId == clientInfo.User.AccountId {
+			continue
+		}
+
+		partyMemberClient.Connection.WriteMessage(1, []byte(`
+			<presence to="`+ partyMemberClient.SocketID +`" from="`+ clientInfo.SocketID +`" xmlns="jabber:client">
+				<x xmlns="http://jabber.org/protocol/muc#user">
+					<item nick="`+ partyNick(clientInfo.User, clientInfo.SocketID) +`" jid="`+ clientInfo.SocketID +`" role="participant" affiliation="none"/>
+				</x>
+			</presence>
+		`))
+
+		all.PrintMagenta([]any{`
+			<presence to="`+ partyMemberClient.SocketID +`" from="`+ partySocketId(foundPartyId, partyNick(clientInfo.User, clientInfo.SocketID)) +`" xmlns="jabber:client">
+				<x xmlns="http://jabber.org/protocol/muc#user">
+					<item nick="`+ partyNick(clientInfo.User, clientInfo.SocketID) +`" jid="`+ clientInfo.SocketID +`" role="participant" affiliation="none"/>
+				</x>
+			</presence>
+		`})
+	}
+}
+
+
+func partyNick(user models.User, socketId string) string {
+	return user.Username + ":" + user.AccountId + ":" + strings.Split(socketId, "/")[1]
+}
+
+func partySocketId(partyId string, socketId string) string {
+	return "Party-" + partyId + "@muc.prod.ol.epicgames.com/" + socketId
+}
+
 
 func XGetFriendStatus(clientInfo *ClientInfo) {
 	friends := common.GetAllAcceptedFriends(clientInfo.User.AccountId)
@@ -352,20 +480,56 @@ func XMPPUpdateStatus(accountId string, friendId string) {
 	`))
 }
 
-func XMPPUpdateStatusSingle(accountId string, friendId string) {
-	mainClient, err := XGetClientFromAccountId(accountId)
+func SendJoinPartyRequest(accountId string, partyId string, ac string) {
+	client, err := XGetClientFromAccountId(accountId)
 	if err != nil {
 		return
 	}
 
-	friendClient, err := XGetClientFromAccountId(friendId)
+	joinPresence := gin.H{
+		"Status": "",
+		"bIsJoinable": false,
+		"bIsPlaying": false,
+		"bHasVoiceSupport": false,
+		"SessionId": "",
+		"Properties": gin.H{
+			"party.joininfodata.286331153_j": gin.H{
+				"sourceId": client.User.AccountId,
+				"sourceDisplayName": client.User.Username,
+				"sourcePlatform": "WIN",
+				"partyId": partyId,
+				"partyTypeId": 286331153,
+				"key": ac,
+				"appId": "Fortnite",
+				"buildId": "1:1:",
+				"partyFlags": 6,
+				"notAcceptingReason": 0,
+			},
+		},
+	}
+
+	jsonPresence, err := json.Marshal(joinPresence)
 	if err != nil {
 		return
 	}
 
-	mainClient.Connection.WriteMessage(1, []byte(`
-		<presence to="`+ friendClient.SocketID +`" xmlns="jabber:client" from="`+ mainClient.SocketID +`" type="available">
-			<status>`+ mainClient.Status +`</status>
-		</presence>
-	`))
+	friends := common.GetAllAcceptedFriends(accountId)
+	for _, friend := range friends {
+		friendClient, err := XGetClientFromAccountId(friend.AccountId)
+		if err != nil {
+			continue
+		}
+
+		friendClient.Connection.WriteMessage(1, []byte(`
+			<presence to="`+ friendClient.SocketID +`" xmlns="jabber:client" from="`+ client.SocketID +`" type="available">
+				<status>`+ string(jsonPresence) +`</status>
+			</presence>
+		`))
+
+		all.PrintMagenta([]any{`
+			<presence to="`+ client.SocketID +`" from="`+ friendClient.SocketID +`" xmlns="jabber:client">
+				<status>`+ string(jsonPresence) +`</status>
+			</presence>
+		`})
+	}
 }

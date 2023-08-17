@@ -145,8 +145,9 @@ func main() {
     party.POST("/parties", controllers.PartyPost)
     party.GET("/parties/:partyId", controllers.PartyGet)
     party.PATCH("/parties/:partyId", controllers.PartyPatch)
-    party.PATCH("/parties/:partyId/members/:memberId/meta", controllers.PartyPatchMemberMeta)
     party.DELETE("/parties/:partyId/members/:memberId", controllers.PartyDeleteMember)
+    party.PATCH("/parties/:partyId/members/:memberId/meta", controllers.PartyPatchMemberMeta)
+    party.POST("/parties/:partyId/members/:newMemberId/join", controllers.PartyJoinMember)
 
 
     party.GET("/user/:accountId", controllers.PartyGetUser)

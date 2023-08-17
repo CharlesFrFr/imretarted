@@ -178,3 +178,23 @@ type StatusJSON struct {
 	BIsJoinable     bool      `json:"bIsJoinable"`
 	BIsPlaying      bool      `json:"bIsPlaying"`
 }
+
+/*<presence to="Party-2ad8b220-4f13-4456-a0a3-cbde2bcbfcfd@muc.prod.ol.epicgames.com/admin:571f16e7-c6aa-41f5-b24c-edc70fc88406:V2:Fortnite:WIN::E0EB415645D78EC5C252798418B1548A"><x xmlns="http://jabber.org/protocol/muc"><history maxstanzas="50"/></x></presence>*/
+
+type PartyPresenceXML struct {
+	XMLName xml.Name `xml:"presence"`
+	Type    string   `xml:"type,attr"`
+	To      string   `xml:"to,attr"`
+	X       X        `xml:"x"`
+}
+
+type X struct {
+	XMLName xml.Name `xml:"x"`
+	XMLNS   string   `xml:"xmlns,attr"`
+	History History  `xml:"history"`
+}
+
+type History struct {
+	XMLName     xml.Name `xml:"history"`
+	Maxstanzas  string   `xml:"maxstanzas,attr"`
+}

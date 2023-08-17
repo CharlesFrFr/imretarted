@@ -39,3 +39,27 @@ type V2PartyConnection struct {
 	YieldLeadership bool                   `json:"yield_leadership"`
 	Meta            map[string]interface{} `json:"meta"`
 }
+
+/*captain.Meta["urn:epic:member:joinrequestusers_j"] = gin.H{}*./*/
+
+type V2CaptainJoinRequestUsers struct {
+	Users []V2CaptainJoinRequestUser `json:"users"`
+}
+
+type V2CaptainJoinRequestUser struct {
+	ID          string `json:"id"`
+	DisplayName string `json:"dn"`
+	Platform    string `json:"plat"`
+	Data        string `json:"data"`
+}
+
+// 	'{"RawSquadAssignments":[{"memberId":"39764163-6510-4915-8ec1-2aedb3ce6c94","absoluteMemberIdx":0}]}'
+
+type V2RawSquadAssignments struct {
+	RawSquadAssignments []V2RawSquadAssignment `json:"RawSquadAssignments"`
+}
+
+type V2RawSquadAssignment struct {
+	MemberId          string `json:"memberId"`
+	AbsoluteMemberIdx int    `json:"absoluteMemberIdx"`
+}

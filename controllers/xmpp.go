@@ -62,11 +62,11 @@ func KillSessionWithToken(c *gin.Context) {
 		return
 	}
 
-	partyId, ok := AccountIdToPartyId[accountId]
+	partyId, ok := common.AccountIdToPartyId[accountId]
 	all.PrintGreen([]any{"partyId", partyId, accountId})
 	if ok {
-		delete(ActiveParties, partyId)
-		delete(AccountIdToPartyId, accountId)
+		delete(common.ActiveParties, partyId)
+		delete(common.AccountIdToPartyId, accountId)
 	}
 
 	c.Status(204)
