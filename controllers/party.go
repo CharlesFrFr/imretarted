@@ -324,11 +324,30 @@ func PartyJoinMember(c *gin.Context) {
 	common.ActiveParties[partyId] = party
 	common.AccountIdToPartyId[user.AccountId] = partyId
 
-	socket.SendJoinPartyRequest(user.AccountId, partyId, c.GetHeader("Authorization"))
+	//  LEGACY DONT USE
+	// socket.SendJoinPartyRequest_legacy(user.AccountId, partyId, "k")
 	
 	c.JSON(200, gin.H{
-		"status": "awyhuid",
+		"status": "PENDING_CONNECTION",
+		"party_id": partyId,
 	})
+
+	r2 := socket.AccountIdToXMPPRemoteAddress[user.AccountId]
+	info1 := socket.ActiveXMPPClients[r2]
+
+	for _, member := range party.Members {
+		r := socket.AccountIdToXMPPRemoteAddress[member.AccountId]
+		info := socket.ActiveXMPPClients[r]
+
+		// xml for fortnite xmpp
+		info.Connection.WriteMessage(1, []byte(`
+			<presence to="` + info.SocketID + `" from="`+ info1.SocketID +`" xmlns="jabber:client">
+				<x xmlns="http://jabber.org/protocol/muc#user">
+					<item affiliation="owner" role="moderator" />
+				</x>
+			</presence>
+		`))	
+	}
 
 	deleteAnyEmptyParties()
 }

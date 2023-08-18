@@ -282,7 +282,7 @@ func XHandlePartyPresence(conn *websocket.Conn, message []byte, messageType int,
 	var presence models.PartyPresenceXML
 	xml.Unmarshal([]byte(message), &presence)
 	
-	all.PrintMagenta([]any{"party presence", presence})
+	all.PrintMagenta([]any{"party presence", string(message)})
 	// Party-2ad8b220-4f13-4456-a0a3-cbde2bcbfcfd@muc.prod.ol.epicgames.com/admin:571f16e7-c6aa-41f5-b24c-edc70fc88406:V2:Fortnite:WIN::E0EB415645D78EC5C252798418B1548A
 	// to := strings.Split(presence.To, "/")
 
@@ -321,7 +321,7 @@ func XHandlePartyPresence(conn *websocket.Conn, message []byte, messageType int,
 		return
 	}
 
-		clientInfo.Connection.WriteMessage(1, []byte(`
+	clientInfo.Connection.WriteMessage(1, []byte(`
 		<presence to="`+ clientInfo.SocketID +`" from="`+ presence.To +`" xmlns="jabber:client">
 			<x xmlns="http://jabber.org/protocol/muc#user">
 				<item nick="`+ partyNick(clientInfo.User, clientInfo.SocketID) +`" jid="`+ partySocketId(foundPartyId, partyNick(clientInfo.User, clientInfo.SocketID)) +`" role="none"/>
@@ -366,7 +366,7 @@ func XHandlePartyPresence(conn *websocket.Conn, message []byte, messageType int,
 		partyMemberClient.Connection.WriteMessage(1, []byte(`
 			<presence to="`+ partyMemberClient.SocketID +`" from="`+ clientInfo.SocketID +`" xmlns="jabber:client">
 				<x xmlns="http://jabber.org/protocol/muc#user">
-					<item nick="`+ partyNick(clientInfo.User, clientInfo.SocketID) +`" jid="`+ clientInfo.SocketID +`" role="participant" affiliation="none"/>
+					<item nick="aaa`+ partyNick(clientInfo.User, clientInfo.SocketID) +`" jid="`+ clientInfo.SocketID +`" role="participant" affiliation="none"/>
 				</x>
 			</presence>
 		`))
@@ -480,7 +480,7 @@ func XMPPUpdateStatus(accountId string, friendId string) {
 	`))
 }
 
-func SendJoinPartyRequest(accountId string, partyId string, ac string) {
+func SendJoinPartyRequest_legacy(accountId string, partyId string, ac string) {
 	client, err := XGetClientFromAccountId(accountId)
 	if err != nil {
 		return
@@ -513,23 +513,23 @@ func SendJoinPartyRequest(accountId string, partyId string, ac string) {
 		return
 	}
 
-	friends := common.GetAllAcceptedFriends(accountId)
-	for _, friend := range friends {
-		friendClient, err := XGetClientFromAccountId(friend.AccountId)
+	party := common.ActiveParties[partyId]
+	for _, member := range party.Members {
+		memberClient, err := XGetClientFromAccountId(member.AccountId)
 		if err != nil {
 			continue
 		}
 
-		friendClient.Connection.WriteMessage(1, []byte(`
-			<presence to="`+ friendClient.SocketID +`" xmlns="jabber:client" from="`+ client.SocketID +`" type="available">
+		memberClient.Connection.WriteMessage(1, []byte(`
+			<presence to="`+ memberClient.SocketID +`" xmlns="jabber:client" from="`+ client.SocketID +`" type="available">
 				<status>`+ string(jsonPresence) +`</status>
 			</presence>
 		`))
 
-		all.PrintMagenta([]any{`
-			<presence to="`+ client.SocketID +`" from="`+ friendClient.SocketID +`" xmlns="jabber:client">
+		client.Connection.WriteMessage(1, []byte(`
+			<presence to="`+ client.SocketID +`" xmlns="jabber:client" from="`+ memberClient.SocketID +`" type="available">
 				<status>`+ string(jsonPresence) +`</status>
 			</presence>
-		`})
+		`))
 	}
 }
