@@ -73,6 +73,43 @@ func ProfileActionHandler(c *gin.Context) {
 	c.JSON(200, response)
 }
 
+func DedicatedServerProfileHandler(c *gin.Context) {
+	userId := c.Param("accountId")
+	profileId, _ := c.GetQuery("profileId")
+
+	response := models.ProfileResponse{}
+
+	profile, err := common.ReadProfileFromUser(userId, profileId)
+	if err != nil {
+		common.ErrorBadRequest(c)
+		c.Abort()
+		return
+	}
+
+	if profile.ProfileId == "athena" {
+		profile.Stats.Attributes["season_num"] = common.Season
+	}
+	
+	response.ProfileChanges = []models.ProfileChange{{
+		ChangeType: "fullProfileUpdate",
+		Profile: profile,
+	}}
+
+	profile.Rvn += 1
+	profile.CommandRevision = profile.Rvn
+	profile.AccountId = userId
+	profile.Updated = time.Now().Format("2006-01-02T15:04:05.999Z")
+
+	response.ProfileRevision = profile.Rvn
+	response.ProfileCommandRevision = profile.CommandRevision
+	response.ProfileID = profileId
+	response.ProfileChangesBaseRevision = profile.Rvn - 1
+	response.ServerTime = time.Now().Format("2006-01-02T15:04:05.999Z")
+	response.ResponseVersion = 1
+
+	c.JSON(200, response)
+}
+
 func PurchaseCatalogEntry(c *gin.Context, user models.User, profile *models.Profile, response *models.ProfileResponse) {
 	athenaProfile, nerr := common.ReadProfileFromUser(user.AccountId, "athena")
 	if nerr != nil {

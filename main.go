@@ -115,6 +115,7 @@ func main() {
     fortnite.GET("/game/v2/profileToken/verify/*accountId", controllers.NoContent)
 
     fortnite.POST("/game/v2/profile/:accountId/client/:action", middleware.VerifyAccessToken, controllers.ProfileActionHandler)
+    fortnite.POST("/game/v2/profile/:accountId/dedicated_server/:action", controllers.DedicatedServerProfileHandler)
     fortnite.POST("/game/v2/tryPlayOnPlatform/account/*accountId", middleware.VerifyAccessToken, controllers.True)
     fortnite.GET("/game/v2/enabled_features", middleware.VerifyAccessToken, controllers.EmptyArray)
     fortnite.GET("/receipts/v1/account/:accountId/receipts", middleware.VerifyAccessToken, controllers.EmptyArray)
