@@ -1,8 +1,6 @@
-# ![Zombie Server](./public/icon.png)
+![template(7)(1)](https://github.com/zombman/backend/assets/121964555/a1624e90-ed7a-4a8d-a00c-b6707c69b4ac)
 
-An open source, performant fortnite backend server with a built in web-interface and desktop launcher!
-
-_Note: Some features are not yet implemented, please see the [Roadmap](#roadmap) for more information._
+An open source, performant fortnite backend server with a built in web-interface and desktop launcher! _Note: Some features are not yet implemented, please see the [Roadmap](#roadmap) for more information._
 
 [How to setup](https://www.youtube.com/watch?v=WvWrgmEH6ZI&t=189s&ab_channel=ulnk)
 
@@ -31,7 +29,6 @@ _Note: Some features are not yet implemented, please see the [Roadmap](#roadmap)
 - [x] Game launcher and web interface
 - [x] Friends
 - [x] Matchmaker
-  - [ ] Not smart atm. Currently making a custom game server so that the backend can talk to each game server and retrieve the required information to make a smart matchmaker. (e.g. only let first 100 in the queue enter match, properly calculated eta, etc.)
 - [x] Xmpp
 - [x] Parties
 - [ ] Party v2
