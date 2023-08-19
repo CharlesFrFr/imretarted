@@ -2,8 +2,6 @@
 
 An open source, performant fortnite backend server with a built in web-interface and desktop launcher! _Note: Some features are not yet implemented, please see the [Roadmap](#roadmap) for more information._
 
-[How to setup](https://www.youtube.com/watch?v=WvWrgmEH6ZI&t=189s&ab_channel=ulnk)
-
 ## Branches
 
 - **[Frontend](https://github.com/zombman/server/tree/frontend)** - Launcher and web interface for backend.
@@ -15,6 +13,11 @@ An open source, performant fortnite backend server with a built in web-interface
 - **Easy to use:** Designed to be easy to use and setup.
 - **Open source:** Completely free to use, share and modify!
 - **Web interface:** Built in web interface to manage your server. (not implemented yet)
+
+## Setup
+
+- Watch the quick setup guide [here](https://www.youtube.com/watch?v=WvWrgmEH6ZI&t=189s&ab_channel=ulnk).
+- To keep your backend updated with the latest updates, instead of downloading the project, use the command ```git clone https://github.com/zombman/backend``` to download. You may need to install [git](https://git-scm.com/) for this. Now whenever I update the repo, just use the command ```git pull```!
 
 ## Roadmap
 
@@ -35,3 +38,8 @@ Roadmap is in order of completion, so closer to the top of list means it will be
 - [x] Parties
 - [ ] Party v2
 - [ ] Battle Pass & Levelling Up
+
+## Prerequisites
+
+- A basic understanding of how to build and run applications. Now made easier with the [scripts folder!](https://github.com/zombman/backend/tree/master/_setup)
+- [GoLang](https://go.dev)
