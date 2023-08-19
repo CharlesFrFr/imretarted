@@ -8,7 +8,6 @@ import (
 	"github.com/zombman/server/all"
 	"github.com/zombman/server/common"
 	"github.com/zombman/server/models"
-	"github.com/zombman/server/socket"
 )
 
 func PartyGetUser(c *gin.Context) {
@@ -223,7 +222,7 @@ func PartyJoinMember(c *gin.Context) {
 	user := c.MustGet("user").(models.User)
 	partyId := c.Param("partyId")
 
-	all.PrintMagenta([]any{user.AccountId, c.Param("newMemberId")})
+	all.PrintMagenta([]any{user.AccountId})
 
 	party, ok := common.ActiveParties[partyId]
 	if !ok {
@@ -327,27 +326,9 @@ func PartyJoinMember(c *gin.Context) {
 	//  LEGACY DONT USE
 	// socket.SendJoinPartyRequest_legacy(user.AccountId, partyId, "k")
 	
-	c.JSON(200, gin.H{
-		"status": "PENDING_CONNECTION",
-		"party_id": partyId,
+	c.JSON(201, gin.H{
+		"status": "JOINED",
 	})
-
-	r2 := socket.AccountIdToXMPPRemoteAddress[user.AccountId]
-	info1 := socket.ActiveXMPPClients[r2]
-
-	for _, member := range party.Members {
-		r := socket.AccountIdToXMPPRemoteAddress[member.AccountId]
-		info := socket.ActiveXMPPClients[r]
-
-		// xml for fortnite xmpp
-		info.Connection.WriteMessage(1, []byte(`
-			<presence to="` + info.SocketID + `" from="`+ info1.SocketID +`" xmlns="jabber:client">
-				<x xmlns="http://jabber.org/protocol/muc#user">
-					<item affiliation="owner" role="moderator" />
-				</x>
-			</presence>
-		`))	
-	}
 
 	deleteAnyEmptyParties()
 }

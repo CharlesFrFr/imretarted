@@ -29,7 +29,7 @@ var (
 
 type ClientInfo struct {
 	UUID string
-	SocketID string
+	JID string
 	Resource string
 	Connection *websocket.Conn
 	Authenticated bool
@@ -49,7 +49,7 @@ func XMPPHandler(w http.ResponseWriter, r *http.Request){
 		UUID: uuid.New().String(),
 		Authenticated: false,
 		User: models.User{},
-		SocketID: "",
+		JID: "",
 		Connection: conn,
 	}
 	ActiveXMPPClients[remoteAddress] = clientInfo
@@ -145,7 +145,7 @@ func XHandleMessage(conn *websocket.Conn, message []byte, messageType int, clien
 
 	if msg.Type == "chat" {
 		recipientClient.Connection.WriteMessage(messageType, []byte(`
-			<message to="`+ recipientClient.SocketID +`" from="`+ clientInfo.SocketID +`" id="`+ msg.ID +`" xmlns="jabber:client" type="chat">
+			<message to="`+ recipientClient.JID +`" from="`+ clientInfo.JID +`" id="`+ msg.ID +`" xmlns="jabber:client" type="chat">
 				<body>`+ msg.Body.Value +`</body>
 			</message>
 		`))
@@ -153,7 +153,7 @@ func XHandleMessage(conn *websocket.Conn, message []byte, messageType int, clien
 	}
 
 	recipientClient.Connection.WriteMessage(messageType, []byte(`
-		<message to="`+ recipientClient.SocketID +`" from="`+ clientInfo.SocketID +`" id="`+ msg.ID +`" xmlns="jabber:client">
+		<message to="`+ recipientClient.JID +`" from="`+ clientInfo.JID +`" id="`+ msg.ID +`" xmlns="jabber:client">
 			<body>`+ msg.Body.Value +`</body>
 		</message>
 	`))
@@ -161,7 +161,7 @@ func XHandleMessage(conn *websocket.Conn, message []byte, messageType int, clien
 
 func XHandleSessionIQ(conn *websocket.Conn, message []byte, messageType int, clientInfo *ClientInfo, id string) {
 	conn.WriteMessage(messageType, []byte(`
-		<iq to="`+ clientInfo.SocketID +`" from="prod.ol.epicgames.com" id="`+ id +`" xmlns="jabber:client" type="result" />
+		<iq to="`+ clientInfo.JID +`" from="prod.ol.epicgames.com" id="`+ id +`" xmlns="jabber:client" type="result" />
 	`))
 }
 
@@ -171,13 +171,13 @@ func XHandleBindIQ(conn *websocket.Conn, message []byte, messageType int, client
 
 	fmt.Println(iq.Bind.Resource)
 
-	clientInfo.SocketID = clientInfo.User.AccountId + "@prod.ol.epicgames.com/" + iq.Bind.Resource
+	clientInfo.JID = clientInfo.User.AccountId + "@prod.ol.epicgames.com/" + iq.Bind.Resource
 
 	
 	conn.WriteMessage(messageType, []byte(`
-		<iq to="` + clientInfo.SocketID + `" id="_xmpp_bind1" xmlns="jabber:client" type="result">
+		<iq to="` + clientInfo.JID + `" id="_xmpp_bind1" xmlns="jabber:client" type="result">
 			<bind xmlns="urn:ietf:params:xml:ns:xmpp-bind">
-				<jid>` + clientInfo.SocketID + `</jid>
+				<jid>` + clientInfo.JID + `</jid>
 			</bind>
 		</iq>
 	`))
@@ -269,7 +269,7 @@ func XHandlePresence(conn *websocket.Conn, message []byte, messageType int, clie
 		}
 
 		friendClient.Connection.WriteMessage(1, []byte(`
-			<presence to="`+ friendClient.SocketID +`" xmlns="jabber:client" from="`+ clientInfo.SocketID +`" type="available">
+			<presence to="`+ friendClient.JID +`" xmlns="jabber:client" from="`+ clientInfo.JID +`" type="available">
 				<status>`+ presence.Status.Value +`</status>
 			</presence>
 		`))
@@ -286,16 +286,6 @@ func XHandlePartyPresence(conn *websocket.Conn, message []byte, messageType int,
 	// Party-2ad8b220-4f13-4456-a0a3-cbde2bcbfcfd@muc.prod.ol.epicgames.com/admin:571f16e7-c6aa-41f5-b24c-edc70fc88406:V2:Fortnite:WIN::E0EB415645D78EC5C252798418B1548A
 	// to := strings.Split(presence.To, "/")
 
-	// clientInfo.Connection.WriteMessage(1, []byte(`
-	// 	<presence to="`+ clientInfo.SocketID +`" from="`+ presence.To +`" xmlns="jabber:client" type="unavailable">
-	// 		<x xmlns="http://jabber.org/protocol/muc#user">
-	// 			<item nick="`+ clientInfo.User.Username +`" jid="`+ clientInfo.SocketID +`" role="participant"/>
-	// 			<status code="110"/>
-	// 			<status code="100"/>
-	// 			<status code="170"/>
-	// 		</x>
-	// 	</presence>
-	// `))
 
 	foundPartyId, ok := common.AccountIdToPartyId[clientInfo.User.AccountId]
 	if !ok {
@@ -307,79 +297,52 @@ func XHandlePartyPresence(conn *websocket.Conn, message []byte, messageType int,
 	// 	return
 	// }
 
-	if presence.Type == "unavailable" {
-		clientInfo.Connection.WriteMessage(1, []byte(`
-			<presence to="`+ clientInfo.SocketID +`" from="`+ presence.To +`" xmlns="jabber:client" type="unavailable">
-				<x xmlns="http://jabber.org/protocol/muc#user">
-					<item nick="`+ partyNick(clientInfo.User, clientInfo.SocketID) +`" jid="`+ partySocketId(foundPartyId, partyNick(clientInfo.User, clientInfo.SocketID)) +`" role="none"/>
-					<status code="110"/>
-					<status code="100"/>
-					<status code="170"/>
-				</x>
-			</presence>
-		`))
-		return
-	}
-
-	clientInfo.Connection.WriteMessage(1, []byte(`
-		<presence to="`+ clientInfo.SocketID +`" from="`+ presence.To +`" xmlns="jabber:client">
-			<x xmlns="http://jabber.org/protocol/muc#user">
-				<item nick="`+ partyNick(clientInfo.User, clientInfo.SocketID) +`" jid="`+ partySocketId(foundPartyId, partyNick(clientInfo.User, clientInfo.SocketID)) +`" role="none"/>
-				<status code="110"/>
-				<status code="100"/>
-				<status code="170"/>
-			</x>
-		</presence>
-	`))
-
 	party, ok := common.ActiveParties[foundPartyId]
 	if !ok {
 		return
 	}
 
+	// fromId := strings.Split(strings.Split(presence.To, "/")[1], ":")[1]
+	// fromClient, _ := XGetClientFromAccountId(fromId)
+
 	for _, member := range party.Members {
-		partyMemberClient, err := XGetClientFromAccountId(member.AccountId)
-		if err != nil {
-			continue
-		}
-				
-		clientInfo.Connection.WriteMessage(1, []byte(`
-			<presence to="`+ clientInfo.SocketID +`" from="`+ partyMemberClient.SocketID +`" xmlns="jabber:client">
-				<x xmlns="http://jabber.org/protocol/muc#user">
-					<item nick="`+ partyNick(partyMemberClient.User, partyMemberClient.SocketID) +`" jid="`+ partyMemberClient.SocketID +`" role="participant" affiliation="none"/>
-				</x>
-			</presence>
-		`))
-
-		all.PrintMagenta([]any{`
-			<presence to="`+ clientInfo.SocketID +`" from="`+ clientInfo.SocketID +`" xmlns="jabber:client">
-				<x xmlns="http://jabber.org/protocol/muc#user">
-					<item nick="`+ partyNick(partyMemberClient.User, partyMemberClient.SocketID) +`" jid="`+ partyMemberClient.SocketID +`" role="participant" affiliation="none"/>
-				</x>
-			</presence>
-		`})
-
-		if partyMemberClient.User.AccountId == clientInfo.User.AccountId {
+		if member.AccountId == clientInfo.User.AccountId {
 			continue
 		}
 
-		partyMemberClient.Connection.WriteMessage(1, []byte(`
-			<presence to="`+ partyMemberClient.SocketID +`" from="`+ clientInfo.SocketID +`" xmlns="jabber:client">
-				<x xmlns="http://jabber.org/protocol/muc#user">
-					<item nick="aaa`+ partyNick(clientInfo.User, clientInfo.SocketID) +`" jid="`+ clientInfo.SocketID +`" role="participant" affiliation="none"/>
+		memberClient, _ := XGetClientFromAccountId(member.AccountId)
+		memberClient.Connection.WriteMessage(1, []byte(`
+			<presence to="`+ memberClient.JID +`" from="`+ presence.To +`" xmlns="jabber:client">
+				<x xmlns='http://jabber.org/protocol/muc#user'>
+					<item affiliation='member' role='participant'/>
+					<status code='100'/>
 				</x>
 			</presence>
 		`))
-
-		all.PrintMagenta([]any{`
-			<presence to="`+ partyMemberClient.SocketID +`" from="`+ partySocketId(foundPartyId, partyNick(clientInfo.User, clientInfo.SocketID)) +`" xmlns="jabber:client">
-				<x xmlns="http://jabber.org/protocol/muc#user">
-					<item nick="`+ partyNick(clientInfo.User, clientInfo.SocketID) +`" jid="`+ clientInfo.SocketID +`" role="participant" affiliation="none"/>
-				</x>
-			</presence>
-		`})
 	}
+
+	
 }
+
+
+/*
+xmpp.org
+
+
+As shown in the last stanza, the "self-presence" sent by the room 
+to the new user MUST include a status code of 110 so that the user 
+knows this presence refers to itself as an occupant. This self-presence 
+MUST NOT be sent to the new occupant until the room has sent the presence 
+of all other occupants to the new occupant; this enables the new occupant 
+to know when it has finished receiving the room roster.
+
+<status code='110'/> IS SELF PRESENCE
+send self presence after all other presences are sent to all other occupants
+
+send <status code='210'/> to self also because we modify their nickname
+
+send <status code='100'/> because the room is non-anonymous
+*/
 
 
 func partyNick(user models.User, socketId string) string {
@@ -402,7 +365,7 @@ func XGetFriendStatus(clientInfo *ClientInfo) {
 		// XMPPUpdateStatusSingle(friendClient.User.AccountId, clientInfo.User.AccountId)
 
 		clientInfo.Connection.WriteMessage(1, []byte(`
-			<presence to="`+ clientInfo.SocketID +`" xmlns="jabber:client" from="`+ friendClient.SocketID +`" type="available">
+			<presence to="`+ clientInfo.JID +`" xmlns="jabber:client" from="`+ friendClient.JID +`" type="available">
 				<status>`+ friendClient.Status +`</status>
 			</presence>
 		`))
@@ -431,7 +394,7 @@ func XMPPSendBodyToAll(body map[string]interface{}) {
 
 	for _, client := range ActiveXMPPClients {
 		client.Connection.WriteMessage(1, []byte(`
-			<message xmlns="jabber:client" from="xmpp-admin@prod.ol.epicgames.com" to="`+ client.SocketID +`">
+			<message xmlns="jabber:client" from="xmpp-admin@prod.ol.epicgames.com" to="`+ client.JID +`">
 				<body>`+ string(data) +`</body>
 			</message>
 		`))
@@ -450,7 +413,7 @@ func XMPPSendBody(body map[string]interface{}, accountId string) {
 	}
 
 	client.Connection.WriteMessage(1, []byte(`
-		<message xmlns="jabber:client" from="xmpp-admin@prod.ol.epicgames.com" to="`+ client.SocketID +`">
+		<message xmlns="jabber:client" from="xmpp-admin@prod.ol.epicgames.com" to="`+ client.JID +`">
 			<body>`+ string(data) +`</body>
 		</message>
 	`))
@@ -468,19 +431,19 @@ func XMPPUpdateStatus(accountId string, friendId string) {
 	}
 
 	friendClient.Connection.WriteMessage(1, []byte(`
-		<presence to="`+ friendClient.SocketID +`" xmlns="jabber:client" from="`+ mainClient.SocketID +`" type="available">
+		<presence to="`+ friendClient.JID +`" xmlns="jabber:client" from="`+ mainClient.JID +`" type="available">
 			<status>`+ mainClient.Status +`</status>
 		</presence>
 	`))
 
 	mainClient.Connection.WriteMessage(1, []byte(`
-		<presence to="`+ mainClient.SocketID +`" xmlns="jabber:client" from="`+ friendClient.SocketID +`" type="available">
+		<presence to="`+ mainClient.JID +`" xmlns="jabber:client" from="`+ friendClient.JID +`" type="available">
 			<status>`+ friendClient.Status +`</status>
 		</presence>
 	`))
 }
 
-func SendJoinPartyRequest_legacy(accountId string, partyId string, ac string) {
+func XSendJoinPartyRequest_legacy(accountId string, partyId string, ac string) {
 	client, err := XGetClientFromAccountId(accountId)
 	if err != nil {
 		return
@@ -521,13 +484,13 @@ func SendJoinPartyRequest_legacy(accountId string, partyId string, ac string) {
 		}
 
 		memberClient.Connection.WriteMessage(1, []byte(`
-			<presence to="`+ memberClient.SocketID +`" xmlns="jabber:client" from="`+ client.SocketID +`" type="available">
+			<presence to="`+ memberClient.JID +`" xmlns="jabber:client" from="`+ client.JID +`" type="available">
 				<status>`+ string(jsonPresence) +`</status>
 			</presence>
 		`))
 
 		client.Connection.WriteMessage(1, []byte(`
-			<presence to="`+ client.SocketID +`" xmlns="jabber:client" from="`+ memberClient.SocketID +`" type="available">
+			<presence to="`+ client.JID +`" xmlns="jabber:client" from="`+ memberClient.JID +`" type="available">
 				<status>`+ string(jsonPresence) +`</status>
 			</presence>
 		`))
