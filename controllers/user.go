@@ -87,6 +87,7 @@ type UserAccountPublicResponse struct {
 	ExternalAuths interface{} `json:"externalAuths"`
 }
 
+// for some reason i think it is party v2 related
 func UserAccountPublic(c *gin.Context) {
 	response := [](UserAccountPublicResponse){}
 	

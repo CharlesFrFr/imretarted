@@ -64,7 +64,7 @@ func CreateFriend(c *gin.Context) {
 	res := common.CreateFriend(user.AccountId, wantedFriend)
 
 	if res == "ACCEPTED" {
-		socket.XMPPSendBody(gin.H{
+		socket.XMPPSendBodyToAccountId(gin.H{
 			"timestamp": time.Now().Format("2006-01-02T15:04:05.999Z"),
 			"type": "com.epicgames.friends.core.apiobjects.Friend",
 			"payload": gin.H{
@@ -76,12 +76,38 @@ func CreateFriend(c *gin.Context) {
 			},
 		}, wantedFriend)
 
-		socket.XMPPSendBody(gin.H{
+		socket.XMPPSendBodyToAccountId(gin.H{
 			"timestamp": time.Now().Format("2006-01-02T15:04:05.999Z"),
 			"type": "com.epicgames.friends.core.apiobjects.Friend",
 			"payload": gin.H{
 				"accountId": wantedFriend,
 				"status": "ACCEPTED",
+				"direction": "INBOUND",
+				"favorite": false,
+				"created": time.Now().Format("2006-01-02T15:04:05.999Z"),
+			},
+		}, user.AccountId)
+	}
+
+	if res == "PENDING" {
+		socket.XMPPSendBodyToAccountId(gin.H{
+			"timestamp": time.Now().Format("2006-01-02T15:04:05.999Z"),
+			"type": "com.epicgames.friends.core.apiobjects.Friend",
+			"payload": gin.H{
+				"accountId": user.AccountId,
+				"status": "PENDING",
+				"direction": "INBOUND",
+				"favorite": false,
+				"created": time.Now().Format("2006-01-02T15:04:05.999Z"),
+			},
+		}, wantedFriend)
+
+		socket.XMPPSendBodyToAccountId(gin.H{
+			"timestamp": time.Now().Format("2006-01-02T15:04:05.999Z"),
+			"type": "com.epicgames.friends.core.apiobjects.Friend",
+			"payload": gin.H{
+				"accountId": wantedFriend,
+				"status": "PENDING",
 				"direction": "INBOUND",
 				"favorite": false,
 				"created": time.Now().Format("2006-01-02T15:04:05.999Z"),
@@ -112,7 +138,7 @@ func DeleteFriend(c *gin.Context) {
 
 	res := common.DeleteFriend(user.AccountId, wantedFriend)
 	if res == "DELETED" {
-		socket.XMPPSendBody(gin.H{
+		socket.XMPPSendBodyToAccountId(gin.H{
 			"timestamp": time.Now().Format("2006-01-02T15:04:05.999Z"),
 			"type": "com.epicgames.friends.core.apiobjects.FriendRemoval",
 			"payload": gin.H{
@@ -121,7 +147,7 @@ func DeleteFriend(c *gin.Context) {
 			},
 		}, wantedFriend)
 
-		socket.XMPPSendBody(gin.H{
+		socket.XMPPSendBodyToAccountId(gin.H{
 			"timestamp": time.Now().Format("2006-01-02T15:04:05.999Z"),
 			"type": "com.epicgames.friends.core.apiobjects.FriendRemoval",
 			"payload": gin.H{

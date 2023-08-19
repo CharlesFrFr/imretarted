@@ -23,10 +23,12 @@ var (
 )
 
 func InitGameServers() {
+	// addGameServer("playlist_defaultsolo", "EU", "158.178.203.104", 7777)
+	// addGameServer("playlist_defaultsolo", "NAE", "158.178.203.104", 7777)
+	// addGameServer("playlist_defaultsolo", "NAW", "158.178.203.104", 7777)
 	addGameServer("playlist_defaultsolo", "EU", "127.0.0.1", 7777)
-	// addGameServer("playlist_defaultsolo", "EU", "158.178.203.104", 7777)
-	// addGameServer("playlist_defaultsolo", "EU", "158.178.203.104", 7777)
-	// addGameServer("playlist_defaultsolo", "EU", "158.178.203.104", 7777)
+	addGameServer("playlist_defaultsolo", "NAE", "127.0.0.1", 7777)
+	addGameServer("playlist_defaultsolo", "NAW", "127.0.0.1", 7777)
 }
 
 func GetGameServer(playlist string, region string) GameServer {

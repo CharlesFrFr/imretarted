@@ -8,6 +8,7 @@ import (
 	"github.com/zombman/server/all"
 	"github.com/zombman/server/common"
 	"github.com/zombman/server/models"
+	"github.com/zombman/server/socket"
 )
 
 func PartyGetUser(c *gin.Context) {
@@ -175,8 +176,43 @@ func PartyPatch(c *gin.Context) {
 	party.Config.JoinConfirmation = body.Config.JoinConfirmation
 	party.Config.Joinability = body.Config.Joinability
 	party.Config.MaxSize = body.Config.MaxSize
-
 	common.ActiveParties[partyId] = party
+
+	var captain models.V2PartyMember
+	for _, member := range party.Members {
+		if member.Role == "CAPTAIN" {
+			captain = member
+		}
+	}
+
+	all.MarshPrintJSON(body)
+
+	for _, member := range party.Members {
+		memberClient, err := socket.XGetClientFromAccountId(member.AccountId)
+		if err != nil {
+			continue
+		}
+		
+		socket.XMPPSendBody(gin.H{
+			"captain_id": captain.AccountId,
+			"invite_ttl_seconds": party.Config.InviteTtl,
+			"max_number_of_members": party.Config.MaxSize,
+			"party_type": party.Config.Type,
+			"party_sub_type": party.Config.SubType,
+			"party_id": party.ID,
+			"party_state_removed": body.Meta.Delete,
+			"party_state_updated": body.Meta.Update,
+			"party_state_overriden": gin.H{},
+			"party_privacy_type": party.Config.Joinability,
+			"updated_at": party.UpdatedAt,
+			"created_at": party.CreatedAt,
+			"sent": time.Now().Format("2006-01-02T15:04:05.000Z"),
+			"revision": party.Revision,
+			"ns": "Fortnite",
+			"type": "com.epicgames.social.party.notification.v0.PARTY_UPDATED",
+		}, memberClient)
+	}
+
 	c.JSON(200, party)
 }
 
@@ -212,9 +248,38 @@ func PartyPatchMemberMeta(c *gin.Context) {
 
 			break
 		}
-	} 
+	}
 
+	var partyMember models.V2PartyMember
+	for _, member := range party.Members {
+		if member.AccountId == memberId {
+			partyMember = member
+			break
+		}
+	}
 	common.ActiveParties[partyId] = party
+
+	for _, member := range party.Members {
+		memberClient, err := socket.XGetClientFromAccountId(member.AccountId)
+		if err != nil {
+			continue
+		}
+
+		socket.XMPPSendBody(gin.H{
+			"account_id": partyMember.AccountId,
+			"account_dn": partyMember.Meta["urn:epic:member:dn_s"],
+			"member_state_updated": body.Update,
+			"member_state_removed": body.Delete,
+			"member_state_overridden": gin.H{},
+			"party_id": party.ID,
+			"updated_at": partyMember.UpdatedAt,
+			"sent": time.Now().Format("2006-01-02T15:04:05.000Z"),
+			"revision": party.Revision,
+			"ns": "Fortnite",
+			"type": "com.epicgames.social.party.notification.v0.MEMBER_STATE_UPDATED",
+		}, memberClient)
+	}
+
 	c.JSON(200, party)
 }
 
@@ -235,13 +300,11 @@ func PartyJoinMember(c *gin.Context) {
 			Id string `json:"id"`
 			Meta struct {
 				UrnEpicConnPlatformS string `json:"urn:epic:conn:platform_s"`
-				UrnEpicConnTypeS string `json:"urn:epic:conn:type_s"`
 			} `json:"meta"`
 		} `json:"connection"`
 		Meta struct {
 			UrnEpicMemberDnS string `json:"urn:epic:member:dn_s"`
-			UrnEpicMemberTypeS string `json:"urn:epic:member:type_s"`
-			UrnEpicMemberPlatformS string `json:"urn:epic:member:platform_s"`
+			UrnJoinRequestUsers string `json:"urn:epic:member:joinrequestusers_j"`
 		} `json:"meta"`
 	}
 
@@ -260,7 +323,6 @@ func PartyJoinMember(c *gin.Context) {
 
 	connectionMeta := make(map[string]interface{})
 	connectionMeta["urn:epic:conn:platform_s"] = body.Connection.Meta.UrnEpicConnPlatformS
-	connectionMeta["urn:epic:conn:type_s"] = body.Connection.Meta.UrnEpicConnTypeS
 	connection := models.V2PartyConnection{
 		ID: body.Connection.Id,
 		Meta: connectionMeta,
@@ -271,8 +333,7 @@ func PartyJoinMember(c *gin.Context) {
 
 	partyMemberMeta := make(map[string]interface{})
 	partyMemberMeta["urn:epic:member:dn_s"] = body.Meta.UrnEpicMemberDnS
-	partyMemberMeta["urn:epic:member:type_s"] = body.Meta.UrnEpicMemberTypeS
-	partyMemberMeta["urn:epic:member:platform_s"] = body.Meta.UrnEpicMemberPlatformS
+	partyMemberMeta["urn:epic:member:joinrequestusers_j"] = body.Meta.UrnJoinRequestUsers
 
 	partyMember := models.V2PartyMember{
 		AccountId: user.AccountId,
@@ -323,11 +384,29 @@ func PartyJoinMember(c *gin.Context) {
 	common.ActiveParties[partyId] = party
 	common.AccountIdToPartyId[user.AccountId] = partyId
 
-	//  LEGACY DONT USE
-	// socket.SendJoinPartyRequest_legacy(user.AccountId, partyId, "k")
+	for _, member := range party.Members {
+		memberClient, err := socket.XGetClientFromAccountId(member.AccountId)
+		if err != nil {
+			continue
+		}
+
+		socket.XMPPSendBody(gin.H{
+			"account_id": partyMember.AccountId,
+			"account_dn": partyMember.Meta["urn:epic:member:dn_s"],
+			"member_state_updated": partyMember.Meta,
+			"party_id": party.ID,
+			"updated_at": partyMember.UpdatedAt,
+			"joined_at": partyMember.JoinedAt,
+			"sent": time.Now().Format("2006-01-02T15:04:05.000Z"),
+			"revision": party.Revision,
+			"ns": "Fortnite",
+			"type": "com.epicgames.social.party.notification.v0.MEMBER_JOINED",
+		}, memberClient)
+	}
 	
 	c.JSON(201, gin.H{
 		"status": "JOINED",
+		"party_id": partyId,
 	})
 
 	deleteAnyEmptyParties()
@@ -362,8 +441,10 @@ func PartyDeleteMember(c *gin.Context) {
 		return
 	}
 
+	var removingMember models.V2PartyMember
 	for i, member := range party.Members {
 		if member.AccountId == memberId {
+			removingMember = member
 			party.Members = append(party.Members[:i], party.Members[i+1:]...)
 			break
 		}
@@ -373,8 +454,34 @@ func PartyDeleteMember(c *gin.Context) {
 		delete(common.ActiveParties, partyId)
 	}
 
+	if removingMember.Role == "CAPTAIN" {
+		if len(party.Members) == 0 {
+			delete(common.ActiveParties, partyId)
+			return
+		}
+
+		party.Members[0].Role = "CAPTAIN"
+	}
+
 	delete(common.AccountIdToPartyId, memberId)
 	common.ActiveParties[partyId] = party
+
+	for _, member := range party.Members {
+		memberClient, err := socket.XGetClientFromAccountId(member.AccountId)
+		if err != nil {
+			continue
+		}
+
+		socket.XMPPSendBody(gin.H{
+			"account_id": removingMember.AccountId,
+			"party_id": party.ID,
+			"sent": time.Now().Format("2006-01-02T15:04:05.000Z"),
+			"revision": party.Revision,
+			"ns": "Fortnite",
+			"type": "com.epicgames.social.party.notification.v0.MEMBER_LEFT",
+		}, memberClient)
+	}
+
 	c.JSON(200, party)
 
 	deleteAnyEmptyParties()
