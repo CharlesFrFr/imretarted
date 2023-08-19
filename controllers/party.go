@@ -185,31 +185,29 @@ func PartyPatch(c *gin.Context) {
 		}
 	}
 
-	all.MarshPrintJSON(body)
-
 	for _, member := range party.Members {
 		memberClient, err := socket.XGetClientFromAccountId(member.AccountId)
 		if err != nil {
 			continue
 		}
-		
+
 		socket.XMPPSendBody(gin.H{
 			"captain_id": captain.AccountId,
-			"invite_ttl_seconds": party.Config.InviteTtl,
-			"max_number_of_members": party.Config.MaxSize,
+			"party_id": party.ID,
+			"party_privacy_type": party.Config.Joinability,
 			"party_type": party.Config.Type,
 			"party_sub_type": party.Config.SubType,
-			"party_id": party.ID,
+			"max_number_of_members": party.Config.MaxSize,
+			"invite_ttl_seconds": party.Config.InviteTtl,
+			"created_at": party.CreatedAt,
+			"updated_at": party.UpdatedAt,
 			"party_state_removed": body.Meta.Delete,
 			"party_state_updated": body.Meta.Update,
-			"party_state_overriden": gin.H{},
-			"party_privacy_type": party.Config.Joinability,
-			"updated_at": party.UpdatedAt,
-			"created_at": party.CreatedAt,
-			"sent": time.Now().Format("2006-01-02T15:04:05.000Z"),
+			"party_state_overridden": gin.H{},
+			"sent": time.Now().Format("2006-01-02T15:04:05.999Z"),
+			"type": "com.epicgames.social.party.notification.v0.PARTY_UPDATED",
 			"revision": party.Revision,
 			"ns": "Fortnite",
-			"type": "com.epicgames.social.party.notification.v0.PARTY_UPDATED",
 		}, memberClient)
 	}
 
@@ -387,6 +385,10 @@ func PartyJoinMember(c *gin.Context) {
 	for _, member := range party.Members {
 		memberClient, err := socket.XGetClientFromAccountId(member.AccountId)
 		if err != nil {
+			continue
+		}
+
+		if member.AccountId == user.AccountId {
 			continue
 		}
 
