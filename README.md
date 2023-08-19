@@ -4,7 +4,7 @@ An open source, performant fortnite backend server with a built in web-interface
 
 [How to setup](https://www.youtube.com/watch?v=WvWrgmEH6ZI&t=189s&ab_channel=ulnk)
 
-# Branches
+## Branches
 
 - **[Frontend](https://github.com/zombman/server/tree/frontend)** - Launcher and web interface for backend.
 - **[CLI](https://github.com/zombman/server/tree/cli)** - The CLI that the launcher interacts with to launch the game.
@@ -17,6 +17,8 @@ An open source, performant fortnite backend server with a built in web-interface
 - **Web interface:** Built in web interface to manage your server. (not implemented yet)
 
 ## Roadmap
+
+Roadmap is in order of completion, so closer to the top of list means it will be done before items lower down the list. View the trello board [here](https://trello.com/b/7AKhxa5T/zombie-server) to see a more detailed view of this roadmap and to view any bugs.
 
 - [x] Basic user creation and authentication
 - [x] Fortnite uses oauth tokens
@@ -32,3 +34,4 @@ An open source, performant fortnite backend server with a built in web-interface
 - [x] Xmpp
 - [x] Parties
 - [ ] Party v2
+- [ ] Battle Pass & Levelling Up
