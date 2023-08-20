@@ -35,7 +35,7 @@ Roadmap is in order of completion, so closer to the top of list means it will be
 - [x] Friends
 - [x] Matchmaker
 - [x] Xmpp
-  - [x] Parties
+- [x] Parties
 - [x] Party v2 (for all seasons)
   - thanks to @mhtsotakis
 - [ ] Battle Pass & Levelling Up
