@@ -17,7 +17,7 @@ An open source, performant fortnite backend server with a built in web-interface
 ## Setup
 
 - Watch the quick setup guide [here](https://www.youtube.com/watch?v=WvWrgmEH6ZI&t=189s&ab_channel=ulnk).
-- To keep your backend updated with the latest updates, instead of downloading the project, use the command ```git clone https://github.com/zombman/backend``` to download. You may need to install [git](https://git-scm.com/) for this. Now whenever I update the repo, just use the command ```git pull```!
+- To keep your backend updated with the latest updates, instead of downloading the project, use the command `git clone https://github.com/zombman/backend` to download. You may need to install [git](https://git-scm.com/) for this. Now whenever I update the repo, just use the command `git pull`!
 
 ## Roadmap
 
@@ -35,8 +35,9 @@ Roadmap is in order of completion, so closer to the top of list means it will be
 - [x] Friends
 - [x] Matchmaker
 - [x] Xmpp
-- [x] Parties
-- [ ] Party v2
+  - [x] Parties
+- [x] Party v2 (for all seasons)
+  - thanks to @mhtsotakis
 - [ ] Battle Pass & Levelling Up
 
 ## Prerequisites

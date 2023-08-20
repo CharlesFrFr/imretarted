@@ -133,6 +133,11 @@ func PurchaseCatalogEntry(c *gin.Context, user models.User, profile *models.Prof
 		return
 	}
 
+	if strings.Contains(body.OfferId, "battlepass") {
+		PurchaseCatalogEntryBattlePass(c, user, profile, response, body)
+		return
+	}
+
 	offer, err := common.GetCatalogEntry(body.OfferId)
 	if err != nil {
 		all.PrintRed([]any{"could not find offer", body.OfferId})
@@ -435,5 +440,36 @@ func SetBattleRoyaleBanner(c *gin.Context, user models.User, profile *models.Pro
 		ChangeType: "statModified",
 		Name: "banner_color",
 		Value: body.HomebaseBannerColorId,
+	})
+}
+
+func PurchaseCatalogEntryBattlePass(c *gin.Context, user models.User, profile *models.Profile, response *models.ProfileResponse, body struct {
+	OfferId string `json:"offerId"`
+	PurchaseQuantity int `json:"purchaseQuantity"`
+	Currency string `json:"currency"`
+	CurrencySubType string `json:"currencySubType"`
+	ExpectedTotalPrice int `json:"expectedTotalPrice"`
+	GameContext string `json:"gameContext"`
+}) {
+	offer, err := common.GetCatalogEntry(body.OfferId)
+	if err != nil {
+		common.ErrorItemNotFound(c)
+		c.Abort()
+		return
+	}
+
+	all.PrintGreen([]any{"purchasing battle pass"})
+	all.MarshPrintJSON(offer)
+
+	if user.VBucks < offer.Prices[0].FinalPrice {
+		common.ErrorBadRequest(c)
+		c.Abort()
+		return
+	}
+
+	response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
+		ChangeType: "itemQuantityChanged",
+		ItemID: "Currency:MtxPurchased",
+		Quantity: user.VBucks - offer.Prices[0].FinalPrice,
 	})
 }

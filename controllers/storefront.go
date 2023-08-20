@@ -3,6 +3,7 @@ package controllers
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"math/rand"
 	"net/http"
@@ -113,6 +114,59 @@ func GenerateRandomItemShop() {
 	legendaryItems := common.FilterRarity(allItems, "Legendary")
 	dailyItems := common.ExcludeRarity(allItems, "Legendary")
 
+	/**
+{
+        "name": "BRSeason9",
+        "catalogEntries": [
+          {
+            "offerId": "C7190ACA4E5E228A94CA3CB9C3FC7AE9",
+            "devName": "BR.Season9.BattleBundle.01",
+            "offerType": "StaticPrice",
+            "prices": [
+              {
+                "currencyType": "MtxCurrency",
+                "currencySubType": "",
+                "regularPrice": 4700,
+                "finalPrice": 2800,
+                "saleType": "PercentOff",
+                "saleExpiration": "9999-12-31T23:59:59.999Z",
+                "basePrice": 2800
+              }
+            ],
+            "categories": [],
+            "dailyLimit": -1,
+            "weeklyLimit": -1,
+            "monthlyLimit": -1,
+            "appStoreId": [
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "requirements": [
+              {
+                "requirementType": "DenyOnFulfillment",
+                "requiredId": "73E6EE6F4526EF97450D1592C3DB0EF5",
+                "minQuantity": 1
+              }
+            ],
+            "metaInfo": [],
+            "catalogGroup": "",
+            "catalogGroupPriority": 0,
+            "sortPriority": 0,
+            "title": " ",
+            "shortDescription": " ",
+            "description": "" ",
+            "displayAssetPath": "/Game/Catalog/DisplayAssets/DA_BR_Season9_BattlePassWithLevels.DA_BR_Season9_BattlePassWithLevels",
+            "itemGrants": []
+          }"
+			**/
 	ItemShop = models.StorePage{
 		RefreshIntervalHrs: 24,
 		DailyPurchaseHrs:  24,
@@ -129,6 +183,75 @@ func GenerateRandomItemShop() {
 			{
 				Name: "BRSeasonStorefront",
 				CatalogEntries: []models.CatalogEntry{},
+			},
+			{
+				Name: "BRSeason8",
+				CatalogEntries: []models.CatalogEntry{
+					{
+						OfferID: "battlepassbundle" + fmt.Sprint(common.Season),
+						DevName: "BR.Season"+ fmt.Sprint(common.Season) +".BattleBundle.01",
+						OfferType: "StaticPrice",
+						Prices: []models.Price{{
+							CurrencyType: "MtxCurrency",
+							CurrencySubType: "",
+							RegularPrice: 4700,
+							FinalPrice: 2800,
+							SaleExpiration: "9999-12-31T23:59:59.999Z",
+							BasePrice: 2800,
+						}},
+						Categories: []string{},
+						DailyLimit: -1,
+						WeeklyLimit: -1,
+						MonthlyLimit: -1,
+						AppStoreID: []string{"", "", "", "", "", "", "", "", "", ""},
+						Requirements: []models.Requirement{{
+							RequirementType: "DenyOnFulfillment",
+							RequiredID: "battlepass"+ fmt.Sprint(common.Season),
+							MinQuantity: 1,
+						}},
+						MetaInfo: []gin.H{},
+						CatalogGroupPriority: 0,
+						SortPriority: 0,
+						DisplayAssetPath: "/Game/Catalog/DisplayAssets/DA_BR_Season"+ fmt.Sprint(common.Season) +"_BattlePassWithLevels.DA_BR_Season"+ fmt.Sprint(common.Season) +"_BattlePassWithLevels",
+						ItemGrants: []models.ItemGrant{},
+						Refundable: false,
+						Title: "Battle Bundle",
+						ShortDescription: "Battle Pass + 25 tiers!",
+						Description: "Season 8 \n\nInstantly get these items <Bold>valued at over 10,000 V-Bucks</>.\n  • <ItemName>Blackheart</> Progressive Outfit\n  • <ItemName>Hybrid</> Progressive Outfit\n  • <ItemName>Sidewinder</> Outfit\n  • <ItemName>Tropical Camo</> Wrap\n  • <ItemName>Woodsy</> Pet\n  • <ItemName>Sky Serpents</> Glider\n  • <ItemName>Cobra</> Back Bling\n  • <ItemName>Flying Standard</> Contrail\n  • 300 V-Bucks\n  • 1 Music Track\n  • <Bold>70% Bonus</> Season Match XP\n  • <Bold>20% Bonus</> Season Friend Match XP\n  • <Bold>Extra Weekly Challenges</>\n  • and more!\n\nPlay to level up your Battle Pass, unlocking <Bold>over 75 rewards</> (typically takes 75 to 150 hours of play).\n  • <Bold>4 more Outfits</>\n  • <Bold>1,000 V-Bucks</>\n  • 6 Emotes\n  • 5 Wraps\n  • 3 Gliders\n  • 3 Back Blings\n  • 4 Harvesting Tools\n  • 4 Contrails\n  • 1 Pet\n  • 12 Sprays\n  • 2 Music Tracks\n  • and so much more!\nWant it all faster? You can use V-Bucks to buy tiers any time!",
+					},
+					{
+						OfferID: "battlepass"+ fmt.Sprint(common.Season) +"",
+						DevName: "BR.Season"+ fmt.Sprint(common.Season) +".BattlePass.01",
+						OfferType: "StaticPrice",
+						Prices: []models.Price{{
+							CurrencyType: "MtxCurrency",
+							CurrencySubType: "",
+							RegularPrice: 950,
+							FinalPrice: 950,
+							SaleExpiration: "9999-12-31T23:59:59.999Z",
+							BasePrice: 950,
+						}},
+						Categories: []string{},
+						DailyLimit: -1,
+						WeeklyLimit: -1,
+						MonthlyLimit: -1,
+						AppStoreID: []string{"", "", "", "", "", "", "", "", "", ""},
+						Requirements: []models.Requirement{{
+							RequirementType: "DenyOnFulfillment",
+							RequiredID: "battlepass"+ fmt.Sprint(common.Season),
+							MinQuantity: 1,
+						}},
+						MetaInfo: []gin.H{},
+						CatalogGroupPriority: 0,
+						SortPriority: 0,
+						DisplayAssetPath: "/Game/Catalog/DisplayAssets/DA_BR_Season8_BattlePass.DA_BR_Season8_BattlePass",
+						ItemGrants: []models.ItemGrant{},
+						Refundable: false,
+						Title: "Battle Pass",
+						ShortDescription: "Season"+ fmt.Sprint(common.Season),
+						Description: "Season 8 \n\nInstantly get these items <Bold>valued at over 3,500 V-Bucks</>.\n  • <ItemName>Blackheart</> Progressive Outfit\n  • <ItemName>Hybrid</> Progressive Outfit\n  • <Bold>50% Bonus</> Season Match XP\n  • <Bold>10% Bonus</> Season Friend Match XP\n  • <Bold>Extra Weekly Challenges</>\n\nPlay to level up your Battle Pass, unlocking <Bold>over 100 rewards</> (typically takes 75 to 150 hours of play).\n  • <ItemName>Sidewinder</> and <Bold>4 more Outfits</>\n  • <Bold>1,300 V-Bucks</>\n  • 7 Emotes\n  • 6 Wraps\n  • 2 Pets\n  • 5 Harvesting Tools\n  • 4 Gliders\n  • 4 Back Blings\n  • 5 Contrails\n  • 14 Sprays\n  • 3 Music Tracks\n  • 1 Toy\n  • 20 Loading Screens\n  • and so much more!\nWant it all faster? You can use V-Bucks to buy tiers any time!",
+					},
+				},
 			},
 		},
 	}

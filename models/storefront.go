@@ -38,6 +38,9 @@ type CatalogEntry struct {
 	ItemGrants       []ItemGrant       `json:"itemGrants"`
 	SortPriority     int               `json:"sortPriority"`
 	CatalogGroupPriority int               `json:"catalogGroupPriority"`
+	Title						string            `json:"title"`
+	ShortDescription	string            `json:"shortDescription"`
+	Description				string            `json:"description"`
 }
 
 type Price struct {
