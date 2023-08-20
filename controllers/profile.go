@@ -44,12 +44,17 @@ func ProfileActionHandler(c *gin.Context) {
 	if profile.ProfileId == "athena" {
 		profile.Stats.Attributes["season_num"] = common.Season
 	}
-	
-	if queryRevision, err := strconv.Atoi(c.Query("rvn")); err == nil && queryRevision != profile.Rvn {
-		response.ProfileChanges = []models.ProfileChange{{
+
+	revisionCheck := profile.Rvn
+	if common.Season + common.Chapter > 22 {
+		revisionCheck = profile.CommandRevision
+	}
+
+	if queryRevision, err := strconv.Atoi(c.Query("rvn")); err == nil && queryRevision != revisionCheck {
+		response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
 			ChangeType: "fullProfileUpdate",
 			Profile: profile,
-		}}
+		})
 	}
 
 	profile.Rvn += 1
@@ -60,8 +65,8 @@ func ProfileActionHandler(c *gin.Context) {
 	common.SaveProfileToUser(user.AccountId, profile)
 
 	response.ProfileRevision = profile.Rvn
-	response.ProfileCommandRevision = profile.CommandRevision
 	response.ProfileID = profileId
+	response.ProfileCommandRevision = profile.CommandRevision
 	response.ProfileChangesBaseRevision = profile.Rvn - 1
 	response.ServerTime = time.Now().Format("2006-01-02T15:04:05.999Z")
 	response.ResponseVersion = 1
@@ -492,6 +497,9 @@ func SetCosmeticLockerSlot(c *gin.Context, user models.User, profile *models.Pro
 		c.Abort()
 		return
 	}
+
+	all.PrintYellow([]any{"activeloadout", activeLoadoutId})
+	all.MarshPrintJSON(activeLoadout)
 	
 	lowercaseItemType := strings.ToLower(body.Category)
 	switch lowercaseItemType {
