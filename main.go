@@ -151,13 +151,12 @@ func main() {
     party.POST("/parties/:partyId/members/:newMemberId/join", controllers.PartyJoinMember)
 
     party.GET("/user/:accountId/pings/", controllers.GetPings)
-    party.GET("/user/:accountId/pings/:pingerId/parties", controllers.GetPartyPings)
     party.POST("user/:accountId/pings/:pingerId", controllers.PostPing)
-    party.DELETE("/user/:accountId/pings/:pingerId", controllers.DeletePing)
+    party.GET("/user/:accountId/pings/:pingerId/parties", controllers.GetPartyPings)
     party.POST("/user/:accountId/pings/:pingerId/join", controllers.JoinPing)
-
+    party.DELETE("/user/:accountId/pings/:pingerId", controllers.DeletePing)
+    
     party.GET("/user/:accountId", controllers.PartyGetUser)
-    party.GET("/user/:accountId/pings/:friendId/parties", controllers.PartyGetFriendPartyPings)
   }
 
   blank := r.Group("/")
@@ -170,7 +169,7 @@ func main() {
     blank.GET("/fortnite/api/game/v2/chat/:accountId/:chatRoomType/:area/pc", controllers.ChatRooms)
     blank.GET("/eulatracking/api/shared/agreements/fn", controllers.EULA)
     blank.GET("/eulatracking/api/public/agreements/fn/account/*accountId", controllers.NoContent)
-    blank.GET("/friends/api/v1/*/settings", controllers.NoContent)
+    blank.GET("/friends/api/v1/:accountId/settings", controllers.NoContent)
     blank.GET("/fortnite/api/game/v2/privacy/account/*accountId", controllers.NoContent)
   }
 
