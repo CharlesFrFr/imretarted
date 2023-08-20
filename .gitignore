@@ -1,7 +1,8 @@
 .env
 server.exe
 server.exe~
+
 data/settings/*
-data/shop.json
+data/shop.*
 
 public/custom_cid_preview/*

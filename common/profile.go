@@ -37,7 +37,6 @@ func AddProfileToUser(user models.User, profileId string) {
 		vbucksAmount, err := strconv.Atoi(os.Getenv("USER_STARTING_VBUCKS"))
 		if err == nil { 
 			SetUserVBucks(user.AccountId, &unmarshaledProfile, vbucksAmount)
-			all.PrintGreen([]any{"gave user", user.Username, "vbucks amount of", vbucksAmount})
 		}
 	}
 
@@ -73,7 +72,11 @@ func AddProfileToUser(user models.User, profileId string) {
 		newAthenaProfile.Stats.Attributes.LifetimeWins = 10
 
 		defaultProfile, err := ConvertAthenaToDefault(newAthenaProfile)
+		if err != nil {
+			return
+		}
 
+		AddItemToProfile(&defaultProfile, "AthenaCharacter:CID_001_Athena_Commando_F_Default", user.AccountId)
 		SaveProfileToUser(user.AccountId, defaultProfile)
 	}
 
