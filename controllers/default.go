@@ -1136,3 +1136,25 @@ func ChatRooms(c *gin.Context) {
 		"GlobalChatRooms": []gin.H{},
 	})
 }
+
+func CIDImage(c *gin.Context) {
+	c.File("./public/custom_cid_preview/" + c.Param("cid") + ".png")
+}
+
+func EULA(c *gin.Context) {
+	c.JSON(200, gin.H{
+    "id": "63efeeb0104afc25dcce6a56",
+    "key": "fn",
+    "version": 5,
+    "revision": 7,
+    "title": "Fortnite® End User License Agreement",
+    "body": "<a id=\"url\" href=\"https://github.com/zombman/backend\" style=\"EULA.Hyperlink\">🧟‍♂️🧟‍♂️🧟‍♂️🧟‍♂️🧟‍♂️🧟‍♂️🧟‍♂️🧟‍♂️🧟‍♂️🧟‍♂️</>",
+    "locale": "en",
+    "createdTimestamp": time.Now().Format("2006-01-02T15:04:05.999Z"),
+    "lastModifiedTimestamp": time.Now().Format("2006-01-02T15:04:05.999Z"),
+    "status": "ACTIVE",
+    "custom": false,
+    "url": "https://cdn1.epicgames.com/eulatracking-download/fn/en/v5/r7/03dde0c0f5657d51db6bdd394a35ad98.pdf",
+    "bodyFormat": "HTML",
+	})
+}

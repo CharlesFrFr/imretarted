@@ -192,22 +192,22 @@ func PartyPatch(c *gin.Context) {
 		}
 
 		socket.XMPPSendBody(gin.H{
-			"captain_id": captain.AccountId,
-			"party_id": party.ID,
-			"party_privacy_type": party.Config.Joinability,
-			"party_type": party.Config.Type,
-			"party_sub_type": party.Config.SubType,
+			"captain_id":            captain.AccountId,
+			"created_at":            party.CreatedAt,
+			"invite_ttl_seconds":    party.Config.InviteTtl,
 			"max_number_of_members": party.Config.MaxSize,
-			"invite_ttl_seconds": party.Config.InviteTtl,
-			"created_at": party.CreatedAt,
-			"updated_at": party.UpdatedAt,
-			"party_state_removed": body.Meta.Delete,
-			"party_state_updated": body.Meta.Update,
-			"party_state_overridden": gin.H{},
-			"sent": time.Now().Format("2006-01-02T15:04:05.999Z"),
-			"type": "com.epicgames.social.party.notification.v0.PARTY_UPDATED",
-			"revision": party.Revision,
-			"ns": "Fortnite",
+			"ns":                    "Fortnite",
+			"party_id":              party.ID,
+			"party_privacy_type":    party.Config.Joinability,
+			"party_state_overriden": gin.H{},
+			"party_state_removed":   body.Meta.Delete,
+			"party_state_updated":   body.Meta.Update,
+			"party_sub_type":        "default",
+			"party_type":            "DEFAULT",
+			"revision":              party.Revision,
+			"sent":                  time.Now().Format("2006-01-02T15:04:05.999Z"),
+			"type":                  "com.epicgames.social.party.notification.v0.PARTY_UPDATED",
+			"updated_at":            time.Now().Format("2006-01-02T15:04:05.999Z"),
 		}, memberClient)
 	}
 

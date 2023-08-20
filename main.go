@@ -65,7 +65,7 @@ func main() {
 
   r.Use(middleware.CheckDatabase)
   r.Use(middleware.AllowFromAnywhere)
-  // r.Use(middleware.RateLimitMiddleware(30, 1))
+  r.Use(middleware.RateLimitMiddleware(30, 1))
 
   site := r.Group("/api")
   {
@@ -150,6 +150,11 @@ func main() {
     party.PATCH("/parties/:partyId/members/:memberId/meta", controllers.PartyPatchMemberMeta)
     party.POST("/parties/:partyId/members/:newMemberId/join", controllers.PartyJoinMember)
 
+    party.GET("/user/:accountId/pings/", controllers.GetPings)
+    party.GET("/user/:accountId/pings/:pingerId/parties", controllers.GetPartyPings)
+    party.POST("user/:accountId/pings/:pingerId", controllers.PostPing)
+    party.DELETE("/user/:accountId/pings/:pingerId", controllers.DeletePing)
+    party.POST("/user/:accountId/pings/:pingerId/join", controllers.JoinPing)
 
     party.GET("/user/:accountId", controllers.PartyGetUser)
     party.GET("/user/:accountId/pings/:friendId/parties", controllers.PartyGetFriendPartyPings)
@@ -163,6 +168,10 @@ func main() {
     blank.GET("/lightswitch/api/service/bulk/status", controllers.Lightswitch)
     blank.GET("/lightswitch/api/service/Fortnite/status", controllers.Lightswitch)
     blank.GET("/fortnite/api/game/v2/chat/:accountId/:chatRoomType/:area/pc", controllers.ChatRooms)
+    blank.GET("/eulatracking/api/shared/agreements/fn", controllers.EULA)
+    blank.GET("/eulatracking/api/public/agreements/fn/account/*accountId", controllers.NoContent)
+    blank.GET("/friends/api/v1/*/settings", controllers.NoContent)
+    blank.GET("/fortnite/api/game/v2/privacy/account/*accountId", controllers.NoContent)
   }
 
   r.GET("/", controllers.XMPP)
@@ -175,9 +184,7 @@ func main() {
   r.StaticFile("api.json", "./public/api.json")
   r.StaticFile("data.json", "./public/data.json")
 
-  r.GET("/cid/:cid", func(c *gin.Context) {
-    c.File("./public/custom_cid_preview/" + c.Param("cid") + ".png")
-  })
+  r.GET("/cid/:cid", controllers.CIDImage)
 
   r.NoRoute(func(c *gin.Context) {
     c.File("./public/index.html")
