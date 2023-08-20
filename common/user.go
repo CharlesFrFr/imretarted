@@ -2,15 +2,25 @@ package common
 
 import (
 	"errors"
+	"regexp"
 
 	"github.com/google/uuid"
 	"github.com/zombman/server/all"
 	"github.com/zombman/server/models"
 )
 
+func OnlyAllowCharacters(s string) string {
+	reg, err := regexp.Compile("[^a-zA-Z0-9]+")
+	if err != nil {
+		all.PrintGreen([]any{"serre", err})
+		return ""
+	}
+	return reg.ReplaceAllString(s, "")
+}
+
 func CreateUser(username string, password string, level int) (models.User, error) {
 	user := models.User{
-		Username:  username,
+		Username:  OnlyAllowCharacters(username),
 		Password:  all.HashString(password),
 		AccountId: uuid.New().String(),
 		AccessLevel: level,
