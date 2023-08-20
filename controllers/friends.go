@@ -36,7 +36,6 @@ func FriendsBlocked(c *gin.Context) {
 	c.JSON(200, friends)
 }
 
-
 func CreateFriend(c *gin.Context) {
 	user := c.MustGet("user").(models.User)
 	wantedFriend := c.Param("friendId")
@@ -197,4 +196,23 @@ func UnBlockFriend(c *gin.Context) {
 	common.UnBlockFriend(user.AccountId, wantedFriend)
 	
 	c.Status(204)
+}
+
+func SearchForUser(c *gin.Context) {
+	user, err := common.GetUserByUsername(c.Query("prefix"))
+	if err != nil {
+		common.ErrorBadRequest(c)
+		return
+	}
+
+	c.JSON(200, []gin.H{{
+		"accountId": user.AccountId,
+		"epicMutuals": 0,
+		"sortPosition": 0,
+		"matchType": "exact",
+		"matches": []gin.H{{
+			"value": user.Username,
+			"platform": "epic",
+		}},
+	}})
 }

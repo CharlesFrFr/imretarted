@@ -1158,3 +1158,14 @@ func EULA(c *gin.Context) {
     "bodyFormat": "HTML",
 	})
 }
+
+func Assets(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"FortCreativeDiscoverySurface": gin.H{
+			"meta": gin.H{
+				"promotion": 0,
+			},
+			"assets": gin.H{},
+		},
+	})
+}

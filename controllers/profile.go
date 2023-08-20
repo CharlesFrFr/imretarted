@@ -497,9 +497,6 @@ func SetCosmeticLockerSlot(c *gin.Context, user models.User, profile *models.Pro
 		c.Abort()
 		return
 	}
-
-	all.PrintYellow([]any{"activeloadout", activeLoadoutId})
-	all.MarshPrintJSON(activeLoadout)
 	
 	lowercaseItemType := strings.ToLower(body.Category)
 	switch lowercaseItemType {
@@ -560,7 +557,7 @@ func SetCosmeticLockerSlot(c *gin.Context, user models.User, profile *models.Pro
 
 	response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
 		ChangeType: "itemAttrChanged",
-		ItemId: body.LockerItem,
+		ItemID: body.LockerItem,
 		AttributeName: "locker_slots_data",
 		AttributeValue: activeLoadout.Attributes.LockerSlotsData,
 	})
@@ -596,6 +593,10 @@ func SetCosmeticLockerSlot(c *gin.Context, user models.User, profile *models.Pro
 	}
 
 	profile.Stats.Attributes["LastAppliedLoadout"] = activeLoadoutId
+
+	all.PrintYellow([]any{"activeloadout", activeLoadoutId})
+	// all.MarshPrintJSON(profile)
+
 	common.AppendLoadoutToProfileNoSave(profile, &activeLoadout, user.AccountId)
 }
 
@@ -648,14 +649,14 @@ func SetCosmeticLockerBanner(c *gin.Context, user models.User, profile *models.P
 
 	response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
 		ChangeType: "itemAttrChanged",
-		ItemId: body.LockerName,
+		ItemID: body.LockerName,
 		AttributeName: "banner_icon_template",
 		AttributeValue: body.BannerIconTemplateName,
 	})
 
 	response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
 		ChangeType: "itemAttrChanged",
-		ItemId: body.LockerName,
+		ItemID: body.LockerName,
 		AttributeName: "banner_color_template",
 		AttributeValue: body.BannerColorTemplateName,
 	})

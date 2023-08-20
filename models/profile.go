@@ -199,7 +199,6 @@ type ProfileChange struct {
 	Value       any    	`json:"value"`
 	AttributeName string `json:"attributeName"`
 	AttributeValue any `json:"attributeValue"`
-	ItemId 		string 	`json:"itemId"`
 }
 
 type Notification struct {

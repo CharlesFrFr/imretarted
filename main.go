@@ -171,6 +171,8 @@ func main() {
     blank.GET("/eulatracking/api/public/agreements/fn/account/*accountId", controllers.NoContent)
     blank.GET("/friends/api/v1/:accountId/settings", controllers.NoContent)
     blank.GET("/fortnite/api/game/v2/privacy/account/*accountId", controllers.NoContent)
+    blank.GET("/api/v1/search/:accountId", controllers.SearchForUser)
+    blank.GET("/api/v1/assets/Fortnite/:versionId/:assetName", controllers.Assets)
   }
 
   r.GET("/", controllers.XMPP)

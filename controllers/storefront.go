@@ -114,59 +114,6 @@ func GenerateRandomItemShop() {
 	legendaryItems := common.FilterRarity(allItems, "Legendary")
 	dailyItems := common.ExcludeRarity(allItems, "Legendary")
 
-	/**
-{
-        "name": "BRSeason9",
-        "catalogEntries": [
-          {
-            "offerId": "C7190ACA4E5E228A94CA3CB9C3FC7AE9",
-            "devName": "BR.Season9.BattleBundle.01",
-            "offerType": "StaticPrice",
-            "prices": [
-              {
-                "currencyType": "MtxCurrency",
-                "currencySubType": "",
-                "regularPrice": 4700,
-                "finalPrice": 2800,
-                "saleType": "PercentOff",
-                "saleExpiration": "9999-12-31T23:59:59.999Z",
-                "basePrice": 2800
-              }
-            ],
-            "categories": [],
-            "dailyLimit": -1,
-            "weeklyLimit": -1,
-            "monthlyLimit": -1,
-            "appStoreId": [
-              "",
-              "",
-              "",
-              "",
-              "",
-              "",
-              "",
-              "",
-              "",
-              ""
-            ],
-            "requirements": [
-              {
-                "requirementType": "DenyOnFulfillment",
-                "requiredId": "73E6EE6F4526EF97450D1592C3DB0EF5",
-                "minQuantity": 1
-              }
-            ],
-            "metaInfo": [],
-            "catalogGroup": "",
-            "catalogGroupPriority": 0,
-            "sortPriority": 0,
-            "title": " ",
-            "shortDescription": " ",
-            "description": "" ",
-            "displayAssetPath": "/Game/Catalog/DisplayAssets/DA_BR_Season9_BattlePassWithLevels.DA_BR_Season9_BattlePassWithLevels",
-            "itemGrants": []
-          }"
-			**/
 	ItemShop = models.StorePage{
 		RefreshIntervalHrs: 24,
 		DailyPurchaseHrs:  24,
@@ -257,12 +204,12 @@ func GenerateRandomItemShop() {
 	}
 
 	for i := 0; i < 6; i++ {
-		entry := GenerateRandomCatalogEntry(1, &dailyItems)
+		entry := GenerateRandomCatalogEntry(1, &dailyItems, "Small")
 		ItemShop.Storefronts[0].CatalogEntries = append(ItemShop.Storefronts[0].CatalogEntries, entry)
 	}
 
 	for i := 0; i < 2; i++ {
-		entry := GenerateRandomCatalogEntry(-1, &legendaryItems)
+		entry := GenerateRandomCatalogEntry(-1, &legendaryItems, "Normal")
 		ItemShop.Storefronts[1].CatalogEntries = append(ItemShop.Storefronts[1].CatalogEntries, entry)
 	}
 
@@ -272,7 +219,7 @@ func GenerateRandomItemShop() {
 	}
 }
 
-func GenerateRandomCatalogEntry(f int, items *[]models.BeforeStoreItem) models.CatalogEntry {
+func GenerateRandomCatalogEntry(f int, items *[]models.BeforeStoreItem, size string) models.CatalogEntry {
 	endOfDay := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 23, 59, 59, 999999999, time.Now().Location()).Format("2006-01-02T15:04:05.999Z")
 	randomItem := (*items)[rand.Intn(len(*items) - 1)]
 	price := Prices[randomItem.BackendType][randomItem.Rarity]
@@ -311,14 +258,14 @@ func GenerateRandomCatalogEntry(f int, items *[]models.BeforeStoreItem) models.C
 		},
 		Meta: map[string]any {
 			"SectionId": "Featured",
-			"TileSize": "Small",
+			"TileSize": size,
 		},
 		MetaInfo: []gin.H{{
 			"key": "SectionId",
 			"value": "Featured",
 		}, {
 			"key": "TileSize",
-			"value": "Small",
+			"value": size,
 		}},
 		Requirements: []models.Requirement{{
 			RequirementType: "DenyOnItemOwnership",
