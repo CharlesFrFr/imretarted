@@ -27,22 +27,18 @@ func ProfileActionHandler(c *gin.Context) {
 	}
 
 	switch action {
-		case "QueryProfile":
-		case "SetMtxPlatform":
-		case "ClientQuestLogin":
-		case "BulkEquipBattleRoyaleCustomization":
-		case "MarkItemSeen":
-		case "SetItemFavoriteStatusBatch":
-			break
-		case "EquipBattleRoyaleCustomization":
-			EquipBattleRoyaleCustomization(c, user, &profile, &response)
 		case "PurchaseCatalogEntry":
 			PurchaseCatalogEntry(c, user, &profile, &response)
+		case "EquipBattleRoyaleCustomization":
+			EquipBattleRoyaleCustomization(c, user, &profile, &response)
 		case "SetBattleRoyaleBanner":
 			SetBattleRoyaleBanner(c, user, &profile, &response)
+		case "SetCosmeticLockerSlot":
+			SetCosmeticLockerSlot(c, user, &profile, &response)
+		case "SetCosmeticLockerBanner":
+			SetCosmeticLockerBanner(c, user, &profile, &response)
 		default:
-			all.PrintRed([]any{action, "Not Handled"})
-			return
+			break
 	}
 
 	if profile.ProfileId == "athena" {
@@ -110,6 +106,15 @@ func DedicatedServerProfileHandler(c *gin.Context) {
 	c.JSON(200, response)
 }
 
+type CatalogOffer struct {
+	OfferId string `json:"offerId"`
+	PurchaseQuantity int `json:"purchaseQuantity"`
+	Currency string `json:"currency"`
+	CurrencySubType string `json:"currencySubType"`
+	ExpectedTotalPrice int `json:"expectedTotalPrice"`
+	GameContext string `json:"gameContext"`
+}
+
 func PurchaseCatalogEntry(c *gin.Context, user models.User, profile *models.Profile, response *models.ProfileResponse) {
 	athenaProfile, nerr := common.ReadProfileFromUser(user.AccountId, "athena")
 	if nerr != nil {
@@ -117,15 +122,7 @@ func PurchaseCatalogEntry(c *gin.Context, user models.User, profile *models.Prof
 		return
 	}
 
-	var body struct {
-		OfferId string `json:"offerId"`
-		PurchaseQuantity int `json:"purchaseQuantity"`
-		Currency string `json:"currency"`
-		CurrencySubType string `json:"currencySubType"`
-		ExpectedTotalPrice int `json:"expectedTotalPrice"`
-		GameContext string `json:"gameContext"`
-	}
-
+	var body CatalogOffer
 	if err := c.ShouldBind(&body); err != nil {
 		all.PrintRed([]any{"could not bind body", err.Error()})
 		common.ErrorBadRequest(c)
@@ -238,6 +235,30 @@ func PurchaseCatalogEntry(c *gin.Context, user models.User, profile *models.Prof
 	})
 }
 
+func PurchaseCatalogEntryBattlePass(c *gin.Context, user models.User, profile *models.Profile, response *models.ProfileResponse, body CatalogOffer) {
+	offer, err := common.GetCatalogEntry(body.OfferId)
+	if err != nil {
+		common.ErrorItemNotFound(c)
+		c.Abort()
+		return
+	}
+
+	all.PrintGreen([]any{"purchasing battle pass"})
+	all.MarshPrintJSON(offer)
+
+	if user.VBucks < offer.Prices[0].FinalPrice {
+		common.ErrorBadRequest(c)
+		c.Abort()
+		return
+	}
+
+	response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
+		ChangeType: "itemQuantityChanged",
+		ItemID: "Currency:MtxPurchased",
+		Quantity: user.VBucks - offer.Prices[0].FinalPrice,
+	})
+}
+
 func EquipBattleRoyaleCustomization(c *gin.Context, user models.User, profile *models.Profile, response *models.ProfileResponse) {
 	if profile.ProfileId != "athena" {
 		common.ErrorBadRequest(c)
@@ -332,7 +353,6 @@ func EquipBattleRoyaleCustomization(c *gin.Context, user models.User, profile *m
 			c.Abort()
 	}
 
-	
 	defaultProfile, err := common.ConvertAthenaToDefault(athenaProfile)
 	if err != nil {
 		common.ErrorBadRequest(c)
@@ -369,7 +389,7 @@ func EquipBattleRoyaleCustomization(c *gin.Context, user models.User, profile *m
 		variantFound.Active = variant.Active
 		variantFound.Owned = []string{variant.Active}
 		common.SetVariantInItem(&itemWithVariant, variantFound)
-		athenaProfile.Items[body.ItemToSlot] = itemWithVariant
+		profile.Items[body.ItemToSlot] = itemWithVariant
 
 		response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
 			ChangeType: "itemAttrChanged",
@@ -379,8 +399,7 @@ func EquipBattleRoyaleCustomization(c *gin.Context, user models.User, profile *m
 		})
 	}
 
-	athenaProfile.Stats.Attributes.LastAppliedLoadout = activeLoadoutId
-
+	profile.Stats.Attributes["LastAppliedLoadout"] = activeLoadoutId
 	common.AppendLoadoutToProfileNoSave(profile, &activeLoadout, user.AccountId)
 }
 
@@ -443,33 +462,193 @@ func SetBattleRoyaleBanner(c *gin.Context, user models.User, profile *models.Pro
 	})
 }
 
-func PurchaseCatalogEntryBattlePass(c *gin.Context, user models.User, profile *models.Profile, response *models.ProfileResponse, body struct {
-	OfferId string `json:"offerId"`
-	PurchaseQuantity int `json:"purchaseQuantity"`
-	Currency string `json:"currency"`
-	CurrencySubType string `json:"currencySubType"`
-	ExpectedTotalPrice int `json:"expectedTotalPrice"`
-	GameContext string `json:"gameContext"`
-}) {
-	offer, err := common.GetCatalogEntry(body.OfferId)
+func SetCosmeticLockerSlot(c *gin.Context, user models.User, profile *models.Profile, response *models.ProfileResponse) {
+	var body struct {
+		Category string `json:"category"` // AthenaCharacter, AthenaBackpack, AthenaPickaxe, AthenaDance, AthenaSkyDiveContrail, AthenaGlider, AthenaLoadingScreen, AthenaMusicPack, AthenaItemWrap
+		LockerItem string `json:"lockerItem"`
+		ItemToSlot string `json:"itemToSlot"`
+		SlotIndex int `json:"slotIndex"`
+		VariantUpdates []models.ItemVariant `json:"variantUpdates"`
+	}
+
+	if err := c.ShouldBind(&body); err != nil {
+		all.PrintRed([]any{"could not bind body", err.Error()})
+		common.ErrorBadRequest(c)
+		c.Abort()
+		return
+	}
+
+	athenaProfile,err := common.ConvertProfileToAthena(*profile)
+	if err != nil {
+		common.ErrorBadRequest(c)
+		c.Abort()
+		return
+	}
+
+	activeLoadoutId := athenaProfile.Stats.Attributes.Loadouts[athenaProfile.Stats.Attributes.ActiveLoadoutIndex]
+	activeLoadout, err := common.GetLoadout(activeLoadoutId, user.AccountId)
+	if err != nil {
+		common.ErrorItemNotFound(c)
+		c.Abort()
+		return
+	}
+	
+	lowercaseItemType := strings.ToLower(body.Category)
+	switch lowercaseItemType {
+		case "character":
+			athenaProfile.Stats.Attributes.FavoriteCharacter = body.ItemToSlot
+			activeLoadout.Attributes.LockerSlotsData.Slots["Character"].Items[0] = body.ItemToSlot
+		case "backpack":
+			athenaProfile.Stats.Attributes.FavoriteBackpack = body.ItemToSlot
+			activeLoadout.Attributes.LockerSlotsData.Slots["Backpack"].Items[0] = body.ItemToSlot
+		case "pickaxe":
+			athenaProfile.Stats.Attributes.FavoritePickaxe = body.ItemToSlot
+			activeLoadout.Attributes.LockerSlotsData.Slots["Pickaxe"].Items[0] = body.ItemToSlot
+		case "glider":
+			athenaProfile.Stats.Attributes.FavoriteGlider = body.ItemToSlot
+			activeLoadout.Attributes.LockerSlotsData.Slots["Glider"].Items[0] = body.ItemToSlot
+		case "skydivecontrail":
+			athenaProfile.Stats.Attributes.FavoriteSkyDiveContrail = body.ItemToSlot
+			activeLoadout.Attributes.LockerSlotsData.Slots["SkyDiveContrail"].Items[0] = body.ItemToSlot
+		case "loadingscreen":
+			athenaProfile.Stats.Attributes.FavoriteLoadingScreen = body.ItemToSlot
+			activeLoadout.Attributes.LockerSlotsData.Slots["LoadingScreen"].Items[0] = body.ItemToSlot
+		case "musicpack":
+			athenaProfile.Stats.Attributes.FavoriteMusicPack = body.ItemToSlot
+			activeLoadout.Attributes.LockerSlotsData.Slots["MusicPack"].Items[0] = body.ItemToSlot
+		case "dance":
+			athenaProfile.Stats.Attributes.FavoriteDance[body.SlotIndex] = body.ItemToSlot
+			activeLoadout.Attributes.LockerSlotsData.Slots["Dance"].Items[body.SlotIndex] = body.ItemToSlot
+		case "itemwrap":
+			if body.SlotIndex >= 0 {
+				athenaProfile.Stats.Attributes.FavoriteItemWraps[body.SlotIndex] = body.ItemToSlot
+				activeLoadout.Attributes.LockerSlotsData.Slots["ItemWrap"].Items[body.SlotIndex] = body.ItemToSlot
+			} 
+			if body.SlotIndex == -1 {
+				for i := range activeLoadout.Attributes.LockerSlotsData.Slots["ItemWrap"].Items {
+					activeLoadout.Attributes.LockerSlotsData.Slots["ItemWrap"].Items[i] = body.ItemToSlot
+				}
+				for i := range athenaProfile.Stats.Attributes.FavoriteItemWraps {
+					athenaProfile.Stats.Attributes.FavoriteItemWraps[i] = body.ItemToSlot
+				}
+			}
+			
+			lowercaseItemType = "itemwraps"
+		default:
+			all.PrintRed([]any{"unknown item type", athenaProfile.Stats.Attributes})
+			common.ErrorBadRequest(c)
+			c.Abort()
+	}
+
+	defaultProfile, err := common.ConvertAthenaToDefault(athenaProfile)
+	if err != nil {
+		common.ErrorBadRequest(c)
+		c.Abort()
+		return
+	}
+
+	profile.Items = defaultProfile.Items
+	profile.Stats = defaultProfile.Stats
+
+	response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
+		ChangeType: "itemAttrChanged",
+		ItemId: body.LockerItem,
+		AttributeName: "locker_slots_data",
+		AttributeValue: activeLoadout.Attributes.LockerSlotsData,
+	})
+
+	for _, variant := range body.VariantUpdates {
+		itemWithVariant, err := common.GetItemFromProfile(profile, body.ItemToSlot)
+		if err != nil {
+			all.PrintRed([]any{"could not find item", body.ItemToSlot})
+			common.ErrorBadRequest(c)
+			return
+		}
+
+		variantFound, err := common.FindVariant(&itemWithVariant, variant.Channel)
+		if err != nil {
+			variantFound = models.ItemVariant{
+				Channel: variant.Channel,
+				Active: variant.Active,
+				Owned: variant.Owned,
+			}
+		}
+
+		variantFound.Active = variant.Active
+		variantFound.Owned = []string{variant.Active}
+		common.SetVariantInItem(&itemWithVariant, variantFound)
+		profile.Items[body.ItemToSlot] = itemWithVariant
+
+		response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
+			ChangeType: "itemAttrChanged",
+			ItemID: body.ItemToSlot,
+			AttributeName: "variants",
+			AttributeValue: itemWithVariant.Attributes.Variants,
+		})
+	}
+
+	profile.Stats.Attributes["LastAppliedLoadout"] = activeLoadoutId
+	common.AppendLoadoutToProfileNoSave(profile, &activeLoadout, user.AccountId)
+}
+
+func SetCosmeticLockerBanner(c *gin.Context, user models.User, profile *models.Profile, response *models.ProfileResponse) {
+	var body struct {
+		BannerIconTemplateName string `json:"bannerIconTemplateName"`
+		BannerColorTemplateName string `json:"bannerColorTemplateName"`
+		LockerName string `json:"lockerName"`
+	}
+
+	if err := c.ShouldBind(&body); err != nil {
+		all.PrintRed([]any{"could not bind body", err.Error()})
+		common.ErrorBadRequest(c)
+		c.Abort()
+		return
+	}
+
+	athenaProfile,err := common.ConvertProfileToAthena(*profile)
+	if err != nil {
+		common.ErrorBadRequest(c)
+		c.Abort()
+		return
+	}
+
+	athenaProfile.Items[body.LockerName].(models.CommonCoreItem).Attributes["banner_icon_template"] = body.BannerIconTemplateName
+	athenaProfile.Items[body.LockerName].(models.CommonCoreItem).Attributes["banner_color_template"] = body.BannerColorTemplateName
+
+	athenaProfile.Stats.Attributes.BannerIcon = body.BannerIconTemplateName
+	athenaProfile.Stats.Attributes.BannerColor = body.BannerColorTemplateName
+
+	activeLoadoutId := athenaProfile.Stats.Attributes.Loadouts[athenaProfile.Stats.Attributes.ActiveLoadoutIndex]
+	activeLoadout, err := common.GetLoadout(activeLoadoutId, user.AccountId)
 	if err != nil {
 		common.ErrorItemNotFound(c)
 		c.Abort()
 		return
 	}
 
-	all.PrintGreen([]any{"purchasing battle pass"})
-	all.MarshPrintJSON(offer)
-
-	if user.VBucks < offer.Prices[0].FinalPrice {
+	defaultProfile, err := common.ConvertAthenaToDefault(athenaProfile)
+	if err != nil {
 		common.ErrorBadRequest(c)
 		c.Abort()
 		return
 	}
 
+	profile.Items = defaultProfile.Items
+	profile.Stats = defaultProfile.Stats
+
+	common.AppendLoadoutToProfileNoSave(profile, &activeLoadout, user.AccountId)
+
 	response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
-		ChangeType: "itemQuantityChanged",
-		ItemID: "Currency:MtxPurchased",
-		Quantity: user.VBucks - offer.Prices[0].FinalPrice,
+		ChangeType: "itemAttrChanged",
+		ItemId: body.LockerName,
+		AttributeName: "banner_icon_template",
+		AttributeValue: body.BannerIconTemplateName,
+	})
+
+	response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
+		ChangeType: "itemAttrChanged",
+		ItemId: body.LockerName,
+		AttributeName: "banner_color_template",
+		AttributeValue: body.BannerColorTemplateName,
 	})
 }
