@@ -116,7 +116,7 @@ func GetPings(c *gin.Context) {
 
 func GetPartyPings(c *gin.Context) {
 	sentBy, _ := common.GetUserByAccountId(c.Param("pingerId"))
-	
+
 	var parties []models.V2Party
 	for _, party := range common.ActiveParties {
 		for _, member := range party.Members {
@@ -261,10 +261,6 @@ func JoinPing(c *gin.Context) {
 	for _, member := range party.Members {
 		memberClient, err := socket.XGetClientFromAccountId(member.AccountId)
 		if err != nil {
-			continue
-		}
-
-		if member.AccountId == user.AccountId {
 			continue
 		}
 

@@ -403,7 +403,7 @@ func PartyJoinMember(c *gin.Context) {
 	}
 	
 	c.JSON(201, gin.H{
-		"status": "PENDING_CONFIRMATION",
+		"status": "JOINED",
 		"party_id": partyId,
 	})
 
