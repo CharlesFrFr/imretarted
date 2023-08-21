@@ -172,7 +172,7 @@ func main() {
     blank.GET("/fortnite/api/game/v2/chat/:accountId/:chatRoomType/:area/pc", controllers.ChatRooms)
     blank.GET("/eulatracking/api/shared/agreements/fn", controllers.EULA)
     blank.GET("/eulatracking/api/public/agreements/fn/account/*accountId", controllers.NoContent)
-    blank.GET("/fortnite/api/game/v2/privacy/account/*accountId", controllers.NoContent)
+    blank.GET("/fortnite/api/game/v2/privacy/account/*accountId", controllers.PartyPrivacy)
     blank.GET("/api/v1/search/:accountId", controllers.SearchForUser)
     blank.GET("/api/v1/assets/Fortnite/:versionId/:assetName", controllers.Assets)
   }

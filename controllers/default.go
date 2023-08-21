@@ -1169,3 +1169,13 @@ func Assets(c *gin.Context) {
 		},
 	})
 }
+
+func PartyPrivacy(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"acceptInvites": "public",
+		"acceptInvitesFrom": "public",
+		"joinConfirmation": "public",
+		"joinability": "open",
+		"partyType": "Public",
+	})
+}
