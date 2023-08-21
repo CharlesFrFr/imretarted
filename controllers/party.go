@@ -109,7 +109,7 @@ func PartyPost(c *gin.Context) {
 	}
 
 	party.Config.JoinConfirmation = body.Config.JoinConfirmation
-	party.Config.Joinability = body.Config.Joinability
+	party.Config.Joinability = "OPEN"
 	party.Config.MaxSize = body.Config.MaxSize
 	party.Members = []models.V2PartyMember{partyMember}
 

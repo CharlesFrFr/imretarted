@@ -87,11 +87,8 @@ func CreateFriend(c *gin.Context) {
 			},
 		}, user.AccountId)
 
-		clientRemoteAddress, _ := socket.AccountIdToXMPPRemoteAddress[wantedFriend]
-		client, _ := socket.ActiveXMPPClients[clientRemoteAddress]
-
-		friendRemoteAddress, _ := socket.AccountIdToXMPPRemoteAddress[user.AccountId]
-		friend, _ := socket.ActiveXMPPClients[friendRemoteAddress]
+		client := socket.ActiveXMPPClients[socket.AccountIdToXMPPRemoteAddress[wantedFriend]]
+		friend := socket.ActiveXMPPClients[socket.AccountIdToXMPPRemoteAddress[user.AccountId]]
 
 		client.Connection.WriteMessage(1, []byte(`
 			<presence to="`+ client.JID +`" xmlns="jabber:client" from="`+ friend.JID +`" type="available">
@@ -280,7 +277,9 @@ func FriendsSummary(c *gin.Context) {
 		Incoming: []FriendSummaryItem{},
 		Outgoing: []FriendSummaryItem{},
 		Suggested: []FriendSummaryItem{},
-		Settings: gin.H{},
+		Settings: gin.H{
+			"acceptInvites": "public",
+		},
 	}
 
 	friends := common.GetAllAcceptedFriends(user.AccountId)
