@@ -244,7 +244,7 @@ func UserUpdate(c *gin.Context) {
 			return
 		}
 	}
-	if body.Password != "" {
+	if body.Password != "" && body.Password != user.Password {
 		user.Password = all.HashString(body.Password)
 	}
 
@@ -324,6 +324,7 @@ func AdminSaveProfile(c *gin.Context) {
 		Profile models.Profile `json:"profile" binding:"required"`
 		AthenaProfile models.AthenaProfile `json:"athenaProfile" binding:"required"`
 		CommonCoreProfile models.CommonCoreProfile `json:"commonCoreProfile" binding:"required"`
+		User models.User `json:"user" binding:"required"`
 	}
 
 	if err := c.ShouldBind(&body); err != nil {
@@ -387,7 +388,8 @@ func AdminSaveProfile(c *gin.Context) {
 	common.AppendLoadoutsToProfile(&defaultAthenaProfile, user.AccountId)
 	common.AppendLoadoutsToProfile(&defaultCommonCoreProfile, user.AccountId)
 
-	all.Postgres.Model(&models.User{}).Where("account_id = ?", user.AccountId).Update("v_bucks", commonCoreProfileConverted.Items["Currency:MtxPurchased"].Quantity)
+	user = body.User
+	all.Postgres.Save(&user)
 
 	c.JSON(http.StatusOK, gin.H{
 		"user": user,
