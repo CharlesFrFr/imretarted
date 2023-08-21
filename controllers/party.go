@@ -284,14 +284,14 @@ func PartyPatchMemberMeta(c *gin.Context) {
 func PartyJoinMember(c *gin.Context) {
 	user := c.MustGet("user").(models.User)
 	partyId := c.Param("partyId")
-
-	all.PrintMagenta([]any{user.AccountId})
-
+	
 	party, ok := common.ActiveParties[partyId]
 	if !ok {
 		common.ErrorBadRequest(c)
 		return
 	}
+
+	common.LeaveOldParty(user.AccountId)
 
 	var body struct {
 		Connection struct {
@@ -412,9 +412,6 @@ func PartyJoinMember(c *gin.Context) {
 		"status": "JOINED",
 		"party_id": partyId,
 	})
-
-	common.LeaveOldParty(user.AccountId)
-	common.DeleteEmptyParties()
 }
 
 func PartyGet(c *gin.Context) {

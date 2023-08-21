@@ -140,6 +140,8 @@ func JoinPing(c *gin.Context) {
 		return
 	}
 
+	common.LeaveOldParty(user.AccountId)
+
 	var body struct {
 		Connection struct {
 			Id string `json:"id"`
@@ -288,7 +290,4 @@ func JoinPing(c *gin.Context) {
 		"status": "JOINED",
 		"party_id": party.ID,
 	})
-
-	common.LeaveOldParty(user.AccountId)
-	common.DeleteEmptyParties()
 }
