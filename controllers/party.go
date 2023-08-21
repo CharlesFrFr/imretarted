@@ -388,10 +388,6 @@ func PartyJoinMember(c *gin.Context) {
 			continue
 		}
 
-		if member.AccountId == user.AccountId {
-			continue
-		}
-
 		socket.XMPPSendBody(gin.H{
 			"account_id": partyMember.AccountId,
 			"account_dn": partyMember.Meta["urn:epic:member:dn_s"],
@@ -407,7 +403,7 @@ func PartyJoinMember(c *gin.Context) {
 	}
 	
 	c.JSON(201, gin.H{
-		"status": "JOINED",
+		"status": "PENDING_CONFIRMATION",
 		"party_id": partyId,
 	})
 
