@@ -90,9 +90,9 @@ type UserAccountPublicResponse struct {
 // for some reason i think it is party v2 related
 func UserAccountPublic(c *gin.Context) {
 	response := [](UserAccountPublicResponse){}
-	
-	accountId := c.Query("accountId")
-	if accountId != "" {
+
+	accountIds, _ := c.GetQueryArray("accountId")
+	for _, accountId := range accountIds {
 		user, err := common.GetUserByAccountId(accountId)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err})

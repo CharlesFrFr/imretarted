@@ -2,7 +2,9 @@ package common
 
 import (
 	"math/rand"
+	"os"
 	"sort"
+	"strconv"
 )
 
 type GameServer struct {
@@ -17,15 +19,19 @@ type GameServer struct {
 var (
 	GameServers             = make(map[string][]GameServer)
 	IP               string = "127.0.0.1:3000"
-	Season           int    = 7
-	Chapter          int    = 2
+	Season           int    = 0
+	Chapter          int    = 0
 	LoadShopFromJson bool   = false
 )
 
 func InitGameServers() {
-	// addGameServer("playlist_defaultsolo", "EU", "158.178.203.104", 7777)
-	// addGameServer("playlist_defaultsolo", "NAE", "158.178.203.104", 7777)
-	// addGameServer("playlist_defaultsolo", "NAW", "158.178.203.104", 7777)
+	seasonEnv, _ := strconv.Atoi(os.Getenv("SEASON"))
+	chapterEnv, _ := strconv.Atoi(os.Getenv("CHAPTER"))
+
+	Season = seasonEnv
+	Chapter = chapterEnv
+	IP = os.Getenv("BACKEND_IP")
+
 	addGameServer("playlist_defaultsolo", "EU", "127.0.0.1", 7777)
 	addGameServer("playlist_defaultsolo", "NAE", "127.0.0.1", 7777)
 	addGameServer("playlist_defaultsolo", "NAW", "127.0.0.1", 7777)

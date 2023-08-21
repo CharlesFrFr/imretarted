@@ -204,12 +204,12 @@ func GenerateRandomItemShop() {
 	}
 
 	for i := 0; i < 6; i++ {
-		entry := GenerateRandomCatalogEntry(1, &dailyItems, "Small")
+		entry := GenerateRandomCatalogEntry(-1, &dailyItems, "Small")
 		ItemShop.Storefronts[0].CatalogEntries = append(ItemShop.Storefronts[0].CatalogEntries, entry)
 	}
 
 	for i := 0; i < 2; i++ {
-		entry := GenerateRandomCatalogEntry(-1, &legendaryItems, "Normal")
+		entry := GenerateRandomCatalogEntry(1, &legendaryItems, "Normal")
 		ItemShop.Storefronts[1].CatalogEntries = append(ItemShop.Storefronts[1].CatalogEntries, entry)
 	}
 
@@ -251,7 +251,7 @@ func GenerateRandomCatalogEntry(f int, items *[]models.BeforeStoreItem, size str
 		DisplayAssetPath: "",
 		OfferType: "StaticPrice",
 		GiftInfo: map[string]any {
-			"bIsEnabled": false,
+			"bIsEnabled": true,
 			"forcedGiftBoxTemplateId": "",
 			"purchaseRequirements": []any{},
 			"giftRecordIds": []any{},

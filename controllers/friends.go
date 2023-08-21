@@ -81,7 +81,7 @@ func CreateFriend(c *gin.Context) {
 			"payload": gin.H{
 				"accountId": wantedFriend,
 				"status": "ACCEPTED",
-				"direction": "INBOUND",
+				"direction": "OUTBOUND",
 				"favorite": false,
 				"created": time.Now().Format("2006-01-02T15:04:05.999Z"),
 			},
@@ -107,7 +107,7 @@ func CreateFriend(c *gin.Context) {
 			"payload": gin.H{
 				"accountId": wantedFriend,
 				"status": "PENDING",
-				"direction": "INBOUND",
+				"direction": "OUTBOUND",
 				"favorite": false,
 				"created": time.Now().Format("2006-01-02T15:04:05.999Z"),
 			},
@@ -198,21 +198,38 @@ func UnBlockFriend(c *gin.Context) {
 	c.Status(204)
 }
 
+type MatchUser struct {
+	AccountId string `json:"accountId"`
+	EpicMutuals int `json:"epicMutuals"`
+	SortPosition int `json:"sortPosition"`
+	MatchType string `json:"matchType"`
+	Matches []Match `json:"matches"`
+}
+
+type Match struct {
+	Value string `json:"value"`
+	Platform string `json:"platform"`
+}
+
 func SearchForUser(c *gin.Context) {
-	user, err := common.GetUserByUsername(c.Query("prefix"))
-	if err != nil {
-		common.ErrorBadRequest(c)
-		return
+	var users []MatchUser
+	prefix := c.Query("prefix")
+	
+	var databaseMatches []models.User
+	all.Postgres.Model(&models.User{}).Where("username LIKE ?", prefix + "%").Limit(10).Find(&databaseMatches)
+
+	for i, match := range databaseMatches {
+		users = append(users, MatchUser{
+			AccountId: match.AccountId,
+			EpicMutuals: 0,
+			SortPosition: i,
+			MatchType: "PREFIX",
+			Matches: []Match{{
+				Value: match.Username,
+				Platform: "WIN",
+			}},
+		})
 	}
 
-	c.JSON(200, []gin.H{{
-		"accountId": user.AccountId,
-		"epicMutuals": 0,
-		"sortPosition": 0,
-		"matchType": "exact",
-		"matches": []gin.H{{
-			"value": user.Username,
-			"platform": "epic",
-		}},
-	}})
+	c.JSON(200, users)
 }
