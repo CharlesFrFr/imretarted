@@ -267,6 +267,12 @@ func JoinPing(c *gin.Context) {
 		socket.XMPPSendBody(gin.H{
 			"account_id": partyMember.AccountId,
 			"account_dn": partyMember.Meta["urn:epic:member:dn_s"],
+			"connection": gin.H{
+				"id": partyMember.Connections[0].ID,
+				"meta": partyMember.Connections[0].Meta,
+				"updated_at": partyMember.Connections[0].UpdatedAt,
+				"connected_at": partyMember.Connections[0].ConnectedAt,
+			},
 			"member_state_updated": partyMember.Meta,
 			"party_id": party.ID,
 			"updated_at": partyMember.UpdatedAt,
