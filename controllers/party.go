@@ -110,7 +110,7 @@ func PartyPost(c *gin.Context) {
 
 	party.Config.JoinConfirmation = body.Config.JoinConfirmation
 	party.Config.Joinability = "OPEN"
-	party.Config.MaxSize = body.Config.MaxSize
+	party.Config.MaxSize = 4
 	party.Members = []models.V2PartyMember{partyMember}
 
 	for key, metaItem := range body.Meta {
@@ -175,7 +175,7 @@ func PartyPatch(c *gin.Context) {
 
 	party.Config.JoinConfirmation = body.Config.JoinConfirmation
 	party.Config.Joinability = "OPEN"
-	party.Config.MaxSize = body.Config.MaxSize
+	party.Config.MaxSize = 4
 	common.ActiveParties[partyId] = party
 
 	var captain models.V2PartyMember
