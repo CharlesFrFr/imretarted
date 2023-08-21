@@ -50,11 +50,18 @@ func ProfileActionHandler(c *gin.Context) {
 		revisionCheck = profile.CommandRevision
 	}
 
-	if queryRevision, err := strconv.Atoi(c.Query("rvn")); err == nil && queryRevision != revisionCheck {
+	if queryRevision, err := strconv.Atoi(c.Query("rvn")); err == nil && queryRevision != revisionCheck  {
 		response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
 			ChangeType: "fullProfileUpdate",
 			Profile: profile,
 		})
+	}
+
+	if queryRevision, err := strconv.Atoi(c.Query("rvn")); err == nil && queryRevision == -1  {
+		response.ProfileChanges = []models.ProfileChange{{
+			ChangeType: "fullProfileUpdate",
+			Profile: profile,
+		}}
 	}
 
 	profile.Rvn += 1

@@ -25,6 +25,7 @@ func PartyGetUser(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"current": party,
 	})
+
 	all.MarshPrintJSON(party)
 }
 
@@ -109,8 +110,8 @@ func PartyPost(c *gin.Context) {
 	}
 
 	party.Config.JoinConfirmation = body.Config.JoinConfirmation
-	party.Config.Joinability = "OPEN"
-	party.Config.MaxSize = 4
+	party.Config.Joinability = body.Config.Joinability
+	party.Config.MaxSize = body.Config.MaxSize
 	party.Members = []models.V2PartyMember{partyMember}
 
 	for key, metaItem := range body.Meta {
@@ -118,6 +119,28 @@ func PartyPost(c *gin.Context) {
 	}
 
 	common.ActiveParties[party.ID] = party
+
+	memberClient, _ := socket.XGetClientFromAccountId(user.AccountId)
+
+	socket.XMPPSendBody(gin.H{
+		"account_id": partyMember.AccountId,
+		"account_dn": partyMember.Meta["urn:epic:member:dn_s"],
+		"connection": gin.H{
+			"id": partyMember.Connections[0].ID,
+			"meta": partyMember.Connections[0].Meta,
+			"updated_at": partyMember.Connections[0].UpdatedAt,
+			"connected_at": partyMember.Connections[0].ConnectedAt,
+			"joined_at": time.Now().Format("2006-01-02T15:04:05.000Z"),
+		},
+		"member_state_updated": partyMember.Meta,
+		"party_id": party.ID,
+		"updated_at": partyMember.UpdatedAt,
+		"joined_at": partyMember.JoinedAt,
+		"sent": time.Now().Format("2006-01-02T15:04:05.000Z"),
+		"revision": party.Revision,
+		"ns": "Fortnite",
+		"type": "com.epicgames.social.party.notification.v0.MEMBER_JOINED",
+	}, memberClient)
 
 	c.JSON(200, party)
 
@@ -174,8 +197,8 @@ func PartyPatch(c *gin.Context) {
 	}
 
 	party.Config.JoinConfirmation = body.Config.JoinConfirmation
-	party.Config.Joinability = "OPEN"
-	party.Config.MaxSize = 4
+	party.Config.Joinability = body.Config.Joinability
+	party.Config.MaxSize = body.Config.MaxSize
 	common.ActiveParties[partyId] = party
 
 	var captain models.V2PartyMember
