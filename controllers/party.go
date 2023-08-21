@@ -266,10 +266,12 @@ func PartyPatchMemberMeta(c *gin.Context) {
 		if member.AccountId == memberId {
 			for _, key := range body.Delete {
 				delete(member.Meta, key)
+				delete(member.Meta, strings.ReplaceAll(key, "Default:", ""))
 			}
 
 			for key, metaItem := range body.Update {
 				member.Meta[key] = metaItem
+				member.Meta[strings.ReplaceAll(key, "Default:", "")] = metaItem
 			}
 
 			break
@@ -294,8 +296,8 @@ func PartyPatchMemberMeta(c *gin.Context) {
 		socket.XMPPSendBody(gin.H{
 			"account_id": partyMember.AccountId,
 			"account_dn": partyMember.Meta["urn:epic:member:dn_s"],
-			"member_state_updated": body.Update,
-			"member_state_removed": body.Delete,
+			"member_state_updated": partyMember.Meta,
+			"member_state_removed": []string{},
 			"member_state_overridden": gin.H{},
 			"party_id": party.ID,
 			"updated_at": partyMember.UpdatedAt,
