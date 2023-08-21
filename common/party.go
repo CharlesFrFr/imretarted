@@ -44,3 +44,27 @@ func CreateParty(activeParties *map[string]models.V2Party, accountIdToPartyId *m
 
 	return party
 }
+
+func LeaveOldParty(accountId string) {
+	partyId := AccountIdToPartyId[accountId]
+	if partyId != "" {
+		party := ActiveParties[partyId]
+		for i, member := range party.Members {
+			if member.AccountId == accountId {
+				party.Members = append(party.Members[:i], party.Members[i+1:]...)
+				break
+			}
+		}
+		ActiveParties[partyId] = party
+	}
+
+	DeleteEmptyParties()
+}
+
+func DeleteEmptyParties() {
+		for partyId, party := range ActiveParties {
+		if len(party.Members) == 0 {
+			delete(ActiveParties, partyId)
+		}
+	}
+}

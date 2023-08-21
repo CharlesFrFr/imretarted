@@ -121,7 +121,7 @@ func PartyPost(c *gin.Context) {
 
 	c.JSON(200, party)
 
-	deleteAnyEmptyParties()
+	common.DeleteEmptyParties()
 }
 
 func PartyPatch(c *gin.Context) {
@@ -391,7 +391,7 @@ func PartyJoinMember(c *gin.Context) {
 		socket.XMPPSendBody(gin.H{
 			"account_id": partyMember.AccountId,
 			"account_dn": partyMember.Meta["urn:epic:member:dn_s"],
-						"connection": gin.H{
+			"connection": gin.H{
 				"id": partyMember.Connections[0].ID,
 				"meta": partyMember.Connections[0].Meta,
 				"updated_at": partyMember.Connections[0].UpdatedAt,
@@ -413,7 +413,8 @@ func PartyJoinMember(c *gin.Context) {
 		"party_id": partyId,
 	})
 
-	deleteAnyEmptyParties()
+	common.LeaveOldParty(user.AccountId)
+	common.DeleteEmptyParties()
 }
 
 func PartyGet(c *gin.Context) {
@@ -488,13 +489,5 @@ func PartyDeleteMember(c *gin.Context) {
 
 	c.JSON(200, party)
 
-	deleteAnyEmptyParties()
-}
-
-func deleteAnyEmptyParties() {
-	for partyId, party := range common.ActiveParties {
-		if len(party.Members) == 0 {
-			delete(common.ActiveParties, partyId)
-		}
-	}
+	common.DeleteEmptyParties()
 }

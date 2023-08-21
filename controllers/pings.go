@@ -98,7 +98,7 @@ func DeletePing(c *gin.Context) {
 		}
 	}
 
-	common.ErrorBadRequest(c)
+	c.Status(204)
 }
 
 func GetPings(c *gin.Context) {
@@ -289,5 +289,6 @@ func JoinPing(c *gin.Context) {
 		"party_id": party.ID,
 	})
 
-	deleteAnyEmptyParties()
+	common.LeaveOldParty(user.AccountId)
+	common.DeleteEmptyParties()
 }
