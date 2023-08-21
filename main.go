@@ -164,17 +164,21 @@ func main() {
 
   blank := r.Group("/")
   {
-    blank.GET("/content/api/pages/*contentPageName", controllers.ContentPage)
-    blank.GET("/waitingroom/api/waitingroom", controllers.NoContent)
     blank.POST("/datarouter/*api", controllers.NoContent)
+    blank.GET("/waitingroom/api/waitingroom", controllers.NoContent)
+    blank.GET("/content/api/pages/*contentPageName", controllers.ContentPage)
+    
     blank.GET("/lightswitch/api/service/bulk/status", controllers.Lightswitch)
     blank.GET("/lightswitch/api/service/Fortnite/status", controllers.Lightswitch)
-    blank.GET("/fortnite/api/game/v2/chat/:accountId/:chatRoomType/:area/pc", controllers.ChatRooms)
+    
     blank.GET("/eulatracking/api/shared/agreements/fn", controllers.EULA)
     blank.GET("/eulatracking/api/public/agreements/fn/account/*accountId", controllers.NoContent)
-    blank.GET("/fortnite/api/game/v2/privacy/account/*accountId", controllers.PartyPrivacy)
+    
     blank.GET("/api/v1/search/:accountId", controllers.SearchForUser)
+    
     blank.GET("/api/v1/assets/Fortnite/:versionId/:assetName", controllers.Assets)
+    blank.GET("/fortnite/api/game/v2/chat/:accountId/:chatRoomType/:area/pc", controllers.ChatRooms)
+    blank.GET("/fortnite/api/game/v2/privacy/account/:accountId", controllers.PartyPrivacy)
   }
 
   r.GET("/", controllers.XMPP)

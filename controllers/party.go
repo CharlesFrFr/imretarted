@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -25,8 +26,6 @@ func PartyGetUser(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"current": party,
 	})
-
-	all.MarshPrintJSON(party)
 }
 
 func PartyGetFriendPartyPings(c *gin.Context) {
@@ -109,9 +108,9 @@ func PartyPost(c *gin.Context) {
 		UpdatedAt: time.Now().Format("2006-01-02T15:04:05.999Z"),
 	}
 
-	party.Config.JoinConfirmation = body.Config.JoinConfirmation
-	party.Config.Joinability = body.Config.Joinability
-	party.Config.MaxSize = body.Config.MaxSize
+	party.Config.JoinConfirmation = true
+	party.Config.Joinability = "OPEN"
+	party.Config.MaxSize = 4
 	party.Members = []models.V2PartyMember{partyMember}
 
 	for key, metaItem := range body.Meta {
@@ -181,6 +180,8 @@ func PartyPatch(c *gin.Context) {
 		return
 	}
 
+	all.MarshPrintJSON(body)
+
 	partyId := common.AccountIdToPartyId[user.AccountId]
 	party, ok := common.ActiveParties[partyId]
 	if !ok {
@@ -190,15 +191,17 @@ func PartyPatch(c *gin.Context) {
 
 	for _, key := range body.Meta.Delete {
 		delete(party.Meta, key)
+		delete(party.Meta, strings.ReplaceAll(key, "Default:", ""))
 	}
 
 	for key, metaItem := range body.Meta.Update {
 		party.Meta[key] = metaItem
+		party.Meta[strings.ReplaceAll(key, "Default:", "")] = metaItem
 	}
 
-	party.Config.JoinConfirmation = body.Config.JoinConfirmation
-	party.Config.Joinability = body.Config.Joinability
-	party.Config.MaxSize = body.Config.MaxSize
+	party.Config.JoinConfirmation = true
+	party.Config.Joinability = "OPEN"
+	party.Config.MaxSize = 4
 	common.ActiveParties[partyId] = party
 
 	var captain models.V2PartyMember
@@ -218,13 +221,13 @@ func PartyPatch(c *gin.Context) {
 			"captain_id":            captain.AccountId,
 			"created_at":            party.CreatedAt,
 			"invite_ttl_seconds":    party.Config.InviteTtl,
-			"max_number_of_members": party.Config.MaxSize,
+			"max_number_of_members": 4,
 			"ns":                    "Fortnite",
 			"party_id":              party.ID,
-			"party_privacy_type":    party.Config.Joinability,
+			"party_privacy_type":    "OPEN",
 			"party_state_overriden": gin.H{},
-			"party_state_removed":   body.Meta.Delete,
-			"party_state_updated":   body.Meta.Update,
+			"party_state_removed":   []string{},
+			"party_state_updated":   party.Meta,
 			"party_sub_type":        "default",
 			"party_type":            "DEFAULT",
 			"revision":              party.Revision,
@@ -251,6 +254,8 @@ func PartyPatchMemberMeta(c *gin.Context) {
 		Update map[string]interface{} `json:"update"`
 		Delete []string `json:"delete"`
 	}
+
+	all.MarshPrintJSON(body)
 
 	if err := c.BindJSON(&body); err != nil {
 		common.ErrorBadRequest(c)

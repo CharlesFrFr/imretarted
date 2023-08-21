@@ -278,7 +278,19 @@ func FriendsSummary(c *gin.Context) {
 		Outgoing: []FriendSummaryItem{},
 		Suggested: []FriendSummaryItem{},
 		Settings: gin.H{
-			"acceptInvites": "public",
+			// for some reason, fortnite doesn't detect any of the settings
+			// which causes parties to be stuck at max players 0 and joinability "CLOSED"
+			// so you have to party privacy to "OPEN" and max players to 16
+			//
+			 /*
+			"urn:epic:cfg:invite-perm_s": "Noone",
+        "urn:epic:cfg:build-id_s": "1:3:25347113",
+        "urn:epic:cfg:can-join_b": "true",
+        "urn:epic:cfg:presence-perm_s": "Noone",
+				*/
+				"acceptInvites": "true",
+				"invitePermission": "Anyone",
+				"presencePermission": "Anyone",
 		},
 	}
 
@@ -341,6 +353,8 @@ func FriendsSummary(c *gin.Context) {
 			Created: friend.Created,
 		})
 	}
+
+	all.MarshPrintJSON(response)
 
 	c.JSON(200, response)
 }
