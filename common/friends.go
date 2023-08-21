@@ -63,6 +63,26 @@ func GetFriendsList(accountId string) []friendListEntry {
 	return friendList
 }
 
+func GetPendingFriendsList(accountId string) []friendListEntry {
+	var friendList []friendListEntry
+
+	var friendActions []models.FriendAction
+	all.Postgres.Find(&friendActions, "for_account_id = ? AND action = ?", accountId, "PENDING")
+
+	var friendActions2 []models.FriendAction
+	all.Postgres.Find(&friendActions2, "account_id = ? AND action = ?", accountId, "PENDING")
+
+	for _, friendAction := range friendActions {
+		AddInFriendToResponse(accountId, friendAction, &friendList)
+	}
+
+	for _, friendAction := range friendActions2 {
+		AddOutFriendToResponse(accountId, friendAction, &friendList)
+	}
+
+	return friendList
+}
+
 func AddInFriendToResponse(accountId string,friendAction models.FriendAction, res *[]friendListEntry) {
 	status := "PENDING"
 	direction := "INBOUND"

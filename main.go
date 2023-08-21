@@ -109,6 +109,7 @@ func main() {
     friends.POST("/public/blocklist/:accountId/:friendId", middleware.VerifyAccessToken, controllers.BlockFriend)
     friends.DELETE("/public/blocklist/:accountId/:friendId", middleware.VerifyAccessToken, controllers.UnBlockFriend)
 
+    friends.GET("/v1/:accountId/summary", middleware.VerifyAccessToken, controllers.FriendsSummary)
     friends.POST("/v1/:accountId/friends/:friendId", middleware.VerifyAccessToken, controllers.CreateFriend)
   }
 

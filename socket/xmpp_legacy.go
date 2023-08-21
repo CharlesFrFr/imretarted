@@ -22,7 +22,7 @@ var (
 		WriteBufferSize: 1024,
 	}
 
-	ActiveXMPPClients = make(map[string]*ClientInfo)
+	ActiveXMPPClients            = make(map[string]*ClientInfo)
 	AccountIdToXMPPRemoteAddress = make(map[string]string)
 )
 
@@ -276,11 +276,15 @@ func XGetFriendStatus(clientInfo *ClientInfo) {
 			continue
 		}
 
-		// XMPPUpdateStatusSingle(friendClient.User.AccountId, clientInfo.User.AccountId)
-
 		clientInfo.Connection.WriteMessage(1, []byte(`
 			<presence to="`+ clientInfo.JID +`" xmlns="jabber:client" from="`+ friendClient.JID +`" type="available">
 				<status>`+ friendClient.Status +`</status>
+			</presence>
+		`))
+
+		friendClient.Connection.WriteMessage(1, []byte(`
+			<presence to="`+ friendClient.JID +`" xmlns="jabber:client" from="`+ clientInfo.JID +`" type="available">
+				<status>`+ clientInfo.Status +`</status>
 			</presence>
 		`))
 	}

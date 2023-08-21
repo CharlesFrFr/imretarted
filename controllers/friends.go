@@ -86,6 +86,24 @@ func CreateFriend(c *gin.Context) {
 				"created": time.Now().Format("2006-01-02T15:04:05.999Z"),
 			},
 		}, user.AccountId)
+
+		clientRemoteAddress, _ := socket.AccountIdToXMPPRemoteAddress[wantedFriend]
+		client, _ := socket.ActiveXMPPClients[clientRemoteAddress]
+
+		friendRemoteAddress, _ := socket.AccountIdToXMPPRemoteAddress[user.AccountId]
+		friend, _ := socket.ActiveXMPPClients[friendRemoteAddress]
+
+		client.Connection.WriteMessage(1, []byte(`
+			<presence to="`+ client.JID +`" xmlns="jabber:client" from="`+ friend.JID +`" type="available">
+				<status>`+ friend.Status +`</status>
+			</presence>
+		`))
+
+		friend.Connection.WriteMessage(1, []byte(`
+			<presence to="`+ friend.JID +`" xmlns="jabber:client" from="`+ client.JID +`" type="available">
+				<status>`+ client.Status +`</status>
+			</presence>
+		`))
 	}
 
 	if res == "PENDING" {
@@ -232,4 +250,98 @@ func SearchForUser(c *gin.Context) {
 	}
 
 	c.JSON(200, users)
+}
+
+type FriendSummaryItem struct {
+	AccountId string `json:"accountId"`
+	Alias string `json:"alias"`
+	Mutual int `json:"mutual"`
+	Note string `json:"note"`
+	Groups []string `json:"groups"`
+	Favorite bool `json:"favorite"`
+	Created string `json:"created"`
+}
+
+type FriendSummary struct {
+	Friends []FriendSummaryItem `json:"friends"`
+	Blocklist []FriendSummaryItem `json:"blocklist"`
+	Incoming []FriendSummaryItem `json:"incoming"`
+	Outgoing []FriendSummaryItem `json:"outgoing"`
+	Suggested []FriendSummaryItem `json:"suggested"`
+	Settings gin.H `json:"settings"`
+}
+
+func FriendsSummary(c *gin.Context) {
+	user := c.MustGet("user").(models.User)
+
+	response := FriendSummary{
+		Friends: []FriendSummaryItem{},
+		Blocklist: []FriendSummaryItem{},
+		Incoming: []FriendSummaryItem{},
+		Outgoing: []FriendSummaryItem{},
+		Suggested: []FriendSummaryItem{},
+		Settings: gin.H{},
+	}
+
+	friends := common.GetAllAcceptedFriends(user.AccountId)
+	pending := common.GetPendingFriendsList(user.AccountId)
+	blocked := common.GetBlockedFriendsList(user.AccountId)
+
+	for _, friend := range friends {
+		friendAccount, _ := common.GetUserByAccountId(friend.AccountId)
+
+		response.Friends = append(response.Friends, FriendSummaryItem{
+			AccountId: friendAccount.AccountId,
+			Alias: friendAccount.Username,
+			Mutual: 0,
+			Note: "",
+			Groups: []string{},
+			Favorite: false,
+			Created: friend.Created,
+		})
+	}
+
+	for _, friend := range pending {
+		friendAccount, _ := common.GetUserByAccountId(friend.AccountId)
+
+		if friend.Direction == "INBOUND" {
+			response.Incoming = append(response.Friends, FriendSummaryItem{
+				AccountId: friendAccount.AccountId,
+				Alias: friendAccount.Username,
+				Mutual: 0,
+				Note: "",
+				Groups: []string{},
+				Favorite: false,
+				Created: friend.Created,
+			})
+		}
+
+		if friend.Direction == "OUTBOUND" {
+			response.Outgoing = append(response.Friends, FriendSummaryItem{
+				AccountId: friendAccount.AccountId,
+				Alias: friendAccount.Username,
+				Mutual: 0,
+				Note: "",
+				Groups: []string{},
+				Favorite: false,
+				Created: friend.Created,
+			})
+		}
+	}
+
+	for _, friend := range blocked {
+		friendAccount, _ := common.GetUserByAccountId(friend.AccountId)
+
+		response.Blocklist = append(response.Blocklist, FriendSummaryItem{
+			AccountId: friendAccount.AccountId,
+			Alias: friendAccount.Username,
+			Mutual: 0,
+			Note: "",
+			Groups: []string{},
+			Favorite: false,
+			Created: friend.Created,
+		})
+	}
+
+	c.JSON(200, response)
 }
