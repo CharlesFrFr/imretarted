@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/zombman/server/all"
 	"github.com/zombman/server/common"
 	"github.com/zombman/server/models"
 	"github.com/zombman/server/socket"
@@ -114,13 +115,8 @@ func GetPings(c *gin.Context) {
 }
 
 func GetPartyPings(c *gin.Context) {
-	sentBy, err := common.GetUserByAccountId(c.Param("pingerId"))
+	sentBy, _ := common.GetUserByAccountId(c.Param("pingerId"))
 	
-	if err != nil {
-		common.ErrorBadRequest(c)
-		return
-	}
-
 	var parties []models.V2Party
 	for _, party := range common.ActiveParties {
 		for _, member := range party.Members {
@@ -129,6 +125,8 @@ func GetPartyPings(c *gin.Context) {
 			}
 		}
 	}
+
+	all.MarshPrintJSON(parties)
 
 	c.JSON(200, parties)
 }
