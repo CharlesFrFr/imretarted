@@ -24,7 +24,10 @@ func PartyGetUser(c *gin.Context) {
 	}
 	
 	c.JSON(200, gin.H{
-		"current": party,
+		"current": []models.V2Party{party},
+		"pending": []gin.H{},
+		"invites": []gin.H{},
+		"pings": []gin.H{},
 	})
 }
 
@@ -180,8 +183,6 @@ func PartyPatch(c *gin.Context) {
 		return
 	}
 
-	all.MarshPrintJSON(body)
-
 	partyId := common.AccountIdToPartyId[user.AccountId]
 	party, ok := common.ActiveParties[partyId]
 	if !ok {
@@ -254,8 +255,6 @@ func PartyPatchMemberMeta(c *gin.Context) {
 		Update map[string]interface{} `json:"update"`
 		Delete []string `json:"delete"`
 	}
-
-	all.MarshPrintJSON(body)
 
 	if err := c.BindJSON(&body); err != nil {
 		common.ErrorBadRequest(c)

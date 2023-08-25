@@ -4,17 +4,30 @@
     "locker_slots_data": {
       "slots": {
         "Pickaxe": {
-          "items": ["AthenaPickaxe:DefaultPickaxe"],
+          "items": [
+            "AthenaPickaxe:DefaultPickaxe"
+          ],
           "activeVariants": []
         },
         "Dance": {
-          "items": ["AthenaDance:EID_DanceMoves", "", "", "", "", ""]
+          "items": [
+            "AthenaDance:EID_DanceMoves",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ]
         },
         "Glider": {
-          "items": ["AthenaGlider:DefaultGlider"]
+          "items": [
+            "AthenaGlider:DefaultGlider"
+          ]
         },
         "Character": {
-          "items": ["AthenaCharacter:CID_001_Athena_Commando_F_Default"],
+          "items": [
+            "AthenaCharacter:CID_001_Athena_Commando_F_Default"
+          ],
           "activeVariants": [
             {
               "variants": []
@@ -22,7 +35,9 @@
           ]
         },
         "Backpack": {
-          "items": [""],
+          "items": [
+            ""
+          ],
           "activeVariants": [
             {
               "variants": []
@@ -30,20 +45,68 @@
           ]
         },
         "ItemWrap": {
-          "items": ["", "", "", "", "", "", ""],
-          "activeVariants": [null, null, null, null, null, null, null]
+          "items": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "activeVariants": [
+            {
+              "variants": []
+            },
+            {
+              "variants": []
+            },
+            {
+              "variants": []
+            },
+            {
+              "variants": []
+            },
+            {
+              "variants": []
+            },
+            {
+              "variants": []
+            },
+            {
+              "variants": []
+            }
+          ]
         },
         "LoadingScreen": {
-          "items": [""],
-          "activeVariants": [null]
+          "items": [
+            ""
+          ],
+          "activeVariants": [
+            {
+              "variants": []
+            }
+          ]
         },
         "MusicPack": {
-          "items": [""],
-          "activeVariants": [null]
+          "items": [
+            ""
+          ],
+          "activeVariants": [
+            {
+              "variants": []
+            }
+          ]
         },
         "SkyDiveContrail": {
-          "items": [""],
-          "activeVariants": [null]
+          "items": [
+            ""
+          ],
+          "activeVariants": [
+            {
+              "variants": []
+            }
+          ]
         }
       }
     },

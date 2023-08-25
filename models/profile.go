@@ -44,7 +44,7 @@ type LockerSlotItem struct {
 }
 
 type Variant struct {
-	Variants []string `json:"variants"`
+	Variants []ItemVariant `json:"variants"`
 }
 
 type Profile struct {

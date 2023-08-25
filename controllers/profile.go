@@ -51,6 +51,10 @@ func ProfileActionHandler(c *gin.Context) {
 	}
 
 	if queryRevision, err := strconv.Atoi(c.Query("rvn")); err == nil && queryRevision != revisionCheck  {
+		// if profileId == "athena" {
+		// 	profile = common.GetFullAthenaProfile(user.AccountId)
+		// }
+
 		response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
 			ChangeType: "fullProfileUpdate",
 			Profile: profile,
@@ -58,10 +62,20 @@ func ProfileActionHandler(c *gin.Context) {
 	}
 
 	if queryRevision, err := strconv.Atoi(c.Query("rvn")); err == nil && queryRevision == -1  {
+		// if profileId == "athena" {
+		// 	profile = common.GetFullAthenaProfile(user.AccountId)
+		// }
+
 		response.ProfileChanges = []models.ProfileChange{{
 			ChangeType: "fullProfileUpdate",
 			Profile: profile,
 		}}
+	}
+
+	all.MarshPrintJSON(response)
+
+	if response.ProfileRevision == -37707 {
+		return
 	}
 
 	profile.Rvn += 1
@@ -485,6 +499,7 @@ func SetCosmeticLockerSlot(c *gin.Context, user models.User, profile *models.Pro
 
 	if err := c.ShouldBind(&body); err != nil {
 		all.PrintRed([]any{"could not bind body", err.Error()})
+		response.ProfileRevision = -37707
 		common.ErrorBadRequest(c)
 		c.Abort()
 		return
@@ -492,6 +507,7 @@ func SetCosmeticLockerSlot(c *gin.Context, user models.User, profile *models.Pro
 
 	athenaProfile,err := common.ConvertProfileToAthena(*profile)
 	if err != nil {
+		response.ProfileRevision = -37707
 		common.ErrorBadRequest(c)
 		c.Abort()
 		return
@@ -500,6 +516,8 @@ func SetCosmeticLockerSlot(c *gin.Context, user models.User, profile *models.Pro
 	activeLoadoutId := athenaProfile.Stats.Attributes.Loadouts[athenaProfile.Stats.Attributes.ActiveLoadoutIndex]
 	activeLoadout, err := common.GetLoadout(activeLoadoutId, user.AccountId)
 	if err != nil {
+		all.PrintRed([]any{err.Error()})
+		response.ProfileRevision = -37707
 		common.ErrorItemNotFound(c)
 		c.Abort()
 		return
@@ -548,30 +566,23 @@ func SetCosmeticLockerSlot(c *gin.Context, user models.User, profile *models.Pro
 			lowercaseItemType = "itemwraps"
 		default:
 			all.PrintRed([]any{"unknown item type", athenaProfile.Stats.Attributes})
+			response.ProfileRevision = -37707
 			common.ErrorBadRequest(c)
 			c.Abort()
 	}
 
 	defaultProfile, err := common.ConvertAthenaToDefault(athenaProfile)
 	if err != nil {
+		response.ProfileRevision = -37707
 		common.ErrorBadRequest(c)
 		c.Abort()
 		return
 	}
 
-	profile.Items = defaultProfile.Items
-	profile.Stats = defaultProfile.Stats
-
-	response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
-		ChangeType: "itemAttrChanged",
-		ItemID: body.LockerItem,
-		AttributeName: "locker_slots_data",
-		AttributeValue: activeLoadout.Attributes.LockerSlotsData,
-	})
-
 	for _, variant := range body.VariantUpdates {
 		itemWithVariant, err := common.GetItemFromProfile(profile, body.ItemToSlot)
 		if err != nil {
+			response.ProfileRevision = -37707
 			all.PrintRed([]any{"could not find item", body.ItemToSlot})
 			common.ErrorBadRequest(c)
 			return
@@ -588,6 +599,13 @@ func SetCosmeticLockerSlot(c *gin.Context, user models.User, profile *models.Pro
 
 		variantFound.Active = variant.Active
 		variantFound.Owned = []string{variant.Active}
+
+		itemSlot := activeLoadout.Attributes.LockerSlotsData.Slots[body.Category]
+		for _, variant := range itemSlot.ActiveVariants {
+			variant.Variants = itemWithVariant.Attributes.Variants
+		} 
+		activeLoadout.Attributes.LockerSlotsData.Slots[body.Category] = itemSlot
+
 		common.SetVariantInItem(&itemWithVariant, variantFound)
 		profile.Items[body.ItemToSlot] = itemWithVariant
 
@@ -599,11 +617,19 @@ func SetCosmeticLockerSlot(c *gin.Context, user models.User, profile *models.Pro
 		})
 	}
 
+	profile.Items = defaultProfile.Items
+	profile.Stats = defaultProfile.Stats
+
+	response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
+		ChangeType: "itemAttrChanged",
+		ItemID: body.LockerItem,
+		AttributeName: "locker_slots_data",
+		AttributeValue: activeLoadout.Attributes.LockerSlotsData,
+	})
+
+	all.PrintCyan([]any{response.ProfileChanges})
+
 	profile.Stats.Attributes["LastAppliedLoadout"] = activeLoadoutId
-
-	all.PrintYellow([]any{"activeloadout", activeLoadoutId})
-	// all.MarshPrintJSON(profile)
-
 	common.AppendLoadoutToProfileNoSave(profile, &activeLoadout, user.AccountId)
 }
 

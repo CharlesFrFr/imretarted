@@ -52,6 +52,7 @@ func AddProfileToUser(user models.User, profileId string) {
 	})
 
 	if profileId == "athena" {
+		all.PrintBlue([]any{"creating loadouts on athena profile for", user.Username})
 		CreateLoadoutForUser(user.AccountId, "sandbox_loadout")
 		CreateLoadoutForUser(user.AccountId, "zombie_loadout")
 
@@ -189,6 +190,7 @@ func CreateLoadoutForUser(accountId string, loadoutName string) {
 
 	fileData, err := io.ReadAll(file)
 	if err != nil {
+		all.PrintRed([]any{"error reading loadout.json"})
 		return
 	}
 	str := string(bytes.ReplaceAll(bytes.ReplaceAll(fileData, []byte("\n"), []byte("")), []byte("\t"), []byte("")))
@@ -196,6 +198,7 @@ func CreateLoadoutForUser(accountId string, loadoutName string) {
 	var loadout models.Loadout
 	err = json.Unmarshal([]byte(str), &loadout)
 	if err != nil {
+		all.PrintRed([]any{err.Error()})
 		return
 	}
 
@@ -491,4 +494,25 @@ func SetVariantInItem(item *models.Item, variant models.ItemVariant) (models.Ite
 	}
 
 	return foundVariant, nil
+}
+
+func GetFullAthenaProfile(accountId string) models.Profile {
+	profile, err := ReadProfileFromUser(accountId, "athena")
+	if err != nil {
+		return models.Profile{}
+	}
+
+	loadout, err := GetLoadout("zombie_loadout", accountId)
+	if err != nil {
+		return models.Profile{}
+	}
+	profile.Items["zombie_loadout"] = loadout
+
+	loadout2, err := GetLoadout("sandbox_loadout", accountId)
+	if err != nil {
+		return models.Profile{}
+	}
+	profile.Items["sandbox_loadout"] = loadout2
+
+	return profile
 }

@@ -53,13 +53,6 @@ func GetFriendsList(accountId string) []friendListEntry {
 		AddOutFriendToResponse(accountId, friendAction, &friendList)
 	}
 
-	all.PrintCyan([]any{
-		"Found",
-		len(friendList),
-		"friend actions for",
-		accountId,
-	})
-
 	return friendList
 }
 
@@ -230,8 +223,6 @@ func GetBlockedFriendsList(accountId string) []friendListEntry {
 }
 
 func BlockFriend(accountId string, friendId string) string {
-	all.PrintMagenta([]any{"BlockFriend", accountId, friendId})
-
 	var friendData models.FriendAction
 	meToFriendRes := all.Postgres.Find(&friendData, "for_account_id = ? AND account_id = ? AND action = ?", accountId, friendId, "ACCEPTED")
 
@@ -239,7 +230,6 @@ func BlockFriend(accountId string, friendId string) string {
 		friendData.Action = "BLOCKED"
 		all.Postgres.Save(&friendData)
 
-		all.PrintCyan([]any{"meToFriend", friendData})
 		return "BLOCKED"
 	}
 
@@ -248,8 +238,6 @@ func BlockFriend(accountId string, friendId string) string {
 	if friendToMeRes.RowsAffected > 0 && friendData.Action == "ACCEPTED" {
 		friendData.Action = "BLOCKED"
 		all.Postgres.Save(&friendData)
-
-		all.PrintCyan([]any{"friendToMe", friendData})
 		return "BLOCKED"
 	}
 

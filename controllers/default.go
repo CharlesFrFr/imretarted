@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/zombman/server/all"
 	"github.com/zombman/server/common"
 	"github.com/zombman/server/models"
 	"github.com/zombman/server/socket"
@@ -1160,13 +1161,151 @@ func EULA(c *gin.Context) {
 }
 
 func Assets(c *gin.Context) {
+	var body struct {
+		DAD_CosmeticItemUserOptions int `json:"DAD_CosmeticItemUserOptions"`
+		FortCreativeDiscoverySurface int `json:"FortCreativeDiscoverySurface"`
+		FortPlaylistAthena int `json:"FortPlaylistAthena"`
+	}
+
+	if err := c.BindJSON(&body); err != nil {
+		c.JSON(200, gin.H{
+			"FortCreativeDiscoverySurface": gin.H{
+				"meta": gin.H{
+					"promotion": 0,
+				},
+				"assets": gin.H{},
+			},
+		})
+		return
+	}
+
+	all.PrintBlue([]any{
+		"awd,abhgghs",
+	})
+
+	testCohort := gin.H{
+		"AnalyticsId": "0",
+		"CohortSelector": "PlayerDeterministic",
+		"PlatformBlacklist": []gin.H{},
+		"ContentPanels": []gin.H{
+				{
+				"NumPages": 1,
+				"AnalyticsId": "1",
+				"PanelType": "AnalyticsList",
+				"AnalyticsListName": "ByEpicWoven",
+				"CuratedListOfLinkCodes": []gin.H{},
+				"ModelName": "",
+				"PageSize": 7,
+				"PlatformBlacklist": []gin.H{},
+				"PanelName": "ByEpicWoven",
+				"MetricInterval": "",
+				"SkippedEntriesCount": 0,
+				"SkippedEntriesPercent": 0,
+				"SplicedEntries": []gin.H{},
+				"PlatformWhitelist": []gin.H{},
+				"EntrySkippingMethod": "None",
+				"PanelDisplayName": gin.H{
+					"Category": "Game",
+					"NativeCulture": "",
+					"Namespace": "CreativeDiscoverySurface_Frontend",
+					"LocalizedStrings": []gin.H{{
+						"key": "en",
+						"value": "Play Your Way",
+					}},
+					"bIsMinimalPatch": false,
+					"NativeString": "Play Your Way",
+					"Key": "ByEpicWoven",
+				},
+				"PlayHistoryType": "RecentlyPlayed",
+				"bLowestToHighest": false,
+				"PanelLinkCodeBlacklist": []gin.H{},
+				"PanelLinkCodeWhitelist": []gin.H{},
+				"FeatureTags": []gin.H{},
+				"MetricName": "",
+			},
+		},
+		"PlatformWhitelist": []gin.H{},
+		"SelectionChance": 0.1,
+		"TestName": "playlists",
+	}
+
 	c.JSON(200, gin.H{
 		"FortCreativeDiscoverySurface": gin.H{
 			"meta": gin.H{
-				"promotion": 0,
+				"promotion": 1,
 			},
-			"assets": gin.H{},
+			"assets": gin.H{
+				"CreativeDiscoverySurface_Frontend": gin.H{
+					"meta": gin.H{
+						"revision": 1,
+						"headRevision": 1,
+						"revisedAt": "2022-04-11T16:34:03.517Z",
+						"promotion": 1,
+						"promotedAt": "2022-04-11T16:34:49.510Z",
+					},
+					"assetData": gin.H{
+						"AnalyticsId": "t412",
+						"TestCohorts": []gin.H{
+							testCohort,
+						},
+						"GlobalLinkCodeBlacklist": []gin.H{},
+						"SurfaceName": "CreativeDiscoverySurface_Frontend",
+						"TestName": "20.10_4/11/2022_hero_combat_popularConsole",
+						"primaryAssetId": "FortCreativeDiscoverySurface:CreativeDiscoverySurface_Frontend",
+						"GlobalLinkCodeWhitelist": []gin.H{},
+					},
+				},
+			},
 		},
+	})
+}
+
+func createPlaylist(mnemonic string, image string) gin.H {
+	return gin.H{
+		"linkData": gin.H{
+			"namespace": "fn",
+			"mnemonic": mnemonic,
+			"linkType": "BR:Playlist",
+			"active": true,
+			"disabled": false,
+			"version": 1,
+			"moderationStatus": "Unmoderated",
+			"accountId": "epic",
+			"creatorName": "Epic",
+			"descriptionTags": []string{},
+			"metadata": gin.H{
+				"image_url": image,
+				"matchmaking": gin.H{
+					"override_playlist": mnemonic,
+				},
+			},
+		},
+		"lastVisited": nil,
+		"linkCode": mnemonic,
+		"isFavorite": false,
+	}
+}
+
+func CH2Playlists(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"Panels": []gin.H{
+			{
+				"PanelName": "ByEpicWoven",
+				"Pages": []gin.H{{
+					"results": []gin.H{
+						createPlaylist("playlist_defaultsolo", "https://cdn2.unrealengine.com/solo-1920x1080-1920x1080-bc0a5455ce20.jpg"),
+						createPlaylist("playlist_defaultduo", "https://cdn2.unrealengine.com/duos-1920x1080-1920x1080-5a411fe07b21.jpg"),
+						createPlaylist("playlist_trios", "https://cdn2.unrealengine.com/trios-1920x1080-1920x1080-d5054bb9691a.jpg"),
+						createPlaylist("playlist_defaultsquad", "https://cdn2.unrealengine.com/squads-1920x1080-1920x1080-095c0732502e.jpg"),
+					},
+					"hasMore": false,
+				}},
+			},
+		},
+		"TestCohorts": []string{
+			"playlists",
+		},
+		"ModeSets": gin.H{},
 	})
 }
 

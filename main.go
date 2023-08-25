@@ -176,7 +176,9 @@ func main() {
     
     blank.GET("/api/v1/search/:accountId", controllers.SearchForUser)
     
-    blank.GET("/api/v1/assets/Fortnite/:versionId/:assetName", controllers.Assets)
+    blank.POST("/api/v1/assets/Fortnite/:versionId/:assetName", controllers.Assets)
+    blank.POST("/fortnite/api/game/v2/creative/discovery/surface/:accountId", controllers.CH2Playlists)
+
     blank.GET("/fortnite/api/game/v2/chat/:accountId/:chatRoomType/:area/pc", controllers.ChatRooms)
     blank.GET("/fortnite/api/game/v2/privacy/account/:accountId", controllers.PartyPrivacy)
   }

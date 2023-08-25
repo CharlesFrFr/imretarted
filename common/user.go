@@ -12,7 +12,6 @@ import (
 func OnlyAllowCharacters(s string) string {
 	reg, err := regexp.Compile("[^a-zA-Z0-9]+")
 	if err != nil {
-		all.PrintGreen([]any{"serre", err})
 		return ""
 	}
 	return reg.ReplaceAllString(s, "")

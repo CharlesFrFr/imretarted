@@ -63,8 +63,6 @@ func XMPPHandler(w http.ResponseWriter, r *http.Request){
 		if err != nil {
 			break
 		}
-
-		all.PrintYellow([]any{string(messageData)})
 		
 		if xml.Unmarshal([]byte(messageData), &models.OpenXML{}) == nil {
 			XHandleOpen(conn, messageData, messageType, clientInfo)
