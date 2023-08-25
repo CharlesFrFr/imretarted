@@ -117,16 +117,16 @@ func main() {
   {
     fortnite.GET("/game/v2/profileToken/verify/*accountId", controllers.NoContent)
 
-    fortnite.POST("/game/v2/profile/:accountId/client/:action", middleware.VerifyAccessToken, controllers.ProfileActionHandler)
-    fortnite.POST("/game/v2/profile/:accountId/dedicated_server/:action", controllers.DedicatedServerProfileHandler)
+    fortnite.POST("/game/v2/profile/:accountId/client/:action", middleware.VerifyAccessToken, controllers.ClientProfileActionHandler)
+    fortnite.POST("/game/v2/profile/:accountId/dedicated_server/:action", controllers.DedicatedServerProfileActionHandler)
     fortnite.POST("/game/v2/tryPlayOnPlatform/account/*accountId", middleware.VerifyAccessToken, controllers.True)
     fortnite.GET("/game/v2/enabled_features", middleware.VerifyAccessToken, controllers.EmptyArray)
     fortnite.GET("/receipts/v1/account/:accountId/receipts", middleware.VerifyAccessToken, controllers.EmptyArray)
     fortnite.GET("/storefront/v2/keychain", middleware.VerifyAccessToken, controllers.StorefrontKeychain)
     fortnite.GET("/calendar/v1/timeline", controllers.CalendarTimeline)
-    fortnite.GET("/storefront/v2/catalog", controllers.StorefrontCatalog)
 
     fortnite.GET("/cloudstorage/system", controllers.SystemCloudFilesList)
+    // fortnite.GET("/cloudstorage/system/config", controllers.SystemConfig) //idk why it doesnt let you login if you enable
     fortnite.GET("/cloudstorage/system/:fileName", controllers.SystemCloudFile)
     fortnite.GET("/cloudstorage/user/:accountId", middleware.VerifyAccessToken, controllers.UserCloudFilesList)
     fortnite.GET("/cloudstorage/user/:accountId/:fileName", middleware.VerifyAccessToken, controllers.UserCloudFile)
@@ -139,7 +139,7 @@ func main() {
     fortnite.POST("/matchmaking/zomb/server", middleware.ServerSecret, controllers.AddNewGameServer)
     fortnite.DELETE("/matchmaking/zomb/server", middleware.ServerSecret, controllers.RemoveGameServer)
 
-    fortnite.GET("/fortnite/api/v2/versioncheck/Windows", controllers.UpdateCheck)
+    fortnite.GET("/v2/versioncheck/Windows", controllers.UpdateCheck)
   }
 
   party := r.Group("/party/api/v1/Fortnite")
@@ -166,9 +166,9 @@ func main() {
   {
     blank.POST("/datarouter/*api", controllers.NoContent)
     blank.GET("/waitingroom/api/waitingroom", controllers.NoContent)
-    blank.GET("/content/api/pages/*contentPageName", controllers.ContentPage)
+    blank.GET("/content/api/pages/*contentPageName", controllers.GetContentPage)
     
-    blank.GET("/lightswitch/api/service/bulk/status", controllers.Lightswitch)
+    blank.GET("/lightswitch/api/service/bulk/status", controllers.LightswitchBulk)
     blank.GET("/lightswitch/api/service/Fortnite/status", controllers.Lightswitch)
     
     blank.GET("/eulatracking/api/shared/agreements/fn", controllers.EULA)
@@ -181,6 +181,7 @@ func main() {
 
     blank.GET("/fortnite/api/game/v2/chat/:accountId/:chatRoomType/:area/pc", controllers.ChatRooms)
     blank.GET("/fortnite/api/game/v2/privacy/account/:accountId", controllers.PartyPrivacy)
+    blank.GET("/fortnite/api/game/v2/br-inventory/account/:accountId", controllers.BRInventory)
   }
 
   r.GET("/", controllers.XMPP)

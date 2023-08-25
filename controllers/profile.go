@@ -12,13 +12,12 @@ import (
 	"github.com/zombman/server/models"
 )
 
-func ProfileActionHandler(c *gin.Context) {
+func ClientProfileActionHandler(c *gin.Context) {
 	user := c.MustGet("user").(models.User)
 	profileId, _ := c.GetQuery("profileId")
 	action := c.Param("action")
 
 	response := models.ProfileResponse{}
-
 	profile, err := common.ReadProfileFromUser(user.AccountId, profileId)
 	if err != nil {
 		common.ErrorBadRequest(c)
@@ -37,6 +36,8 @@ func ProfileActionHandler(c *gin.Context) {
 			SetCosmeticLockerSlot(c, user, &profile, &response)
 		case "SetCosmeticLockerBanner":
 			SetCosmeticLockerBanner(c, user, &profile, &response)
+		case "QueryProfile":
+			QueryProfile(c, user, &profile, &response)
 		default:
 			break
 	}
@@ -46,33 +47,17 @@ func ProfileActionHandler(c *gin.Context) {
 	}
 
 	revisionCheck := profile.Rvn
-	if common.Season + common.Chapter > 22 {
+	if common.Season > 12 {
 		revisionCheck = profile.CommandRevision
 	}
 
-	if queryRevision, err := strconv.Atoi(c.Query("rvn")); err == nil && queryRevision != revisionCheck  {
-		// if profileId == "athena" {
-		// 	profile = common.GetFullAthenaProfile(user.AccountId)
-		// }
-
+	if queryRevision, err := strconv.Atoi(c.Query("rvn")); err == nil && queryRevision != revisionCheck {
+		all.PrintRed([]any{"revision mismatch", queryRevision, revisionCheck})
 		response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
 			ChangeType: "fullProfileUpdate",
 			Profile: profile,
 		})
 	}
-
-	if queryRevision, err := strconv.Atoi(c.Query("rvn")); err == nil && queryRevision == -1  {
-		// if profileId == "athena" {
-		// 	profile = common.GetFullAthenaProfile(user.AccountId)
-		// }
-
-		response.ProfileChanges = []models.ProfileChange{{
-			ChangeType: "fullProfileUpdate",
-			Profile: profile,
-		}}
-	}
-
-	all.MarshPrintJSON(response)
 
 	if response.ProfileRevision == -37707 {
 		return
@@ -87,15 +72,27 @@ func ProfileActionHandler(c *gin.Context) {
 
 	response.ProfileRevision = profile.Rvn
 	response.ProfileID = profileId
-	response.ProfileCommandRevision = profile.CommandRevision
+	response.ProfileCommandRevision = profile.Rvn
 	response.ProfileChangesBaseRevision = profile.Rvn - 1
 	response.ServerTime = time.Now().Format("2006-01-02T15:04:05.999Z")
 	response.ResponseVersion = 1
+	
+	if response.MultiUpdate == nil {
+		response.MultiUpdate = []models.MultiUpdate{}
+	}
+
+	if response.Notifications == nil {
+		response.Notifications = []models.Notification{}
+	}
+
+	if response.ProfileChanges == nil {
+		response.ProfileChanges = []models.ProfileChange{}
+	}
 
 	c.JSON(200, response)
 }
 
-func DedicatedServerProfileHandler(c *gin.Context) {
+func DedicatedServerProfileActionHandler(c *gin.Context) {
 	userId := c.Param("accountId")
 	profileId, _ := c.GetQuery("profileId")
 
@@ -130,6 +127,13 @@ func DedicatedServerProfileHandler(c *gin.Context) {
 	response.ResponseVersion = 1
 
 	c.JSON(200, response)
+}
+
+func QueryProfile(c *gin.Context, user models.User, profile *models.Profile, response *models.ProfileResponse) {
+	response.ProfileChanges = []models.ProfileChange{{
+		ChangeType: "fullProfileUpdate",
+		Profile: *profile,
+	}}
 }
 
 type CatalogOffer struct {
@@ -425,7 +429,7 @@ func EquipBattleRoyaleCustomization(c *gin.Context, user models.User, profile *m
 		})
 	}
 
-	profile.Stats.Attributes["LastAppliedLoadout"] = activeLoadoutId
+	profile.Stats.Attributes["last_applied_loadout"] = activeLoadoutId
 	common.AppendLoadoutToProfileNoSave(profile, &activeLoadout, user.AccountId)
 }
 

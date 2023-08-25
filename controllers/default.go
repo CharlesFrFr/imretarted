@@ -842,7 +842,7 @@ func EmptyObject(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-func Lightswitch(c *gin.Context) {
+func LightswitchBulk(c *gin.Context) {
 	c.JSON(http.StatusOK, []gin.H{{
 		"serviceInstanceId": "fortnite",
 		"status": "UP",
@@ -859,10 +859,27 @@ func Lightswitch(c *gin.Context) {
 	}})
 }
 
-var ContentPageData map[string]interface{}
+func Lightswitch(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"serviceInstanceId": "fortnite",
+		"status": "UP",
+		"message": "fortnite is up.",
+		"maintenanceUri": nil,
+		"overrideCatalogIds": []string{"a7f138b2e51945ffbfdacc1af0541053"},
+		"allowedActions": []string{"PLAY", "DOWNLOAD"},
+		"banned": false,
+		"launcherInfoDTO": gin.H{
+			"appName": "Fortnite",
+			"catalogItemId": "4fe75bbc5a674f4f9b356b5c90567da5",
+			"namespace": "fn",
+		},
+	})
+}
+
+var ContentPageData gin.H
 var LoadedContentPage bool = false
 
-func ContentPage(c *gin.Context) {
+func GetContentPage(c *gin.Context) {
 	if !LoadedContentPage {
 		file, err := os.Open("data/contentpage.json")
 		if err != nil {
@@ -887,13 +904,35 @@ func ContentPage(c *gin.Context) {
 		LoadedContentPage = true
 	}
 
+	Dynamicbackgrounds := ContentPageData["dynamicbackgrounds"].(map[string]interface{})
+	OuterBackgrounds := Dynamicbackgrounds["backgrounds"].(map[string]interface{})
+
+	InnerBackgrounds := []gin.H{
+		{
+			"stage": "season17",
+			"backgroundimage": "https://cdn2.unrealengine.com/0814-ch4s4-lobby-2048x1024-2048x1024-e3c2cf8d342d.png",
+			"key": "lobby",
+			"_type": "DynamicBackground",
+		},
+		{
+			"stage": "default",
+			"key": "vault",
+			"_type": "DynamicBackground",
+		},
+	}
+
+	OuterBackgrounds["backgrounds"] = InnerBackgrounds
+	Dynamicbackgrounds["backgrounds"] = OuterBackgrounds
+	ContentPageData["dynamicbackgrounds"] = Dynamicbackgrounds
+
 	c.JSON(http.StatusOK, ContentPageData)
 }
 
 func CalendarTimeline(c *gin.Context) {
 	monthPos := time.Now().Add(time.Hour * 24 * 30).Format("2006-01-02T15:04:05.999Z")
 	endOfDay := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 23, 59, 59, 999999999, time.Now().Location()).Format("2006-01-02T15:04:05.999Z")
-
+	nextSunday := time.Now().AddDate(0, 0, 7 - int(time.Now().Weekday())).Format("2006-01-02T15:04:05.999Z")
+	
 	file, err := os.Open("data/time.json")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -918,18 +957,33 @@ func CalendarTimeline(c *gin.Context) {
 	state := calendar.Channels.ClientEvents.States[0]
 	state.ActiveEvents[0].EventType = "EventFlag.Season" + fmt.Sprint(common.Season)
 	state.ActiveEvents[1].EventType = "EventFlag.LobbySeason" + fmt.Sprint(common.Season)
+	
+	for i, event := range state.ActiveEvents {
+		event.ActiveSince = time.Now().Format("2006-01-02T15:04:05.999Z")
+		event.ActiveUntil = monthPos
+		
+		state.ActiveEvents[i] = event
+	}
+	state.ValidFrom = time.Now().Format("2006-01-02T15:04:05.999Z")
+	
 	state.State.SeasonNumber = common.Season
 	state.State.SeasonTemplateID = "AthenaSeason:athenaseason" + fmt.Sprint(common.Season)
 	state.State.SeasonEnd = monthPos
 	state.State.SeasonDisplayedEnd = monthPos
 	state.State.DailyStoreEnd = endOfDay
-	state.State.WeeklyStoreEnd = endOfDay
+	state.State.WeeklyStoreEnd = nextSunday
+	state.State.STWEventStoreEnd = nextSunday
+	state.State.STWWeeklyStoreEnd = nextSunday
 	state.State.SectionStoreEnds = map[string]string {
-		"Featured": endOfDay,
+		"Featured": nextSunday,
 	}
-	
 	calendar.Channels.ClientEvents.States[0] = state
+	
 	calendar.CurrentTime = time.Now().Format("2006-01-02T15:04:05.999Z")
+	calendar.Channels.ClientMatchmaking.CacheExpire = endOfDay
+	calendar.Channels.ClientEvents.CacheExpire = endOfDay
+
+	all.MarshPrintJSON(calendar)
 
 	c.JSON(http.StatusOK, calendar)
 }
@@ -990,6 +1044,19 @@ func SystemCloudFile(c *gin.Context) {
 	}
 
 	c.Data(http.StatusOK, "application/octet-stream", fileData)
+}
+
+func SystemConfig(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"lastUpdated": "2021-09-28T20:00:00.000Z",
+		"disableV2": false,
+		"isAuthenticated": true,
+		"enumerateFilesPath": "/api/cloudstorage/system",
+		"enableMigration": false,
+		"enableWrites": false,
+		"epicAppName": "Live",
+		"transports": gin.H{},
+	})
 }
 
 func UserCloudFilesList(c *gin.Context) {
@@ -1085,7 +1152,7 @@ func AddCloudFile(filePath string, files *[]FileResponse) error {
 }
 
 func UpdateCheck(c *gin.Context) {
-	c.JSON(200, gin.H{
+	c.JSON(201, gin.H{
 		"type": "NO_UPDATE",
 	})
 }
@@ -1160,6 +1227,44 @@ func EULA(c *gin.Context) {
 	})
 }
 
+func createContentPanel(title string, id string) gin.H {
+	return gin.H{
+		"NumPages": 1,
+		"AnalyticsId": "1",
+		"PanelType": "AnalyticsList",
+		"AnalyticsListName": title,
+		"CuratedListOfLinkCodes": []gin.H{},
+		"ModelName": "",
+		"PageSize": 7,
+		"PlatformBlacklist": []gin.H{},
+		"PanelName": id,
+		"MetricInterval": "",
+		"SkippedEntriesCount": 0,
+		"SkippedEntriesPercent": 0,
+		"SplicedEntries": []gin.H{},
+		"PlatformWhitelist": []gin.H{},
+		"EntrySkippingMethod": "None",
+		"PanelDisplayName": gin.H{
+			"Category": "Game",
+			"NativeCulture": "",
+			"Namespace": "CreativeDiscoverySurface_Frontend",
+			"LocalizedStrings": []gin.H{{
+				"key": "en",
+				"value": title,
+			}},
+			"bIsMinimalPatch": false,
+			"NativeString": title,
+			"Key": "",
+		},
+		"PlayHistoryType": "RecentlyPlayed",
+		"bLowestToHighest": false,
+		"PanelLinkCodeBlacklist": []gin.H{},
+		"PanelLinkCodeWhitelist": []gin.H{},
+		"FeatureTags": []gin.H{},
+		"MetricName": "",
+	}
+}
+
 func Assets(c *gin.Context) {
 	var body struct {
 		DAD_CosmeticItemUserOptions int `json:"DAD_CosmeticItemUserOptions"`
@@ -1188,41 +1293,7 @@ func Assets(c *gin.Context) {
 		"CohortSelector": "PlayerDeterministic",
 		"PlatformBlacklist": []gin.H{},
 		"ContentPanels": []gin.H{
-				{
-				"NumPages": 1,
-				"AnalyticsId": "1",
-				"PanelType": "AnalyticsList",
-				"AnalyticsListName": "ByEpicWoven",
-				"CuratedListOfLinkCodes": []gin.H{},
-				"ModelName": "",
-				"PageSize": 7,
-				"PlatformBlacklist": []gin.H{},
-				"PanelName": "ByEpicWoven",
-				"MetricInterval": "",
-				"SkippedEntriesCount": 0,
-				"SkippedEntriesPercent": 0,
-				"SplicedEntries": []gin.H{},
-				"PlatformWhitelist": []gin.H{},
-				"EntrySkippingMethod": "None",
-				"PanelDisplayName": gin.H{
-					"Category": "Game",
-					"NativeCulture": "",
-					"Namespace": "CreativeDiscoverySurface_Frontend",
-					"LocalizedStrings": []gin.H{{
-						"key": "en",
-						"value": "Play Your Way",
-					}},
-					"bIsMinimalPatch": false,
-					"NativeString": "Play Your Way",
-					"Key": "ByEpicWoven",
-				},
-				"PlayHistoryType": "RecentlyPlayed",
-				"bLowestToHighest": false,
-				"PanelLinkCodeBlacklist": []gin.H{},
-				"PanelLinkCodeWhitelist": []gin.H{},
-				"FeatureTags": []gin.H{},
-				"MetricName": "",
-			},
+			createContentPanel("Featured", "1"),
 		},
 		"PlatformWhitelist": []gin.H{},
 		"SelectionChance": 0.1,
@@ -1290,7 +1361,7 @@ func CH2Playlists(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"Panels": []gin.H{
 			{
-				"PanelName": "ByEpicWoven",
+				"PanelName": "1",
 				"Pages": []gin.H{{
 					"results": []gin.H{
 						createPlaylist("playlist_defaultsolo", "https://cdn2.unrealengine.com/solo-1920x1080-1920x1080-bc0a5455ce20.jpg"),
@@ -1316,5 +1387,13 @@ func PartyPrivacy(c *gin.Context) {
 		"partyInviteRestriction": "AnyMember",
 		"acceptingMembers": true,
 		"partyType": "Public",
+	})
+}
+
+func BRInventory(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"stash": gin.H{
+			"globalcash": 0,
+		},
 	})
 }

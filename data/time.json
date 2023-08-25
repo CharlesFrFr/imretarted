@@ -2,22 +2,997 @@
   "channels": {
     "client-matchmaking": {
       "states": [],
-      "cacheExpire": "9999-01-01T00:00:00.000Z"
+      "cacheExpire": ""
     },
     "client-events": {
       "states": [
         {
-          "validFrom": "0001-01-01T00:00:00.000Z",
+          "validFrom": "",
           "activeEvents": [
             {
               "eventType": "EventFlag.Season",
-              "activeUntil": "9999-01-01T00:00:00.000Z",
-              "activeSince": "2020-01-01T00:00:00.000Z"
+              "activeUntil": "",
+              "activeSince": ""
             },
             {
               "eventType": "EventFlag.LobbySeason",
-              "activeUntil": "9999-01-01T00:00:00.000Z",
-              "activeSince": "2020-01-01T00:00:00.000Z"
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Spring2018Phase1",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Spring2018Phase2",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Spring2018Phase3",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Spring2018Phase4",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Blockbuster2018",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Blockbuster2018Phase1",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Blockbuster2018Phase2",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Blockbuster2018Phase3",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Blockbuster2018Phase4",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.RoadTrip2018",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Horde",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Anniversary2018_BR",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTM_Heist",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.BirthdayBattleBus",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTM_Fortnitemares",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTM_LilKevin",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Fortnitemares",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.FortnitemaresPhase1",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "POI0",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.FortnitemaresPhase2",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LobbySeason6Halloween",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.HalloweenBattleBus",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Frostnite",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTM_14DaysOfFortnite",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTE_Festivus",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTM_WinterDeimos",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTE_S7_OverTime",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Spring2019",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Spring2019.Phase1",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTM_Ashton",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTM_Goose",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTM_HighStakes",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTE_BootyBay",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Spring2019.Phase2",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Season9.Phase1",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Anniversary2019_BR",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTM_14DaysOfSummer",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTM_Mash",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTM_Wax",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Season9.Phase2",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Mayday",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Season10.Phase2",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Season10.Phase3",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTE_BlackMonday",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.S10_Oak",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.S10_Mystery",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTE_CoinCollectXP",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTE_Fortnitemares2019",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTE_Galileo_Feats",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTE_Galileo",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTE_WinterFest2019",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Starlight",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Season11.Fortnitemares.Quests.Phase1",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Season11.Fortnitemares.Quests.Phase2",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Season11.Fortnitemares.Quests.Phase3",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Season11.Fortnitemares.Quests.Phase4",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.StormKing.Landmark",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.HolidayDeco",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Season11.WinterFest.Quests.Phase1",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Season11.WinterFest.Quests.Phase2",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Season11.WinterFest.Quests.Phase3",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Season11.Frostnite",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Winterfest.Tree",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTE_WinterFest",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTE_WinterFest2019",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTE_SpyGames",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTE_JerkyChallenges",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTE_Oro",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTE_StormTheAgency",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTE_Fortnitemares_2020",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S15_Legendary_Week_01",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S15_Legendary_Week_02",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S15_Legendary_Week_03",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S15_Legendary_Week_04",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S15_Legendary_Week_05",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S15_Legendary_Week_06",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S15_Legendary_Week_07",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S15_Legendary_Week_08",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S15_Legendary_Week_09",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S15_Legendary_Week_10",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S15_Legendary_Week_11",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S15_Legendary_Week_12",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S15_Legendary_Week_13",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S15_Legendary_Week_14",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S15_Legendary_Week_15",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Event_HiddenRole",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Event_OperationSnowdown",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Event_PlumRetro",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S16_Legendary_Week_01",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S16_Legendary_Week_02",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S16_Legendary_Week_03",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S16_Legendary_Week_04",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S16_Legendary_Week_05",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S16_Legendary_Week_06",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S16_Legendary_Week_07",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S16_Legendary_Week_08",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S16_Legendary_Week_09",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S16_Legendary_Week_10",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S16_Legendary_Week_11",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S16_Legendary_Week_12",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Event_NBA_Challenges",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Event_Spire_Challenges",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Event_TheMarch",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Event_O2_Challenges",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTE_Buffet_PreQuests",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTE_Buffet_Attend",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTE_Buffet_PostQuests",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTE_Buffet_Cosmetics",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Event_CosmicSummer",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Event_IslandGames",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S17_Legendary_Week_01",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S17_Legendary_Week_02",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S17_Legendary_Week_03",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S17_Legendary_Week_04",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S17_Legendary_Week_05",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S17_Legendary_Week_06",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S17_Legendary_Week_07",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S17_Legendary_Week_08",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S17_Legendary_Week_09",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S17_Legendary_Week_10",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S17_Legendary_Week_11",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S17_Legendary_Week_12",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S17_Legendary_Week_13",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S17_Legendary_Week_14",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S17_CB_Radio",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S17_Sneak_Week",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S17_Yeet_Week",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S17_Zap_Week",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S17_Bargain_Bin_Week",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTE_Season18_BirthdayQuests",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Event_Fornitemares_2021",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Event_HordeRush",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S18_Repeatable_Weekly",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S18_Repeatable_Weekly_06",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S18_Repeatable_Weekly_07",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S18_Repeatable_Weekly_08",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S18_Repeatable_Weekly_09",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S18_Repeatable_Weekly_10",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S18_Repeatable_Weekly_11",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTQ_S18_Repeatable_Weekly_12",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Event_SoundWave",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTE_Season18_TextileQuests",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.S18_WildWeek_Shadows",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.S18_WildWeek_Bargain",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTM_Hyena",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTM_Vigilante",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTM_ZebraWallet",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTE_Galileo_Feats",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Event_S19_Trey",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Event_S19_DeviceQuestsPart1",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Event_S19_DeviceQuestsPart2",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Event_S19_DeviceQuestsPart3",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Event_S19_Gow_Quests",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Event_MonarchLevelUpPack",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.S19_WinterfestCrewGrant",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.S19_WildWeeks_Chicken",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.S19_WildWeeks_BargainBin",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.S19_WildWeeks_Spider",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.S19_WildWeeks_Primal",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "Event_S20_AliQuest",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.CovertOps_Phase1",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.CovertOps_Phase2",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.CovertOps_Phase3",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.CovertOps_Phase4",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Event_S20_LevelUpPack",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "Event_S20_May4thQuest",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.NoBuildQuests",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Event_S20_NoBuildQuests_TokenGrant",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "Event_S20_EmicidaQuest",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.S20_WildWeeks_Bargain",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.S20_WildWeeks_Chocolate",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.S20_WildWeeks_Purple",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "Event_S21_Stamina",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "Event_S21_FallFest",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "Event_S21_IslandHopper",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Event_S21_LevelUpPack",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.Event_NoSweatSummer",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "Event_S21_CRRocketQuest",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "Event_S21_GenQuest",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "Event_S21_WildWeeks_BargainBin",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "Event_S21_WildWeeks_Fire",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "Event_S21_WildWeeks_Kondor",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTE_WinterFest",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "WF_IG_AVAIL",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTE_WinterFest",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.LTE_WinterFestTab",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "WF_GUFF_AVAIL",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.HordeV3",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.HordeV3.Week02",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.HordeV3.Week03",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.HordeV3.Week04",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.HordeV3.Week05",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.HordeV3.Week06",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.HordeV3.Week07",
+              "activeUntil": "",
+              "activeSince": ""
+            },
+            {
+              "eventType": "EventFlag.HordeV3.Week08",
+              "activeUntil": "",
+              "activeSince": ""
             }
           ],
           "state": {
@@ -29,20 +1004,20 @@
             "seasonBegin": "0001-01-01T00:00:00.000Z",
             "seasonEnd": "9999-01-01T00:00:00Z",
             "seasonDisplayedEnd": "9999-01-01T00:00:00Z",
-            "weeklyStoreEnd": "9999-01-01T00:00:00.000Z",
-            "stwEventStoreEnd": "9999-01-01T00:00:00.000Z",
-            "stwWeeklyStoreEnd": "9999-01-01T00:00:00.000Z",
+            "weeklyStoreEnd": "",
+            "stwEventStoreEnd": "",
+            "stwWeeklyStoreEnd": "",
             "sectionStoreEnds": {
-              "Featured": "9999-01-01T00:00:00.000Z"
+              "Featured": ""
             },
-            "dailyStoreEnd": "9999-01-01T00:00:00.000Z"
+            "dailyStoreEnd": ""
           }
         }
       ],
-      "cacheExpire": "9999-01-01T00:00:00.000Z"
+      "cacheExpire": ""
     }
   },
   "eventsTimeOffsetHrs": 0,
   "cacheIntervalMins": 10,
-  "currentTime": "0001-01-01T00:00:00.000Z"
+  "currentTime": ""
 }

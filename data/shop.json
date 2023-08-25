@@ -1,220 +1,33 @@
 {
 	"refreshIntervalHrs": 24,
 	"dailyPurchaseHrs": 24,
-	"expiration": "2023-08-25T23:59:59.999Z",
+	"expiration": "2023-08-26T23:59:59.999Z",
 	"storefronts": [
 		{
 			"name": "BRDailyStorefront",
 			"catalogEntries": [
 				{
-					"devName": "a5a493e2fb5fc6d15c818003290c169d0fd7abab",
-					"offerId": "a5a493e2fb5fc6d15c818003290c169d0fd7abab",
+					"devName": "81072960023ac6b64034dbfb293e00faaad53e8955f68cd75ca38fb5874345da",
+					"offerId": "81072960023ac6b64034dbfb293e00faaad53e8955f68cd75ca38fb5874345da",
 					"fulfillmentIds": [],
 					"dailyLimit": -1,
 					"weeklyLimit": -1,
 					"monthlyLimit": -1,
-					"categories": [],
-					"prices": [
-						{
-							"currencyType": "MtxCurrency",
-							"currencySubType": "CurrencySource",
-							"regularPrice": 0,
-							"finalPrice": 0,
-							"saleExpiration": "2023-08-25T23:59:59.999Z",
-							"basePrice": 0
-						}
+					"categories": [
+						"Featured"
 					],
-					"meta": {
-						"SectionId": "Featured",
-						"TileSize": "Small"
-					},
-					"matchFilter": "",
-					"filterWeight": -1,
-					"appStoreId": [],
-					"requirements": [
-						{
-							"requirementType": "DenyOnItemOwnership",
-							"requiredId": "AthenaLoadingScreen:LSID_064_S6Cumulative03",
-							"minQuantity": 1
-						}
-					],
-					"offerType": "StaticPrice",
-					"giftInfo": {
-						"bIsEnabled": true,
-						"forcedGiftBoxTemplateId": "",
-						"giftRecordIds": [],
-						"purchaseRequirements": []
-					},
-					"refundable": false,
-					"metaInfo": [
-						{
-							"key": "SectionId",
-							"value": "Featured"
-						},
-						{
-							"key": "TileSize",
-							"value": "Small"
-						}
-					],
-					"displayAssetPath": "",
-					"itemGrants": [
-						{
-							"templateId": "AthenaLoadingScreen:LSID_064_S6Cumulative03",
-							"quantity": 1
-						}
-					],
-					"sortPriority": -1,
-					"catalogGroupPriority": 0,
-					"title": "",
-					"shortDescription": "",
-					"description": ""
-				},
-				{
-					"devName": "4705f12a42c11e65ae52ceb4252dd28813f58fee",
-					"offerId": "4705f12a42c11e65ae52ceb4252dd28813f58fee",
-					"fulfillmentIds": [],
-					"dailyLimit": -1,
-					"weeklyLimit": -1,
-					"monthlyLimit": -1,
-					"categories": [],
-					"prices": [
-						{
-							"currencyType": "MtxCurrency",
-							"currencySubType": "CurrencySource",
-							"regularPrice": 500,
-							"finalPrice": 500,
-							"saleExpiration": "2023-08-25T23:59:59.999Z",
-							"basePrice": 500
-						}
-					],
-					"meta": {
-						"SectionId": "Featured",
-						"TileSize": "Small"
-					},
-					"matchFilter": "",
-					"filterWeight": -1,
-					"appStoreId": [],
-					"requirements": [
-						{
-							"requirementType": "DenyOnItemOwnership",
-							"requiredId": "AthenaGlider:Glider_ID_074_RaptorArcticCamo",
-							"minQuantity": 1
-						}
-					],
-					"offerType": "StaticPrice",
-					"giftInfo": {
-						"bIsEnabled": true,
-						"forcedGiftBoxTemplateId": "",
-						"giftRecordIds": [],
-						"purchaseRequirements": []
-					},
-					"refundable": false,
-					"metaInfo": [
-						{
-							"key": "SectionId",
-							"value": "Featured"
-						},
-						{
-							"key": "TileSize",
-							"value": "Small"
-						}
-					],
-					"displayAssetPath": "",
-					"itemGrants": [
-						{
-							"templateId": "AthenaGlider:Glider_ID_074_RaptorArcticCamo",
-							"quantity": 1
-						}
-					],
-					"sortPriority": -1,
-					"catalogGroupPriority": 0,
-					"title": "",
-					"shortDescription": "",
-					"description": ""
-				},
-				{
-					"devName": "18129f86e6fc3e61e2b1d1948d7842ec1f742e0f",
-					"offerId": "18129f86e6fc3e61e2b1d1948d7842ec1f742e0f",
-					"fulfillmentIds": [],
-					"dailyLimit": -1,
-					"weeklyLimit": -1,
-					"monthlyLimit": -1,
-					"categories": [],
-					"prices": [
-						{
-							"currencyType": "MtxCurrency",
-							"currencySubType": "CurrencySource",
-							"regularPrice": 200,
-							"finalPrice": 200,
-							"saleExpiration": "2023-08-25T23:59:59.999Z",
-							"basePrice": 200
-						}
-					],
-					"meta": {
-						"SectionId": "Featured",
-						"TileSize": "Small"
-					},
-					"matchFilter": "",
-					"filterWeight": -1,
-					"appStoreId": [],
-					"requirements": [
-						{
-							"requirementType": "DenyOnItemOwnership",
-							"requiredId": "AthenaDance:EID_Snap_DeployPartyRift",
-							"minQuantity": 1
-						}
-					],
-					"offerType": "StaticPrice",
-					"giftInfo": {
-						"bIsEnabled": true,
-						"forcedGiftBoxTemplateId": "",
-						"giftRecordIds": [],
-						"purchaseRequirements": []
-					},
-					"refundable": false,
-					"metaInfo": [
-						{
-							"key": "SectionId",
-							"value": "Featured"
-						},
-						{
-							"key": "TileSize",
-							"value": "Small"
-						}
-					],
-					"displayAssetPath": "",
-					"itemGrants": [
-						{
-							"templateId": "AthenaDance:EID_Snap_DeployPartyRift",
-							"quantity": 1
-						}
-					],
-					"sortPriority": -1,
-					"catalogGroupPriority": 0,
-					"title": "",
-					"shortDescription": "",
-					"description": ""
-				},
-				{
-					"devName": "16327a4c0650509bce35aab62140d93d7588c7d9",
-					"offerId": "16327a4c0650509bce35aab62140d93d7588c7d9",
-					"fulfillmentIds": [],
-					"dailyLimit": -1,
-					"weeklyLimit": -1,
-					"monthlyLimit": -1,
-					"categories": [],
 					"prices": [
 						{
 							"currencyType": "MtxCurrency",
 							"currencySubType": "CurrencySource",
 							"regularPrice": 800,
 							"finalPrice": 800,
-							"saleExpiration": "2023-08-25T23:59:59.999Z",
+							"saleExpiration": "2023-08-26T23:59:59.999Z",
 							"basePrice": 800
 						}
 					],
 					"meta": {
-						"SectionId": "Featured",
+						"SectionId": "Daily",
 						"TileSize": "Small"
 					},
 					"matchFilter": "",
@@ -223,7 +36,7 @@
 					"requirements": [
 						{
 							"requirementType": "DenyOnItemOwnership",
-							"requiredId": "AthenaPickaxe:Pickaxe_ID_167_Medusa",
+							"requiredId": "AthenaDance:EID_HipHopS5",
 							"minQuantity": 1
 						}
 					],
@@ -238,7 +51,7 @@
 					"metaInfo": [
 						{
 							"key": "SectionId",
-							"value": "Featured"
+							"value": "Daily"
 						},
 						{
 							"key": "TileSize",
@@ -248,133 +61,7 @@
 					"displayAssetPath": "",
 					"itemGrants": [
 						{
-							"templateId": "AthenaPickaxe:Pickaxe_ID_167_Medusa",
-							"quantity": 1
-						}
-					],
-					"sortPriority": -1,
-					"catalogGroupPriority": 0,
-					"title": "",
-					"shortDescription": "",
-					"description": ""
-				},
-				{
-					"devName": "b444512fab12b0cd851e180e4e5839f24d73b193",
-					"offerId": "b444512fab12b0cd851e180e4e5839f24d73b193",
-					"fulfillmentIds": [],
-					"dailyLimit": -1,
-					"weeklyLimit": -1,
-					"monthlyLimit": -1,
-					"categories": [],
-					"prices": [
-						{
-							"currencyType": "MtxCurrency",
-							"currencySubType": "CurrencySource",
-							"regularPrice": 0,
-							"finalPrice": 0,
-							"saleExpiration": "2023-08-25T23:59:59.999Z",
-							"basePrice": 0
-						}
-					],
-					"meta": {
-						"SectionId": "Featured",
-						"TileSize": "Small"
-					},
-					"matchFilter": "",
-					"filterWeight": -1,
-					"appStoreId": [],
-					"requirements": [
-						{
-							"requirementType": "DenyOnItemOwnership",
-							"requiredId": "AthenaLoadingScreen:LSID_048_S5Cumulative9",
-							"minQuantity": 1
-						}
-					],
-					"offerType": "StaticPrice",
-					"giftInfo": {
-						"bIsEnabled": true,
-						"forcedGiftBoxTemplateId": "",
-						"giftRecordIds": [],
-						"purchaseRequirements": []
-					},
-					"refundable": false,
-					"metaInfo": [
-						{
-							"key": "SectionId",
-							"value": "Featured"
-						},
-						{
-							"key": "TileSize",
-							"value": "Small"
-						}
-					],
-					"displayAssetPath": "",
-					"itemGrants": [
-						{
-							"templateId": "AthenaLoadingScreen:LSID_048_S5Cumulative9",
-							"quantity": 1
-						}
-					],
-					"sortPriority": -1,
-					"catalogGroupPriority": 0,
-					"title": "",
-					"shortDescription": "",
-					"description": ""
-				},
-				{
-					"devName": "c4f019f296bc51f210eb8328dbde860738001bcb",
-					"offerId": "c4f019f296bc51f210eb8328dbde860738001bcb",
-					"fulfillmentIds": [],
-					"dailyLimit": -1,
-					"weeklyLimit": -1,
-					"monthlyLimit": -1,
-					"categories": [],
-					"prices": [
-						{
-							"currencyType": "MtxCurrency",
-							"currencySubType": "CurrencySource",
-							"regularPrice": 1200,
-							"finalPrice": 1200,
-							"saleExpiration": "2023-08-25T23:59:59.999Z",
-							"basePrice": 1200
-						}
-					],
-					"meta": {
-						"SectionId": "Featured",
-						"TileSize": "Small"
-					},
-					"matchFilter": "",
-					"filterWeight": -1,
-					"appStoreId": [],
-					"requirements": [
-						{
-							"requirementType": "DenyOnItemOwnership",
-							"requiredId": "AthenaCharacter:CID_077_Athena_Commando_M_Sup",
-							"minQuantity": 1
-						}
-					],
-					"offerType": "StaticPrice",
-					"giftInfo": {
-						"bIsEnabled": true,
-						"forcedGiftBoxTemplateId": "",
-						"giftRecordIds": [],
-						"purchaseRequirements": []
-					},
-					"refundable": false,
-					"metaInfo": [
-						{
-							"key": "SectionId",
-							"value": "Featured"
-						},
-						{
-							"key": "TileSize",
-							"value": "Small"
-						}
-					],
-					"displayAssetPath": "",
-					"itemGrants": [
-						{
-							"templateId": "AthenaCharacter:CID_077_Athena_Commando_M_Sup",
+							"templateId": "AthenaDance:EID_HipHopS5",
 							"quantity": 1
 						}
 					],
@@ -390,20 +77,22 @@
 			"name": "BRWeeklyStorefront",
 			"catalogEntries": [
 				{
-					"devName": "7b14a08f4ad7e84788a8233a57e5943487203724",
-					"offerId": "7b14a08f4ad7e84788a8233a57e5943487203724",
+					"devName": "5f88d7b4a1b13716cf59f9bbfc0195f94301621da8e9a0bc1709b95cfbc2f59a",
+					"offerId": "5f88d7b4a1b13716cf59f9bbfc0195f94301621da8e9a0bc1709b95cfbc2f59a",
 					"fulfillmentIds": [],
 					"dailyLimit": -1,
 					"weeklyLimit": -1,
 					"monthlyLimit": -1,
-					"categories": [],
+					"categories": [
+						"Featured"
+					],
 					"prices": [
 						{
 							"currencyType": "MtxCurrency",
 							"currencySubType": "CurrencySource",
 							"regularPrice": 2000,
 							"finalPrice": 2000,
-							"saleExpiration": "2023-08-25T23:59:59.999Z",
+							"saleExpiration": "2023-08-26T23:59:59.999Z",
 							"basePrice": 2000
 						}
 					],
@@ -417,7 +106,7 @@
 					"requirements": [
 						{
 							"requirementType": "DenyOnItemOwnership",
-							"requiredId": "AthenaCharacter:CID_164_Athena_Commando_M_Viking",
+							"requiredId": "AthenaCharacter:CID_105_Athena_Commando_F_SpaceBlack",
 							"minQuantity": 1
 						}
 					],
@@ -442,70 +131,7 @@
 					"displayAssetPath": "",
 					"itemGrants": [
 						{
-							"templateId": "AthenaCharacter:CID_164_Athena_Commando_M_Viking",
-							"quantity": 1
-						}
-					],
-					"sortPriority": 1,
-					"catalogGroupPriority": 0,
-					"title": "",
-					"shortDescription": "",
-					"description": ""
-				},
-				{
-					"devName": "1b0b514141d0b15d3b6d46e95a653f51cdf3893b",
-					"offerId": "1b0b514141d0b15d3b6d46e95a653f51cdf3893b",
-					"fulfillmentIds": [],
-					"dailyLimit": -1,
-					"weeklyLimit": -1,
-					"monthlyLimit": -1,
-					"categories": [],
-					"prices": [
-						{
-							"currencyType": "MtxCurrency",
-							"currencySubType": "CurrencySource",
-							"regularPrice": 1500,
-							"finalPrice": 1500,
-							"saleExpiration": "2023-08-25T23:59:59.999Z",
-							"basePrice": 1500
-						}
-					],
-					"meta": {
-						"SectionId": "Featured",
-						"TileSize": "Normal"
-					},
-					"matchFilter": "",
-					"filterWeight": 1,
-					"appStoreId": [],
-					"requirements": [
-						{
-							"requirementType": "DenyOnItemOwnership",
-							"requiredId": "AthenaGlider:Glider_ID_133_BandageNinja",
-							"minQuantity": 1
-						}
-					],
-					"offerType": "StaticPrice",
-					"giftInfo": {
-						"bIsEnabled": true,
-						"forcedGiftBoxTemplateId": "",
-						"giftRecordIds": [],
-						"purchaseRequirements": []
-					},
-					"refundable": false,
-					"metaInfo": [
-						{
-							"key": "SectionId",
-							"value": "Featured"
-						},
-						{
-							"key": "TileSize",
-							"value": "Normal"
-						}
-					],
-					"displayAssetPath": "",
-					"itemGrants": [
-						{
-							"templateId": "AthenaGlider:Glider_ID_133_BandageNinja",
+							"templateId": "AthenaCharacter:CID_105_Athena_Commando_F_SpaceBlack",
 							"quantity": 1
 						}
 					],
@@ -522,11 +148,15 @@
 			"catalogEntries": []
 		},
 		{
+			"name": "BRSpecialFeatured",
+			"catalogEntries": []
+		},
+		{
 			"name": "BRSeason8",
 			"catalogEntries": [
 				{
-					"devName": "BR.Season8.BattleBundle.01",
-					"offerId": "battlepassbundle8",
+					"devName": "BR.Season17.BattleBundle.01",
+					"offerId": "battlepassbundle17",
 					"fulfillmentIds": null,
 					"dailyLimit": -1,
 					"weeklyLimit": -1,
@@ -560,7 +190,7 @@
 					"requirements": [
 						{
 							"requirementType": "DenyOnFulfillment",
-							"requiredId": "battlepass8",
+							"requiredId": "battlepass17",
 							"minQuantity": 1
 						}
 					],
@@ -568,7 +198,7 @@
 					"giftInfo": null,
 					"refundable": false,
 					"metaInfo": [],
-					"displayAssetPath": "/Game/Catalog/DisplayAssets/DA_BR_Season8_BattlePassWithLevels.DA_BR_Season8_BattlePassWithLevels",
+					"displayAssetPath": "/Game/Catalog/DisplayAssets/DA_BR_Season17_BattlePassWithLevels.DA_BR_Season17_BattlePassWithLevels",
 					"itemGrants": [],
 					"sortPriority": 0,
 					"catalogGroupPriority": 0,
@@ -577,8 +207,8 @@
 					"description": "Season 8 \n\nInstantly get these items \u003cBold\u003evalued at over 10,000 V-Bucks\u003c/\u003e.\n  • \u003cItemName\u003eBlackheart\u003c/\u003e Progressive Outfit\n  • \u003cItemName\u003eHybrid\u003c/\u003e Progressive Outfit\n  • \u003cItemName\u003eSidewinder\u003c/\u003e Outfit\n  • \u003cItemName\u003eTropical Camo\u003c/\u003e Wrap\n  • \u003cItemName\u003eWoodsy\u003c/\u003e Pet\n  • \u003cItemName\u003eSky Serpents\u003c/\u003e Glider\n  • \u003cItemName\u003eCobra\u003c/\u003e Back Bling\n  • \u003cItemName\u003eFlying Standard\u003c/\u003e Contrail\n  • 300 V-Bucks\n  • 1 Music Track\n  • \u003cBold\u003e70% Bonus\u003c/\u003e Season Match XP\n  • \u003cBold\u003e20% Bonus\u003c/\u003e Season Friend Match XP\n  • \u003cBold\u003eExtra Weekly Challenges\u003c/\u003e\n  • and more!\n\nPlay to level up your Battle Pass, unlocking \u003cBold\u003eover 75 rewards\u003c/\u003e (typically takes 75 to 150 hours of play).\n  • \u003cBold\u003e4 more Outfits\u003c/\u003e\n  • \u003cBold\u003e1,000 V-Bucks\u003c/\u003e\n  • 6 Emotes\n  • 5 Wraps\n  • 3 Gliders\n  • 3 Back Blings\n  • 4 Harvesting Tools\n  • 4 Contrails\n  • 1 Pet\n  • 12 Sprays\n  • 2 Music Tracks\n  • and so much more!\nWant it all faster? You can use V-Bucks to buy tiers any time!"
 				},
 				{
-					"devName": "BR.Season8.BattlePass.01",
-					"offerId": "battlepass8",
+					"devName": "BR.Season17.BattlePass.01",
+					"offerId": "battlepass17",
 					"fulfillmentIds": null,
 					"dailyLimit": -1,
 					"weeklyLimit": -1,
@@ -612,7 +242,7 @@
 					"requirements": [
 						{
 							"requirementType": "DenyOnFulfillment",
-							"requiredId": "battlepass8",
+							"requiredId": "battlepass17",
 							"minQuantity": 1
 						}
 					],
@@ -625,7 +255,7 @@
 					"sortPriority": 0,
 					"catalogGroupPriority": 0,
 					"title": "Battle Pass",
-					"shortDescription": "Season8",
+					"shortDescription": "Season17",
 					"description": "Season 8 \n\nInstantly get these items \u003cBold\u003evalued at over 3,500 V-Bucks\u003c/\u003e.\n  • \u003cItemName\u003eBlackheart\u003c/\u003e Progressive Outfit\n  • \u003cItemName\u003eHybrid\u003c/\u003e Progressive Outfit\n  • \u003cBold\u003e50% Bonus\u003c/\u003e Season Match XP\n  • \u003cBold\u003e10% Bonus\u003c/\u003e Season Friend Match XP\n  • \u003cBold\u003eExtra Weekly Challenges\u003c/\u003e\n\nPlay to level up your Battle Pass, unlocking \u003cBold\u003eover 100 rewards\u003c/\u003e (typically takes 75 to 150 hours of play).\n  • \u003cItemName\u003eSidewinder\u003c/\u003e and \u003cBold\u003e4 more Outfits\u003c/\u003e\n  • \u003cBold\u003e1,300 V-Bucks\u003c/\u003e\n  • 7 Emotes\n  • 6 Wraps\n  • 2 Pets\n  • 5 Harvesting Tools\n  • 4 Gliders\n  • 4 Back Blings\n  • 5 Contrails\n  • 14 Sprays\n  • 3 Music Tracks\n  • 1 Toy\n  • 20 Loading Screens\n  • and so much more!\nWant it all faster? You can use V-Bucks to buy tiers any time!"
 				}
 			]

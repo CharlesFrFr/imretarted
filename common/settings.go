@@ -20,16 +20,13 @@ var (
 	GameServers             = make(map[string][]GameServer)
 	IP               string = "127.0.0.1:3000"
 	Season           int    = 0
-	Chapter          int    = 0
 	LoadShopFromJson bool   = false
 )
 
 func InitGameServers() {
 	seasonEnv, _ := strconv.Atoi(os.Getenv("SEASON"))
-	chapterEnv, _ := strconv.Atoi(os.Getenv("CHAPTER"))
 
 	Season = seasonEnv
-	Chapter = chapterEnv
 	IP = os.Getenv("BACKEND_IP")
 
 	addGameServer("playlist_defaultsolo", "EU", "127.0.0.1", 7777)

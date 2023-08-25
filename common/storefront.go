@@ -62,7 +62,7 @@ func GetItemsFromSeason(season int) ([]models.BeforeStoreItem, error) {
 
 	var itemsFromSeason []models.BeforeStoreItem
 	for _, item := range items {
-		if item.IntroductionSeason > season {
+		if item.IntroductionSeason > season + 10 {
 			continue
 		}
 		
