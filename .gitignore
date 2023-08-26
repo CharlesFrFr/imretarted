@@ -6,3 +6,7 @@ data/settings/*
 data/shop.*
 
 public/custom_cid_preview/*
+
+# no tmp folder
+tmp
+tmp/*
