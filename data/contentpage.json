@@ -13094,7 +13094,7 @@
     "news": {
       "platform_messages": [],
       "_type": "Battle Royale News",
-      "messages": [
+      "//messages": [
         {
           "hidden": false,
           "_type": "CommonUI Simple Message Base",

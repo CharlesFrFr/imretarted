@@ -983,8 +983,6 @@ func CalendarTimeline(c *gin.Context) {
 	calendar.Channels.ClientMatchmaking.CacheExpire = endOfDay
 	calendar.Channels.ClientEvents.CacheExpire = endOfDay
 
-	all.MarshPrintJSON(calendar)
-
 	c.JSON(http.StatusOK, calendar)
 }
 

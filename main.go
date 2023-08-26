@@ -122,24 +122,26 @@ func main() {
     fortnite.POST("/game/v2/tryPlayOnPlatform/account/*accountId", middleware.VerifyAccessToken, controllers.True)
     fortnite.GET("/game/v2/enabled_features", middleware.VerifyAccessToken, controllers.EmptyArray)
     fortnite.GET("/receipts/v1/account/:accountId/receipts", middleware.VerifyAccessToken, controllers.EmptyArray)
-    fortnite.GET("/storefront/v2/keychain", middleware.VerifyAccessToken, controllers.StorefrontKeychain)
     fortnite.GET("/calendar/v1/timeline", controllers.CalendarTimeline)
-
+    
     fortnite.GET("/cloudstorage/system", controllers.SystemCloudFilesList)
     // fortnite.GET("/cloudstorage/system/config", controllers.SystemConfig) //idk why it doesnt let you login if you enable
     fortnite.GET("/cloudstorage/system/:fileName", controllers.SystemCloudFile)
     fortnite.GET("/cloudstorage/user/:accountId", middleware.VerifyAccessToken, controllers.UserCloudFilesList)
     fortnite.GET("/cloudstorage/user/:accountId/:fileName", middleware.VerifyAccessToken, controllers.UserCloudFile)
     fortnite.PUT("/cloudstorage/user/:accountId/ClientSettings.Sav", middleware.VerifyAccessToken, controllers.SaveUserCloudFile)
-
+    
     fortnite.GET("/game/v2/matchmakingservice/ticket/player/:accountId", middleware.VerifyAccessToken, controllers.MatchmakingTicket)
     fortnite.GET("/game/v2/matchmaking/account/:accountId/session/:sessionId", middleware.VerifyAccessToken, controllers.GetMatchmakingKey)
     fortnite.GET("/matchmaking/session/:sessionId", middleware.VerifyAccessToken, controllers.GetMatchmakeSession)
-
+    
     fortnite.POST("/matchmaking/zomb/server", middleware.ServerSecret, controllers.AddNewGameServer)
     fortnite.DELETE("/matchmaking/zomb/server", middleware.ServerSecret, controllers.RemoveGameServer)
-
+    
     fortnite.GET("/v2/versioncheck/Windows", controllers.UpdateCheck)
+    
+    fortnite.GET("/storefront/v2/catalog", controllers.StorefrontCatalog)
+    fortnite.GET("/storefront/v2/keychain", middleware.VerifyAccessToken, controllers.StorefrontKeychain)
   }
 
   party := r.Group("/party/api/v1/Fortnite")
