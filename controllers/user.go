@@ -388,7 +388,8 @@ func AdminSaveProfile(c *gin.Context) {
 	common.AppendLoadoutsToProfile(&defaultAthenaProfile, user.AccountId)
 	common.AppendLoadoutsToProfile(&defaultCommonCoreProfile, user.AccountId)
 
-	user = body.User
+	user.VBucks = body.User.VBucks
+	user.Banned = body.User.Banned
 	all.Postgres.Save(&user)
 
 	c.JSON(http.StatusOK, gin.H{
