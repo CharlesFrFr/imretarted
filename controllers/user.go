@@ -388,7 +388,12 @@ func AdminSaveProfile(c *gin.Context) {
 	common.AppendLoadoutsToProfile(&defaultAthenaProfile, user.AccountId)
 	common.AppendLoadoutsToProfile(&defaultCommonCoreProfile, user.AccountId)
 
-	user.VBucks = body.User.VBucks
+	if body.User.VBucks != 0 {
+		user.VBucks = body.User.VBucks
+	}
+	if user.Username != "admin" && body.User.AccessLevel != 0 {
+		user.AccessLevel = body.User.AccessLevel
+	}
 	user.Banned = body.User.Banned
 	all.Postgres.Save(&user)
 
