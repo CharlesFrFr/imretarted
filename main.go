@@ -45,8 +45,6 @@ func main() {
     all.Postgres.Save(&adminUser)
 
     fmt.Println("Admin password reset!")
-
-    return
   }
 
   if strings.Contains(args, "-reset_database") {
@@ -56,6 +54,38 @@ func main() {
     all.Postgres.Exec("GRANT ALL ON SCHEMA public TO public;")
     all.Postgres.Exec("COMMENT ON SCHEMA public IS 'standard public schema';")
     all.AutoMigrate()
+  }
+
+  if strings.Contains(args, "-get_users") {
+    var users []models.User
+    all.Postgres.Find(&users)
+
+    fmt.Println("-------------------- TOTAL", len(users), "USERS --------------------")
+    for _, user := range users {
+      fmt.Println("[",user.Username,"]", user.Username, ":", user.AccountId)
+    }
+    fmt.Println("-------------------- TOTAL", len(users), "USERS --------------------")
+  }  
+
+  if strings.Contains(args, "-remove_empty_users") {
+    var users []models.User
+    all.Postgres.Find(&users)
+
+    var emptyUsers []models.User
+    for _, user := range users {
+      if user.AccountId == "" {
+        emptyUsers = append(emptyUsers, user)
+      }
+    }
+
+    fmt.Println("-------------------- TOTAL", len(emptyUsers), "EMPTY USERS --------------------")
+
+    for _, user := range emptyUsers {
+      all.Postgres.Delete(&user)
+    }
+  }
+
+  if strings.Contains(args, "-return") {
     return
   }
   

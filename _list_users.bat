@@ -3,6 +3,6 @@ title Zombie Server
 echo [ Zombie Server ] Resetting Database
 
 cd ./../
-server.exe -reset_database -return
+server.exe -get_users
 
 pause
