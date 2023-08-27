@@ -909,7 +909,7 @@ func GetContentPage(c *gin.Context) {
 
 	InnerBackgrounds := []gin.H{
 		{
-			"stage": "season17",
+			"stage": "season"+fmt.Sprint(common.Season),
 			"backgroundimage": "https://cdn2.unrealengine.com/0814-ch4s4-lobby-2048x1024-2048x1024-e3c2cf8d342d.png",
 			"key": "lobby",
 			"_type": "DynamicBackground",
@@ -1046,12 +1046,12 @@ func SystemCloudFile(c *gin.Context) {
 
 func SystemConfig(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
-		"lastUpdated": "2021-09-28T20:00:00.000Z",
-		"disableV2": false,
+		"lastUpdated": time.Now().Format("2006-01-02T15:04:05.999Z"),
+		"disableV2": true,
 		"isAuthenticated": true,
 		"enumerateFilesPath": "/api/cloudstorage/system",
-		"enableMigration": false,
-		"enableWrites": false,
+		"enableMigration": true,
+		"enableWrites": true,
 		"epicAppName": "Live",
 		"transports": gin.H{},
 	})

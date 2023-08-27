@@ -157,7 +157,7 @@ func main() {
     fortnite.GET("/calendar/v1/timeline", controllers.CalendarTimeline)
     
     fortnite.GET("/cloudstorage/system", controllers.SystemCloudFilesList)
-    // fortnite.GET("/cloudstorage/system/config", controllers.SystemConfig) //idk why it doesnt let you login if you enable
+    fortnite.GET("/cloudstorage/system/config", controllers.SystemConfig)
     fortnite.GET("/cloudstorage/system/:fileName", controllers.SystemCloudFile)
     fortnite.GET("/cloudstorage/user/:accountId", middleware.VerifyAccessToken, controllers.UserCloudFilesList)
     fortnite.GET("/cloudstorage/user/:accountId/:fileName", middleware.VerifyAccessToken, controllers.UserCloudFile)
