@@ -117,6 +117,8 @@ func main() {
     site.POST("/admin/profile/accountId/:accountId/take/:itemId", middleware.VerifySiteToken, controllers.AdminTakeItem)
   }
 
+  r.GET("/account/api/oauth/verify",  middleware.VerifyAccessToken, controllers.OAuthVerify)
+
   account := r.Group("/account/api")
   {
     account.POST("/oauth/token", controllers.OAuthMain)
@@ -229,6 +231,21 @@ func main() {
   r.GET("/cid/:cid", controllers.CIDImage)
 
   r.NoRoute(func(c *gin.Context) {
+    fortniteVersion := c.GetHeader("User-Agent")
+
+    if strings.Contains(fortniteVersion, "Fortnite/") {
+      c.JSON(404, gin.H{
+        "errorCode": "errors.com.epicgames.common.not_found",
+        "errorMessage": "Sorry the resource you were trying to find could not be found",
+        "messageVars": []string{},
+        "numericErrorCode": 1004,
+        "originatingService": "fortnite",
+        "intent": "prod",
+        "error_description": "Sorry the resource you were trying to find could not be found",
+      })
+      return
+    }
+
     c.File("./public/index.html")
   })
 

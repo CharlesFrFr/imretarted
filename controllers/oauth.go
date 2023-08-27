@@ -171,3 +171,9 @@ func ClientCredentials(c *gin.Context, client string) {
 		"expires_in": time.Hour.Milliseconds() * 24,
 	})
 }
+
+func OAuthVerify(c *gin.Context) {
+	user := c.MustGet("user").(models.User)
+	all.MarshPrintJSON(user)
+	c.AbortWithStatus(204)
+}

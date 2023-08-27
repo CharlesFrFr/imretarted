@@ -250,8 +250,6 @@ func AppendLoadoutsToProfileNoSave(profile *models.Profile, accountId string) {
 
 	loadoutIds := []string{}
 
-
-
 	for _, loadout := range loadouts {
 		var loadoutData models.Loadout
 		err := json.Unmarshal([]byte(loadout.Loadout), &loadoutData)

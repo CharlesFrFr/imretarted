@@ -51,7 +51,7 @@ func ClientProfileActionHandler(c *gin.Context) {
 		revisionCheck = profile.CommandRevision
 	}
 
-	if queryRevision, err := strconv.Atoi(c.Query("rvn")); err == nil && queryRevision != revisionCheck {
+	if queryRevision, err := strconv.Atoi(c.Query("rvn")); err == nil && queryRevision != revisionCheck && queryRevision != -1 {
 		all.PrintRed([]any{"revision mismatch", queryRevision, revisionCheck})
 		response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
 			ChangeType: "fullProfileUpdate",
@@ -105,6 +105,8 @@ func DedicatedServerProfileActionHandler(c *gin.Context) {
 		return
 	}
 
+	common.AppendLoadoutsToProfileNoSave(&profile, userId)
+
 	if profile.ProfileId == "athena" {
 		profile.Stats.Attributes["season_num"] = common.Season
 	}
@@ -130,10 +132,31 @@ func DedicatedServerProfileActionHandler(c *gin.Context) {
 }
 
 func QueryProfile(c *gin.Context, user models.User, profile *models.Profile, response *models.ProfileResponse) {
-	response.ProfileChanges = []models.ProfileChange{{
+	if profile.ProfileId == "athena" {
+		common.AppendLoadoutsToProfileNoSave(profile, user.AccountId)
+		athenaProfile, _ := common.ConvertProfileToAthena(*profile)
+		activeLoadoutId := athenaProfile.Stats.Attributes.Loadouts[athenaProfile.Stats.Attributes.ActiveLoadoutIndex]
+		activeLoadout, err := common.GetLoadout(activeLoadoutId, user.AccountId)
+		if err != nil {
+			all.PrintRed([]any{err.Error()})
+			response.ProfileRevision = -37707
+			common.ErrorItemNotFound(c)
+			c.Abort()
+			return
+		}
+
+		response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
+			ChangeType: "itemAttrChanged",
+			ItemID: "Default:CosmeticLocker",
+			AttributeName: "locker_slots_data",
+			AttributeValue: activeLoadout.Attributes.LockerSlotsData,
+		})
+	}
+	
+	response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
 		ChangeType: "fullProfileUpdate",
 		Profile: *profile,
-	}}
+	})
 }
 
 type CatalogOffer struct {
@@ -526,41 +549,60 @@ func SetCosmeticLockerSlot(c *gin.Context, user models.User, profile *models.Pro
 		c.Abort()
 		return
 	}
+
+	sandboxLoadout, err := common.GetLoadout("sandbox_loadout", user.AccountId)
+	if err != nil {
+		all.PrintRed([]any{err.Error()})
+		response.ProfileRevision = -37707
+		common.ErrorItemNotFound(c)
+		c.Abort()
+		return
+	}
 	
 	lowercaseItemType := strings.ToLower(body.Category)
 	switch lowercaseItemType {
 		case "character":
 			athenaProfile.Stats.Attributes.FavoriteCharacter = body.ItemToSlot
 			activeLoadout.Attributes.LockerSlotsData.Slots["Character"].Items[0] = body.ItemToSlot
+			sandboxLoadout.Attributes.LockerSlotsData.Slots["Character"].Items[0] = body.ItemToSlot
 		case "backpack":
 			athenaProfile.Stats.Attributes.FavoriteBackpack = body.ItemToSlot
 			activeLoadout.Attributes.LockerSlotsData.Slots["Backpack"].Items[0] = body.ItemToSlot
+			sandboxLoadout.Attributes.LockerSlotsData.Slots["Backpack"].Items[0] = body.ItemToSlot
 		case "pickaxe":
 			athenaProfile.Stats.Attributes.FavoritePickaxe = body.ItemToSlot
 			activeLoadout.Attributes.LockerSlotsData.Slots["Pickaxe"].Items[0] = body.ItemToSlot
+			sandboxLoadout.Attributes.LockerSlotsData.Slots["Pickaxe"].Items[0] = body.ItemToSlot
 		case "glider":
 			athenaProfile.Stats.Attributes.FavoriteGlider = body.ItemToSlot
 			activeLoadout.Attributes.LockerSlotsData.Slots["Glider"].Items[0] = body.ItemToSlot
+			sandboxLoadout.Attributes.LockerSlotsData.Slots["Glider"].Items[0] = body.ItemToSlot
 		case "skydivecontrail":
 			athenaProfile.Stats.Attributes.FavoriteSkyDiveContrail = body.ItemToSlot
 			activeLoadout.Attributes.LockerSlotsData.Slots["SkyDiveContrail"].Items[0] = body.ItemToSlot
+			sandboxLoadout.Attributes.LockerSlotsData.Slots["SkyDiveContrail"].Items[0] = body.ItemToSlot
 		case "loadingscreen":
 			athenaProfile.Stats.Attributes.FavoriteLoadingScreen = body.ItemToSlot
 			activeLoadout.Attributes.LockerSlotsData.Slots["LoadingScreen"].Items[0] = body.ItemToSlot
+			sandboxLoadout.Attributes.LockerSlotsData.Slots["LoadingScreen"].Items[0] = body.ItemToSlot
 		case "musicpack":
 			athenaProfile.Stats.Attributes.FavoriteMusicPack = body.ItemToSlot
 			activeLoadout.Attributes.LockerSlotsData.Slots["MusicPack"].Items[0] = body.ItemToSlot
+			sandboxLoadout.Attributes.LockerSlotsData.Slots["MusicPack"].Items[0] = body.ItemToSlot
 		case "dance":
 			athenaProfile.Stats.Attributes.FavoriteDance[body.SlotIndex] = body.ItemToSlot
 			activeLoadout.Attributes.LockerSlotsData.Slots["Dance"].Items[body.SlotIndex] = body.ItemToSlot
+			sandboxLoadout.Attributes.LockerSlotsData.Slots["Dance"].Items[body.SlotIndex] = body.ItemToSlot
 		case "itemwrap":
 			if body.SlotIndex >= 0 {
 				athenaProfile.Stats.Attributes.FavoriteItemWraps[body.SlotIndex] = body.ItemToSlot
 				activeLoadout.Attributes.LockerSlotsData.Slots["ItemWrap"].Items[body.SlotIndex] = body.ItemToSlot
+				sandboxLoadout.Attributes.LockerSlotsData.Slots["ItemWrap"].Items[body.SlotIndex] = body.ItemToSlot
 			} 
 			if body.SlotIndex == -1 {
 				for i := range activeLoadout.Attributes.LockerSlotsData.Slots["ItemWrap"].Items {
 					activeLoadout.Attributes.LockerSlotsData.Slots["ItemWrap"].Items[i] = body.ItemToSlot
+					sandboxLoadout.Attributes.LockerSlotsData.Slots["ItemWrap"].Items[i] = body.ItemToSlot
 				}
 				for i := range athenaProfile.Stats.Attributes.FavoriteItemWraps {
 					athenaProfile.Stats.Attributes.FavoriteItemWraps[i] = body.ItemToSlot
@@ -635,6 +677,7 @@ func SetCosmeticLockerSlot(c *gin.Context, user models.User, profile *models.Pro
 
 	profile.Stats.Attributes["LastAppliedLoadout"] = activeLoadoutId
 	common.AppendLoadoutToProfileNoSave(profile, &activeLoadout, user.AccountId)
+	common.AppendLoadoutToProfileNoSave(profile, &sandboxLoadout, user.AccountId)
 }
 
 func SetCosmeticLockerBanner(c *gin.Context, user models.User, profile *models.Profile, response *models.ProfileResponse) {

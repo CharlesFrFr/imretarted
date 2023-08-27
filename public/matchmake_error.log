@@ -1,0 +1,110 @@
+[2023.08.26-07.53.29:866][ 86]LogAthenaMatchmakingWidget: UFortAthenaMatchmakingWidgetLegacy::HandlePlayClicked
+[2023.08.26-07.53.29:866][ 86]LogMatchmakingUtility: RequestToMatchmake - MaxRetriesOnFail: 0
+[2023.08.26-07.53.29:866][ 86]LogMatchmakingUtility: RequestToMatchmake - TimeBetweenRetries: 0.000000
+[2023.08.26-07.53.29:866][ 86]LogMatchmakingUtility: RequestToMatchmake - PlaylistRegionForTournament: NONE
+[2023.08.26-07.53.29:866][ 86]LogMatchmakingUtility: RequestToMatchmake - FlowOverride: EMatchmakingUtilityFlows::Automatic
+[2023.08.26-07.53.29:866][ 86]LogMatchmakingUtility: RequestToMatchmake - DesiredPlaylist: Playlist_DefaultDuo
+[2023.08.26-07.53.29:866][ 86]LogMatchmakingUtility: RequestToMatchmake - LinkCodeOverride: playlist_defaultduo
+[2023.08.26-07.53.29:866][ 86]LogMatchmakingUtility: RequestToMatchmake - bAllowServerBrowser: false
+[2023.08.26-07.53.29:866][ 86]LogMatchmakingUtility: Changing state from EMatchmakingUtilityState::Idle to EMatchmakingUtilityState::MatchmakingUtilityBegin
+[2023.08.26-07.53.29:868][ 86]LogMatchmakingUtility: Changing state from EMatchmakingUtilityState::MatchmakingUtilityBegin to EMatchmakingUtilityState::CheckSittingOutState
+[2023.08.26-07.53.29:868][ 86]LogMatchmakingUtility: Changing state from EMatchmakingUtilityState::CheckSittingOutState to EMatchmakingUtilityState::InitializePlaylistSelection
+[2023.08.26-07.53.29:868][ 86]LogMatchmakingUtility: CurrentPlaylistData: Playlist_DefaultDuo
+[2023.08.26-07.53.29:868][ 86]LogMatchmakingUtility: DesiredPlaylistData: Playlist_DefaultDuo
+[2023.08.26-07.53.29:869][ 86]LogMatchmakingUtility: Changing state from EMatchmakingUtilityState::InitializePlaylistSelection to EMatchmakingUtilityState::UpdateHiddenMatchmakingDelay
+[2023.08.26-07.53.29:869][ 86]LogMatchmakingUtility: Changing state from EMatchmakingUtilityState::UpdateHiddenMatchmakingDelay to EMatchmakingUtilityState::QoSSettings_UpdateManager
+[2023.08.26-07.53.29:869][ 86]LogQos: [UQosRegionManager::RegisterQoSSettingsChangedDelegate] delegate was replaced
+LogHotfixManager: Display: Update State UpdateComplete -> UpdatePending
+[2023.08.26-07.53.29:870][ 86]LogHotfixManager: Display: Update State UpdateComplete -> UpdatePending
+LogHotfixManager: Display: Update State UpdatePending -> CheckingForPatch
+[2023.08.26-07.53.30:068][110]LogHotfixManager: Display: Update State UpdatePending -> CheckingForPatch
+[2023.08.26-07.53.30:068][110]LogOnlineIdentity: MCP: Sending User Privilege request. url=https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/v2/versioncheck/Windows?version=%2B%2BFortnite%2BRelease-17.50-CL-17388565-Windows
+LogPatchCheck: Display: [EnvironmentWantsPatchCheck] Backend Prod wants a patch check!
+[2023.08.26-07.53.30:095][114]LogPatchCheck: Display: [EnvironmentWantsPatchCheck] Backend Prod wants a patch check!
+LogHotfixManager: Display: Update State CheckingForPatch -> CheckingForHotfix
+[2023.08.26-07.53.30:095][114]LogHotfixManager: Display: Update State CheckingForPatch -> CheckingForHotfix
+[2023.08.26-07.53.30:095][114]LogHotfixManager: Starting Hotfix Process
+[2023.08.26-07.53.30:095][114]LogOnlineTitleFile: MCP: [v2/dispatch](FOnlineTitleFileMcpDispatcher::ConfigUpdateCheck) initiating configuration update for v2 dispatch subsystem! [init? true, force once? false, force next? true, last: 99.64]
+LogOnline: Warning: MCP: Invalid response. CorrId=FN-yJMImMTPNUuhFT7sozRwIQ code=400 error=Failure ErrorCode=errors.com.epicgames.common.bad_request, Message=Bad Request, Raw={"error":"","errorCode":"errors.com.epicgames.common.bad_request","errorDescription":"Bad Request","errorMessage":"Bad Request","intent":"prod","messageVars":[],"numericErrorCode":1000,"originatingService":"com.epicgames.account.public"}
+[2023.08.26-07.53.30:129][118]LogOnline: Warning: MCP: Invalid response. CorrId=FN-yJMImMTPNUuhFT7sozRwIQ code=400 error=Failure ErrorCode=errors.com.epicgames.common.bad_request, Message=Bad Request, Raw={"error":"","errorCode":"errors.com.epicgames.common.bad_request","errorDescription":"Bad Request","errorMessage":"Bad Request","intent":"prod","messageVars":[],"numericErrorCode":1000,"originatingService":"com.epicgames.account.public"}
+[2023.08.26-07.53.30:129][118]LogOnlineTitleFile: MCP: [v2/dispatch](FOnlineTitleFileMcpDispatcher::InitializeTitleFileSystem) configuration complete!
+[2023.08.26-07.53.30:129][118]LogHotfixManager: sending title file analytics event 'Online.TitleFile.InitComplete'
+[2023.08.26-07.53.30:129][118]LogOnlineTitleFile: MCP: [v2/dispatch](FOnlineTitleFileMcpDispatcher::ProcessQueuedConfigUpdateCompleteDelegates) firing 1 queued config update complete delegates (bSuccess? true) on next tick...
+[2023.08.26-07.53.30:162][122]LogOnlineTitleFile: MCP: FOnlineTitleFileMcp::DeleteCachedFiles Clearing cached files: [bSkipEnumerated:1]
+[2023.08.26-07.53.30:162][122]LogOnlineTitleFile: MCP:   Cleared 0 cached files.
+[2023.08.26-07.53.30:163][122]LogHotfixManager: EnumerateFiles Http Request Complete
+[2023.08.26-07.53.30:163][122]LogHotfixManager: Using default hotfix DefaultEngine.ini
+[2023.08.26-07.53.30:163][122]LogHotfixManager: Using default hotfix DefaultGame.ini
+[2023.08.26-07.53.30:163][122]LogHotfixManager: Using default hotfix DefaultInput.ini
+[2023.08.26-07.53.30:163][122]LogHotfixManager: Using default hotfix DefaultRuntimeOptions.ini
+LogHotfixManager: Display: Returned hotfix data is the same as last application, skipping the apply phase
+[2023.08.26-07.53.30:163][122]LogHotfixManager: Display: Returned hotfix data is the same as last application, skipping the apply phase
+LogHotfixManager: Display: OnHotfixCheckComplete 2
+[2023.08.26-07.53.30:163][122]LogHotfixManager: Display: OnHotfixCheckComplete 2
+LogHotfixManager: Display: Update State CheckingForHotfix -> WaitingOnInitialLoad
+[2023.08.26-07.53.30:268][134]LogHotfixManager: Display: Update State CheckingForHotfix -> WaitingOnInitialLoad
+[2023.08.26-07.53.30:270][135]LogHotfixManager: Finished initial load/hotfix phase in 0.001310s
+LogHotfixManager: Display: Update State WaitingOnInitialLoad -> InitialLoadComplete
+[2023.08.26-07.53.30:270][135]LogHotfixManager: Display: Update State WaitingOnInitialLoad -> InitialLoadComplete
+LogHotfixManager: Display: CheckComplete UpdateSuccess_NoChange
+[2023.08.26-07.53.30:270][135]LogHotfixManager: Display: CheckComplete UpdateSuccess_NoChange
+LogFort: Display: FortGameFeaturePluginManager is loading enabled hotfixable features...
+[2023.08.26-07.53.30:270][135]LogFort: Display: FortGameFeaturePluginManager is loading enabled hotfixable features...
+
+loading shit 
+
+LogHotfixManager: Display: External CheckComplete UpdateSuccess_NoChange
+[2023.08.26-07.53.30:794][195]LogHotfixManager: Display: External CheckComplete UpdateSuccess_NoChange
+LogHotfixManager: Display: Update State InitialLoadComplete -> UpdateComplete
+
+update from api is ok
+
+[2023.08.26-07.53.30:794][195]LogHotfixManager: Display: Update State InitialLoadComplete -> UpdateComplete
+[2023.08.26-07.53.30:794][195]LogMatchmakingUtility: Changing state from EMatchmakingUtilityState::QoSSettings_UpdateManager to EMatchmakingUtilityState::QoSSettings_UpdateManager_Success
+[2023.08.26-07.53.30:795][195]LogMatchmakingUtility: [FFortMatchmakingUtility::HandleQoSCheckComplete] completed patch check - bQoSSettingsChanged is 0
+[2023.08.26-07.53.30:795][195]LogMatchmakingUtility: [FFortMatchmakingUtility::HandleQoSCheckComplete_ContinueToNextStep] bSuccessfulUpdateCheck? 1
+[2023.08.26-07.53.30:795][195]LogMatchmakingUtility: Changing state from EMatchmakingUtilityState::QoSSettings_UpdateManager_Success to EMatchmakingUtilityState::DelayReadyUp
+
+questclientlogin is success
+
+
+[2023.08.26-07.53.30:796][195]LogMatchmakingUtility: Need to wait: -16833987.493915 seconds before can continue Matchmaking
+[2023.08.26-07.53.30:796][195]LogMatchmakingUtility: Changing state from EMatchmakingUtilityState::DelayReadyUp to EMatchmakingUtilityState::HiddenMatchmakingDelay
+[2023.08.26-07.53.30:796][195]LogMatchmakingUtility: FFortMatchmakingUtility::HandleMatchmakingPartyPreloaded: Stream sniper protection delay of 1 seconds induced
+[2023.08.26-07.53.30:797][195]LogMatchmakingUtility: [ReevaluatePartyPlaylists] Called because of EPlaylistUpdateReason::ValidatePlaylist_MatchmakingEventsChanged
+[2023.08.26-07.53.30:797][195]LogMatchmakingUtility: [Legacy_ValidatePlaylist] Calling HandlePlaylistDataChanged with current playlist to refresh
+[2023.08.26-07.53.30:797][195]LogMatchmakingUtility: [HandlePlaylistDataChanged called]
+[2023.08.26-07.53.30:797][195]LogFort: [UFortPlaylistManager.TryGetPlaylistFrontEndData] Attempt with PlaylistName:Playlist_DefaultDuo and Tournament: and Event Window:
+[2023.08.26-07.53.30:797][195]LogFort: [FortAthenaMatchmakingWidget::Setting CurrentPlaylistData from handle playlist data changed
+[2023.08.26-07.53.30:797][195]LogMatchmakingUtility: [SetCurrentPlaylistData called] Setting playlist to: Playlist_DefaultDuo
+[2023.08.26-07.53.30:797][195]LogMatchmakingUtility: [FFortMatchmakingUtility.SetCurrentPlaylistData] Attempt with PlaylistName:Playlist_DefaultDuo and Tournament: and Event Window:
+[2023.08.26-07.53.30:797][195]LogFort: [UFortPlaylistManager.TryGetPlaylistFrontEndData] Attempt with PlaylistName:Playlist_DefaultDuo and Tournament: and Event Window:
+LogRHI: Display: ShaderPipelineCache::SetGameUsageMaskWithComparison set a new mask but did not attempt to setup any tasks because the cache was not open
+[2023.08.26-07.53.30:798][195]LogRHI: Display: ShaderPipelineCache::SetGameUsageMaskWithComparison set a new mask but did not attempt to setup any tasks because the cache was not open
+LogRHI: Display: Applied New ShaderPipelineCache GameUsageMask [UserMask=65535 | Playlist=0 | Material=3 | Shadow=3 | Foliage=2]
+[2023.08.26-07.53.30:798][195]LogRHI: Display: Applied New ShaderPipelineCache GameUsageMask [UserMask=65535 | Playlist=0 | Material=3 | Shadow=3 | Foliage=2]
+[2023.08.26-07.53.30:799][195]LogFort: Reloading scheduled notifications from data
+[2023.08.26-07.53.30:799][195]LogCatalogHelper: Re-querying prices from EpicPurchasingService
+[2023.08.26-07.53.30:799][195]LogCatalogHelper: No uncached RealMoney offers found in catalog (10 total offers)
+[2023.08.26-07.53.30:801][196]LogAthenaItemShop_OfferDebugging: UAthenaCatabaScreen::EstablishSections
+[2023.08.26-07.53.31:796][315]LogMatchmakingUtility: Changing state from EMatchmakingUtilityState::HiddenMatchmakingDelay to EMatchmakingUtilityState::ServerBrowsers
+[2023.08.26-07.53.31:797][315]LogMatchmakingUtility: Changing state from EMatchmakingUtilityState::ServerBrowsers to EMatchmakingUtilityState::CheckingIfBanned
+[2023.08.26-07.53.31:797][315]LogMatchmakingUtility: Changing state from EMatchmakingUtilityState::CheckingIfBanned to EMatchmakingUtilityState::CrossplayOptIn_GameMode
+[2023.08.26-07.53.31:798][315]LogMatchmakingUtility: Playlist Name: Playlist_DefaultDuo
+[2023.08.26-07.53.31:798][315]LogMatchmakingUtility: Changing state from EMatchmakingUtilityState::CrossplayOptIn_GameMode to EMatchmakingUtilityState::CrossplayOptIn_Fill
+[2023.08.26-07.53.31:798][315]LogMatchmakingUtility: Changing state from EMatchmakingUtilityState::CrossplayOptIn_Fill to EMatchmakingUtilityState::CrossplayDevices
+[2023.08.26-07.53.31:799][315]LogMatchmakingUtility: Changing state from EMatchmakingUtilityState::CrossplayDevices to EMatchmakingUtilityState::PrivateMatchMinPartySize
+[2023.08.26-07.53.31:799][315]LogMatchmakingUtility: Changing state from EMatchmakingUtilityState::PrivateMatchMinPartySize to EMatchmakingUtilityState::CreativeContentDownloadModal
+[2023.08.26-07.53.31:800][315]LogMatchmakingUtility: Changing state from EMatchmakingUtilityState::CreativeContentDownloadModal to EMatchmakingUtilityState::FactionChoice
+LogFortUI: Error: [AFortAthenaMutator_Infiltration::GetAvailablePerksForPlayer()] Incorrect number of player perks found?!
+[2023.08.26-07.53.31:800][315]LogFortUI: Error: [AFortAthenaMutator_Infiltration::GetAvailablePerksForPlayer()] Incorrect number of player perks found?!
+[2023.08.26-07.53.31:800][315]LogMatchmakingUtility: Changing state from EMatchmakingUtilityState::FactionChoice to EMatchmakingUtilityState::TournamentEligibility
+[2023.08.26-07.53.31:801][315]LogMatchmakingUtility: Changing state from EMatchmakingUtilityState::TournamentEligibility to EMatchmakingUtilityState::TournamentRegionLock
+[2023.08.26-07.53.31:801][315]LogMatchmakingUtility: Changing state from EMatchmakingUtilityState::TournamentRegionLock to EMatchmakingUtilityState::TournamentMFA
+[2023.08.26-07.53.31:802][315]LogMatchmakingUtility: Changing state from EMatchmakingUtilityState::TournamentMFA to EMatchmakingUtilityState::TournamentEULA
+[2023.08.26-07.53.31:802][315]LogMatchmakingUtility: Changing state from EMatchmakingUtilityState::TournamentEULA to EMatchmakingUtilityState::FindExistingEditSession
+[2023.08.26-07.53.31:803][315]LogMatchmakingUtility: Changing state from EMatchmakingUtilityState::FindExistingEditSession to EMatchmakingUtilityState::AppEnvSecurity
+[2023.08.26-07.53.31:803][315]LogWindows: FPlatformMisc::RequestExit(0)
+[2023.08.26-07.53.31:803][315]LogMatchmakingUtility: Called to FailMatchmakingFlow. Reason: Failed Security Checks
+[2023.08.26-07.53.31:803][315]LogMatchmakingUtility: Changing state from EMatchmakingUtilityState::AppEnvSecurity to EMatchmakingUtilityState::Failed
+[2023.08.26-07.53.31:804][315]LogMatchmakingUtility: Changing state from EMatchmakingUtilityState::Failed to EMatchmakingUtilityState::Idle
