@@ -137,6 +137,14 @@ func GetMatchmakeSession(c *gin.Context) {
 	})
 }
 
+func JoinMatchmakeSession(c *gin.Context) {
+	sessionId := c.Param("sessionId")
+	c.JSON(http.StatusOK, gin.H{
+		"status": "success",
+		"sessionId": sessionId,
+	})
+}
+
 func GetMatchmakingKey(c *gin.Context) {
 	user := c.MustGet("user").(models.User)
 	sessionId := c.Param("sessionId")
