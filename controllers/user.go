@@ -389,14 +389,49 @@ func AdminSaveProfile(c *gin.Context) {
 	common.AppendLoadoutsToProfile(&defaultAthenaProfile, user.AccountId)
 	common.AppendLoadoutsToProfile(&defaultCommonCoreProfile, user.AccountId)
 
+	commonCore, err := common.ReadProfileFromUser(accountId, "common_core")
+	if err != nil {
+		return
+	}
+
+	gift := models.CommonCoreItem{
+		TemplateId: "GiftBox:gb_default",
+		Attributes: gin.H{
+			"fromAccountId": "Server",
+			"lootList": []gin.H{
+				
+			},
+			"params": gin.H{
+				"userMessage": "Server has updated your account. Enjoy!",
+			},
+			"level": 1,
+			"giftedOn": time.Now().Format("2006-01-02T15:04:05.999Z"),
+		},
+		Quantity: 1,
+	}
+	commonCore.Items["GiftBox:gb_default"] = gift
+	common.SaveProfileToUser(accountId, commonCore)
+
 	if body.User.VBucks != 0 {
 		user.VBucks = body.User.VBucks
+		gift.Attributes["lootList"] = append(gift.Attributes["lootList"].([]gin.H), gin.H{
+			"itemType": "MtxCurrency:MTXCurrency",
+			"itemGuid": "MtxCurrency:MTXCurrency",
+			"itemProfile": "athena",
+			"quantity": user.VBucks - body.User.VBucks,
+		})
 	}
 	if user.Username != "admin" && body.User.AccessLevel != 0 {
 		user.AccessLevel = body.User.AccessLevel
 	}
 	user.Banned = body.User.Banned
 	all.Postgres.Save(&user)
+
+	socket.XMPPSendBodyToAccountId(gin.H{
+		"payload": gin.H{},
+		"type": "com.epicgames.gift.received",
+		"timestamp": time.Now().Format("2006-01-02T15:04:05.999Z"),
+	}, accountId)
 
 	c.JSON(http.StatusOK, gin.H{
 		"user": user,
@@ -522,6 +557,12 @@ func AdminTakeItem(c *gin.Context) {
 
 	common.RemoveItemFromProfile(&profile, itemId, accountId)
 	common.AppendLoadoutsToProfile(&profile, accountId)
+
+	socket.XMPPSendBodyToAccountId(gin.H{
+		"payload": gin.H{},
+		"type": "com.epicgames.gift.received",
+		"timestamp": time.Now().Format("2006-01-02T15:04:05.999Z"),
+	}, accountId)
 
 	c.JSON(http.StatusOK, profile)
 }

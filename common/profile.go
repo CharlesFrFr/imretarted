@@ -456,7 +456,6 @@ func RemoveEverythingFromProfile(profile *models.Profile, accountId string) {
 		},
 		Quantity: 1,
 	}
-
 	commonCore.Items["GiftBox:gb_default"] = gift
 	SaveProfileToUser(accountId, commonCore)
 }
@@ -479,6 +478,34 @@ func SetUserVBucks(accountId string, profile *models.Profile, amount int) {
 		Quantity: wantedAmount,
 	}
 
+	commonCore, err := ReadProfileFromUser(accountId, "common_core")
+	if err != nil {
+		return
+	}
+
+	gift := models.CommonCoreItem{
+		TemplateId: "GiftBox:gb_default",
+		Attributes: gin.H{
+			"fromAccountId": "Server",
+			"lootList": []gin.H{
+				{
+					"itemType": "MtxCurrency:MTXCurrency",
+					"itemGuid": "MtxCurrency:MTXCurrency",
+					"itemProfile": "athena",
+					"quantity": wantedAmount,
+				},
+			},
+			"params": gin.H{
+				"userMessage": "Server has updated your account. Enjoy!",
+			},
+			"level": 1,
+			"giftedOn": time.Now().Format("2006-01-02T15:04:05.999Z"),
+		},
+		Quantity: 1,
+	}
+	commonCore.Items["GiftBox:gb_default"] = gift
+	SaveProfileToUser(accountId, commonCore)
+
 	AppendLoadoutsToProfileNoSave(profile, accountId)
 }
 
@@ -500,6 +527,34 @@ func TakeUserVBucks(accountId string, profile *models.Profile, amount int) {
 		Quantity: wantedAmount,
 	}
 
+	commonCore, err := ReadProfileFromUser(accountId, "common_core")
+	if err != nil {
+		return
+	}
+
+	gift := models.CommonCoreItem{
+		TemplateId: "GiftBox:gb_default",
+		Attributes: gin.H{
+			"fromAccountId": "Server",
+			"lootList": []gin.H{
+				{
+					"itemType": "MtxCurrency:MTXCurrency",
+					"itemGuid": "MtxCurrency:MTXCurrency",
+					"itemProfile": "athena",
+					"quantity": wantedAmount,
+				},
+			},
+			"params": gin.H{
+				"userMessage": "Server has updated your account. Enjoy!",
+			},
+			"level": 1,
+			"giftedOn": time.Now().Format("2006-01-02T15:04:05.999Z"),
+		},
+		Quantity: 1,
+	}
+	commonCore.Items["GiftBox:gb_default"] = gift
+	SaveProfileToUser(accountId, commonCore)
+
 	AppendLoadoutsToProfileNoSave(profile, accountId)
 }
 
@@ -520,6 +575,34 @@ func AddUserVBucks(accountId string, profile *models.Profile, amount int) {
 		},
 		Quantity: wantedAmount,
 	}
+	
+	commonCore, err := ReadProfileFromUser(accountId, "common_core")
+	if err != nil {
+		return
+	}
+
+	gift := models.CommonCoreItem{
+		TemplateId: "GiftBox:gb_default",
+		Attributes: gin.H{
+			"fromAccountId": "Server",
+			"lootList": []gin.H{
+				{
+					"itemType": "MtxCurrency:MTXCurrency",
+					"itemGuid": "MtxCurrency:MTXCurrency",
+					"itemProfile": "athena",
+					"quantity": wantedAmount,
+				},
+			},
+			"params": gin.H{
+				"userMessage": "Server has updated your account. Enjoy!",
+			},
+			"level": 1,
+			"giftedOn": time.Now().Format("2006-01-02T15:04:05.999Z"),
+		},
+		Quantity: 1,
+	}
+	commonCore.Items["GiftBox:gb_default"] = gift
+	SaveProfileToUser(accountId, commonCore)
 
 	AppendLoadoutsToProfileNoSave(profile, accountId)
 }
