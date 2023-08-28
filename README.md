@@ -39,6 +39,11 @@ Roadmap is in order of completion, so closer to the top of list means it will be
 - [ ] Battle Pass & Levelling Up
 - [ ] Challenges (or Quests)
 
+## Compatibility
+
+- Everything is functional in **Chapter 1**
+- Unkown issue causing matchmaker and parties to not work on **Season 16+**
+
 ## Prerequisites
 
 - A basic understanding of how to build and run applications. Now made easier with the [scripts folder!](https://github.com/zombman/backend/tree/master/_setup)
