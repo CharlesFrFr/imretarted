@@ -1,6 +1,6 @@
 ![template(7)(1)](https://github.com/zombman/backend/assets/121964555/a1624e90-ed7a-4a8d-a00c-b6707c69b4ac)
 
-An open source, performant fortnite backend server with a built in web-interface and desktop launcher! _Note: Some features are not yet implemented, please see the [Roadmap](#roadmap) for more information._
+An open source, performant fortnite backend server with a built in web-interface and desktop launcher! Thank you to @mhtsotakis for help with party v2! _Note: Some features are not yet implemented, please see the [Roadmap](#roadmap) for more information._
 
 ## Branches
 
@@ -28,6 +28,7 @@ Roadmap is in order of completion, so closer to the top of list means it will be
 - [x] Profiles to access lobby and item shop
 - [x] Random item shop
 - [x] Buy from item shop
+- [x] Gifting
 - [x] Equip items and variants
 - [x] Cloud storage for settings
 - [x] Control panel for server admins
@@ -36,8 +37,8 @@ Roadmap is in order of completion, so closer to the top of list means it will be
 - [x] Matchmaker
 - [x] Xmpp
 - [x] Parties
-- [x] Party v2 (for all seasons)
-  - thanks to @mhtsotakis
+- [x] Party v2 (kinda scuffed)
+- [x] Daily rewards
 - [ ] Battle Pass & Levelling Up
 
 ## Prerequisites
