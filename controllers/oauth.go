@@ -173,7 +173,6 @@ func ClientCredentials(c *gin.Context, client string) {
 }
 
 func OAuthVerify(c *gin.Context) {
-	user := c.MustGet("user").(models.User)
-	all.MarshPrintJSON(user)
+	// user := c.MustGet("user").(models.User)
 	c.AbortWithStatus(204)
 }

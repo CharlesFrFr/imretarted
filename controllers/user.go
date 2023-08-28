@@ -495,6 +495,12 @@ func AdminTakeAllSkins(c * gin.Context) {
 	}, accountId)
 	common.SaveProfileToUser(accountId, profile)
 
+	socket.XMPPSendBodyToAccountId(gin.H{
+		"payload": gin.H{},
+		"type": "com.epicgames.gift.received",
+		"timestamp": time.Now().Format("2006-01-02T15:04:05.999Z"),
+	}, accountId)
+
 	c.JSON(http.StatusOK, profile)
 }
 

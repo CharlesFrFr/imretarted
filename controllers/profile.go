@@ -95,8 +95,6 @@ func ClientProfileActionHandler(c *gin.Context) {
 		response.ProfileChanges = []models.ProfileChange{}
 	}
 
-	all.MarshPrintJSON(response)
-
 	c.JSON(200, response)
 }
 
@@ -397,7 +395,6 @@ func PurchaseCatalogEntryBattlePass(c *gin.Context, user models.User, profile *m
 	}
 
 	all.PrintGreen([]any{"purchasing battle pass"})
-	all.MarshPrintJSON(offer)
 
 	if user.VBucks < offer.Prices[0].FinalPrice {
 		common.ErrorBadRequest(c)
@@ -900,9 +897,8 @@ func GiftCatalogEntry(c *gin.Context, user models.User, profile *models.Profile,
 		}
 
 		for _, item := range offer.ItemGrants {
-			item222, hasItem := friendAthenaProfile.Items[item.TemplateID]
+			_, hasItem := friendAthenaProfile.Items[item.TemplateID]
 			if hasItem {
-				all.MarshPrintJSON(item222)
 				all.PrintRed([]any{"friend already has item", friend})
 				common.ErrorUserAlreadyHasItem(c)
 				c.Abort()
@@ -973,8 +969,8 @@ func RemoveGiftBox(c *gin.Context, user models.User, profile *models.Profile, re
 	common.SaveProfileToUser(user.AccountId, *profile)
 
 	
-	all.MarshPrintJSON(profile)
-	all.MarshPrintJSON(body)
+	// all.MarshPrintJSON(profile)
+	// all.MarshPrintJSON(body)
 
 	response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
 		ChangeType: "fullProfileUpdate",

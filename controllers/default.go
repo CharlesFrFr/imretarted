@@ -1399,7 +1399,6 @@ func PartyPrivacy(c *gin.Context) {
 func SetPartyPrivacy(c *gin.Context) {
 	var body any
 	c.BindJSON(&body)
-	all.MarshPrintJSON(body)
 	c.JSON(200, gin.H{
 		"accountId": c.Param("accountId"),
 		"optOutOfPublicLeaderboards": false,

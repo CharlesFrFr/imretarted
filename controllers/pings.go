@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/zombman/server/all"
 	"github.com/zombman/server/common"
 	"github.com/zombman/server/models"
 	"github.com/zombman/server/socket"
@@ -125,8 +124,6 @@ func GetPartyPings(c *gin.Context) {
 			}
 		}
 	}
-
-	all.MarshPrintJSON(parties)
 
 	c.JSON(200, parties)
 }

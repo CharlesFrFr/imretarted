@@ -412,6 +412,53 @@ func RemoveEverythingFromProfile(profile *models.Profile, accountId string) {
 		delete(profile.Items, itemId)
 	}
 	AppendLoadoutsToProfileNoSave(profile, accountId)
+
+	commonCore, err := ReadProfileFromUser(accountId, "common_core")
+	if err != nil {
+		return
+	}
+
+	gift := models.CommonCoreItem{
+		TemplateId: "GiftBox:gb_default",
+		Attributes: gin.H{
+			"fromAccountId": "Server",
+			"lootList": []gin.H{
+				{
+					"itemType": "AthenaCharacter:CID_001_Athena_Commando_F_Default",
+					"itemGuid": "AthenaCharacter:CID_001_Athena_Commando_F_Default",
+					"itemProfile": "athena",
+					"quantity": 1,
+				},
+				{
+					"itemType": "AthenaPickaxe:DefaultPickaxe",
+					"itemGuid": "AthenaPickaxe:DefaultPickaxe",
+					"itemProfile": "athena",
+					"quantity": 1,
+				},
+				{
+					"itemType": "AthenaGlider:DefaultGlider",
+					"itemGuid": "AthenaGlider:DefaultGlider",
+					"itemProfile": "athena",
+					"quantity": 1,
+				},
+				{
+					"itemType": "AthenaDance:EID_DanceMoves",
+					"itemGuid": "AthenaDance:EID_DanceMoves",
+					"itemProfile": "athena",
+					"quantity": 1,
+				},
+			},
+			"params": gin.H{
+				"userMessage": "Server has removed all items from your account. Enjoy!",
+			},
+			"level": 1,
+			"giftedOn": time.Now().Format("2006-01-02T15:04:05.999Z"),
+		},
+		Quantity: 1,
+	}
+
+	commonCore.Items["GiftBox:gb_default"] = gift
+	SaveProfileToUser(accountId, commonCore)
 }
 
 func SetUserVBucks(accountId string, profile *models.Profile, amount int) {

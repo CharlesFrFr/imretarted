@@ -18,8 +18,6 @@ func FriendsPublic(c *gin.Context) {
 	user := c.MustGet("user").(models.User)
 	friends := common.GetFriendsList(user.AccountId)
 
-	all.MarshPrintJSON(friends)
-
 	c.JSON(200, friends)
 }
 
@@ -30,8 +28,6 @@ func FriendsBlocked(c *gin.Context) {
 	})
 	user := c.MustGet("user").(models.User)
 	friends := common.GetBlockedFriendsList(user.AccountId)
-
-	all.MarshPrintJSON(friends)
 
 	c.JSON(200, friends)
 }
@@ -353,8 +349,6 @@ func FriendsSummary(c *gin.Context) {
 			Created: friend.Created,
 		})
 	}
-
-	all.MarshPrintJSON(response)
 
 	c.JSON(200, response)
 }

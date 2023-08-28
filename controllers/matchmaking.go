@@ -53,7 +53,6 @@ func MatchmakingTicket(c *gin.Context) {
 	_, ok := common.GameServers[bucket.PlaylistName + ":" + bucket.Region]
 	if !ok {
 		all.PrintRed([]any{"servers not found", bucket.PlaylistName + ":" + bucket.Region})
-		all.MarshPrintJSON(common.GameServers)
 		common.ErrorBadRequest(c)
 		return
 	}
