@@ -173,7 +173,7 @@ func main() {
     
     fortnite.GET("/v2/versioncheck/Windows", controllers.UpdateCheck)
     
-    fortnite.GET("/storefront/v2/catalog", middleware.VerifyAccessToken, controllers.StorefrontCatalog)
+    fortnite.GET("/storefront/v2/catalog", controllers.StorefrontCatalog)
     fortnite.GET("/storefront/v2/keychain", middleware.VerifyAccessToken, controllers.StorefrontKeychain)
     fortnite.GET("/storefront/v2/gift/check_eligibility/recipient/:recipientId/offer/:offerId", middleware.VerifyAccessToken, controllers.CheckGiftStatus)
   }

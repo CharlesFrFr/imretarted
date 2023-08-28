@@ -347,7 +347,7 @@ func RemoveItemsFromProfile(profile *models.Profile, itemIds []string, accountId
 }
 
 func AddEverythingToProfile(profile *models.Profile, accountId string) {
-	pathToAllItems := "data/items.json"
+	pathToAllItems := "data/shop/all.json"
 
 	file, err := os.Open(pathToAllItems)
 	if err != nil {

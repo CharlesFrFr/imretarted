@@ -68,6 +68,10 @@ type BeforeStoreItem struct {
 	BackendType       	string `json:"backendType"`
 	IntroductionSeason 	int    `json:"introductionSeason"`
 	Rarity            	string `json:"rarity"`
+	Gender							string `json:"gender"`
+	Set									string `json:"set"`
 }
+
+type BeforeStoreSetMap map[string][]string
 
 type Prices map[string]map[string]int

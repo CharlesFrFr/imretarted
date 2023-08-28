@@ -229,6 +229,7 @@ func QueryProfile(c *gin.Context, user models.User, profile *models.Profile, res
 				Quantity: 1,
 			}
 			profile.Items["GiftBox:gb_default"] = gift
+			profile.Stats.Attributes["gift_history"] = append(profile.Stats.Attributes["gift_history"].([]interface{}), gift)
 			common.SaveProfileToUser(user.AccountId, *profile)
 
 			all.PrintGreen([]any{"giving daily login reward", user.Username})

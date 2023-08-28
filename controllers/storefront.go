@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"math/rand"
 	"net/http"
 	"os"
 	"time"
@@ -69,9 +68,9 @@ func StorefrontCatalog(c *gin.Context) {
 	}
 
 	if (common.LoadShopFromJson) {
-		pathToProfile := "data/shop.json"
+		pathToShop := "data/shop/shop.json"
 
-		file, err := os.Open(pathToProfile)
+		file, err := os.Open(pathToShop)
 		if err != nil {
 			all.PrintRed([]any{"error opening shop", err})
 			return
@@ -204,148 +203,23 @@ func GenerateRandomItemShop() {
 	}
 
 	for i := 0; i < 6; i++ {
-		entry := GenerateRandomCatalogEntry(-1, &dailyItems, "Small")
+		entry := common.GenerateRandomCatalogEntry(-1, &dailyItems, "Small")
 		ItemShop.Storefronts[0].CatalogEntries = append(ItemShop.Storefronts[0].CatalogEntries, entry)
 	}
 
 	for i := 0; i < 2; i++ {
-		entry := GenerateRandomCatalogEntry(1, &legendaryItems, "Normal")
+		entry := common.GenerateRandomCatalogEntry(1, &legendaryItems, "Normal")
 		ItemShop.Storefronts[1].CatalogEntries = append(ItemShop.Storefronts[1].CatalogEntries, entry)
 	}
-
-	// CreateItemShopEntry("AthenaCharacter", "CID_Emperess", "Common", 0, "Small", 0)
-	// CreateItemShopEntry("AthenaCharacter", "CID_Boyle", "Common", 0, "Small", 0)
-
-	// CreateItemShopEntry("AthenaCharacter", "CID_Samuel", "Common", 0, "Small", 1)
-	// CreateItemShopEntry("AthenaCharacter", "CID_Outsider", "Common", 0, "Small", 1)
-	// CreateItemShopEntry("AthenaCharacter", "CID_PennyNude", "Common", 0, "Small", 1)
-	// CreateItemShopEntry("AthenaCharacter", "CID_LordRegent", "Common", 0, "Small", 1)
-	// CreateItemShopEntry("AthenaMusicPack", "MusicPack_Automotivo", "Common", 0, "Small", 1)
-
+	
 	all.PrintGreen([]any{"generated new random item shop"})
 	if !common.LoadShopFromJson {
 		SaveItemShop()
 	}
 }
 
-func GenerateRandomCatalogEntry(f int, items *[]models.BeforeStoreItem, size string) models.CatalogEntry {
-	endOfDay := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 23, 59, 59, 999999999, time.Now().Location()).Format("2006-01-02T15:04:05.999Z")
-	randomItem := (*items)[rand.Intn(len(*items) - 1)]
-	price := Prices[randomItem.BackendType][randomItem.Rarity]
-	id := all.HashString(randomItem.ID)
-
-	return models.CatalogEntry{
-		DevName: id,
-		OfferID: id,
-		FulfillmentIDs: []string{},
-		DailyLimit: -1,
-		WeeklyLimit: -1,
-		MonthlyLimit: -1,
-		Categories: []string{},
-		Prices: []models.Price{{
-			CurrencyType: "MtxCurrency",
-			CurrencySubType: "CurrencySource",
-			RegularPrice: price,
-			FinalPrice: price,
-			SaleExpiration: endOfDay,
-			BasePrice: price,
-		}},
-		MatchFilter: "",
-		AppStoreID: []string{},
-		FilterWeight: f,
-		SortPriority: f,
-		CatalogGroupPriority: 0,
-		Refundable: false,
-		DisplayAssetPath: "",
-		OfferType: "StaticPrice",
-		GiftInfo: map[string]any {
-			"bIsEnabled": true,
-			"forcedGiftBoxTemplateId": "",
-			"purchaseRequirements": []any{},
-			"giftRecordIds": []any{},
-		},
-		Meta: map[string]any {
-			"SectionId": "Featured",
-			"TileSize": size,
-		},
-		MetaInfo: []gin.H{{
-			"key": "SectionId",
-			"value": "Featured",
-		}, {
-			"key": "TileSize",
-			"value": size,
-		}},
-		Requirements: []models.Requirement{{
-			RequirementType: "DenyOnItemOwnership",
-			RequiredID: randomItem.BackendType + ":" + randomItem.ID,
-			MinQuantity: 1,
-		}},
-		ItemGrants: []models.ItemGrant{{
-			TemplateID: randomItem.BackendType + ":" + randomItem.ID,
-			Quantity: 1,
-		}},
-	}
-}
-
-func CreateItemShopEntry(backendType string, id string, rarity string, f int, size string, store int) {
-	endOfDay := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 23, 59, 59, 999999999, time.Now().Location()).Format("2006-01-02T15:04:05.999Z")
-	price := Prices[backendType][rarity]
-	id = all.HashString(id)
-	ItemShop.Storefronts[store].CatalogEntries = append(ItemShop.Storefronts[store].CatalogEntries, models.CatalogEntry{
-		DevName: id,
-		OfferID: id,
-		FulfillmentIDs: []string{},
-		DailyLimit: -1,
-		WeeklyLimit: -1,
-		MonthlyLimit: -1,
-		Categories: []string{},
-		Prices: []models.Price{{
-			CurrencyType: "MtxCurrency",
-			CurrencySubType: "CurrencySource",
-			RegularPrice: price,
-			FinalPrice: price,
-			SaleExpiration: endOfDay,
-			BasePrice: price,
-		}},
-		MatchFilter: "",
-		AppStoreID: []string{},
-		FilterWeight: f,
-		SortPriority: f,
-		CatalogGroupPriority: 0,
-		Refundable: false,
-		DisplayAssetPath: "",
-		OfferType: "StaticPrice",
-		GiftInfo: map[string]any {
-			"bIsEnabled": true,
-			"forcedGiftBoxTemplateId": "",
-			"purchaseRequirements": []any{},
-			"giftRecordIds": []any{},
-		},
-		Meta: map[string]any {
-			"SectionId": "Featured",
-			"TileSize": size,
-		},
-		MetaInfo: []gin.H{{
-			"key": "SectionId",
-			"value": "Featured",
-		}, {
-			"key": "TileSize",
-			"value": size,
-		}},
-		Requirements: []models.Requirement{{
-			RequirementType: "DenyOnItemOwnership",
-			RequiredID: backendType + ":" + id,
-			MinQuantity: 1,
-		}},
-		ItemGrants: []models.ItemGrant{{
-			TemplateID: backendType + ":" + id,
-			Quantity: 1,
-		}},
-	})
-}
-
 func SaveItemShop() {
-	file, err := os.OpenFile("data/shop.json", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+	file, err := os.OpenFile("data/shop/shop.json", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
 	if err != nil {
 		return
 	}
