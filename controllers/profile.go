@@ -95,6 +95,8 @@ func ClientProfileActionHandler(c *gin.Context) {
 		response.ProfileChanges = []models.ProfileChange{}
 	}
 
+	all.MarshPrintJSON(response)
+
 	c.JSON(200, response)
 }
 
@@ -297,9 +299,11 @@ func PurchaseCatalogEntry(c *gin.Context, user models.User, profile *models.Prof
 			return
 		}
 
-		if marshItem.TemplateId == offer.ItemGrants[0].TemplateID {
-			playerHasItem = true
-			break
+		for _, grant := range offer.ItemGrants {
+			if marshItem.TemplateId == grant.TemplateID {
+				playerHasItem = true
+				break
+			}
 		}
 	}
 
@@ -324,7 +328,34 @@ func PurchaseCatalogEntry(c *gin.Context, user models.User, profile *models.Prof
 		return
 	}
 
-	common.AddItemToProfile(&athenaProfile, offer.ItemGrants[0].TemplateID, user.AccountId)
+	itemsProfileChange := []models.ProfileChange{}
+	lootItems := []models.LootResultItem{}
+
+	for _, grant := range offer.ItemGrants {
+		common.AddItemToProfile(profile, grant.TemplateID, user.AccountId)
+		common.SaveProfileToUser(user.AccountId, *profile)
+
+		lootItems = append(lootItems, models.LootResultItem{
+			ItemType: grant.TemplateID,
+			ItemGuid: grant.TemplateID,
+			ItemProfile: "athena",
+			Quantity: 1,
+		})
+
+		itemsProfileChange = append(itemsProfileChange, models.ProfileChange{
+			ChangeType: "itemAdded",
+			ItemID: grant.TemplateID,
+			Item: models.Item{
+				TemplateId: grant.TemplateID,
+				Attributes: models.ItemAttributes{
+					ItemSeen: false,
+					Variants: []models.ItemVariant{},
+				},
+				Quantity: 1,
+			},
+		})
+	}
+
 	common.TakeUserVBucks(user.AccountId, profile, offer.Prices[0].FinalPrice)
 
 	athenaProfile.Stats.Attributes["season_num"] = common.Season
@@ -334,40 +365,26 @@ func PurchaseCatalogEntry(c *gin.Context, user models.User, profile *models.Prof
 	athenaProfile.Updated = time.Now().Format("2006-01-02T15:04:05.999Z")
 	common.SaveProfileToUser(user.AccountId, athenaProfile)
 
+	response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
+		ChangeType: "itemQuantityChanged",
+		ItemID: "Currency:MtxPurchased",
+		Quantity: user.VBucks - offer.Prices[0].FinalPrice,
+	})
+	
 	response.MultiUpdate = append(response.MultiUpdate, models.MultiUpdate{
 		ProfileRevision: athenaProfile.Rvn,
 		ProfileCommandRevision: athenaProfile.CommandRevision,
 		ProfileID: "athena",
 		ProfileChangesBaseRevision: athenaProfile.Rvn - 1,
-		ProfileChanges: []models.ProfileChange{{
-			ChangeType: "itemAdded",
-			ItemID: offer.ItemGrants[0].TemplateID,
-			Item: models.Item{
-				TemplateId: offer.ItemGrants[0].TemplateID,
-				Attributes: models.ItemAttributes{
-					ItemSeen: false,
-					Variants: []models.ItemVariant{},
-				},
-				Quantity: 1,
-			},
-		}},
+		ProfileChanges: itemsProfileChange,
 	})
-
+	
 	response.Notifications = append(response.Notifications, models.Notification{
 		Type: "CatalogPurchase",
 		Primary: true,
-		LootResult: models.LootResult{ Items: []models.LootResultItem{{
-			ItemType: offer.ItemGrants[0].TemplateID,
-			ItemGuid: offer.ItemGrants[0].TemplateID,
-			ItemProfile: "athena",
-			Quantity: 1,
-		}}},
-	})
-
-	response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
-		ChangeType: "itemQuantityChanged",
-		ItemID: "Currency:MtxPurchased",
-		Quantity: user.VBucks - offer.Prices[0].FinalPrice,
+		LootResult: models.LootResult{ 
+			Items: lootItems,
+		},
 	})
 }
 
