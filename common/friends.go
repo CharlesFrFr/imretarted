@@ -97,7 +97,7 @@ func AddInFriendToResponse(accountId string,friendAction models.FriendAction, re
 		AccountId: friendAction.AccountId,
 		Status:    status,
 		Direction: direction,
-		Created:   time.Now().Format("2006-01-02T15:04:05.999Z"),
+		Created:   time.Now().AddDate(0, 0, -7).Format("2006-01-02T15:04:05.999Z"),
 		Favorite:  false,
 	})
 }
@@ -123,7 +123,7 @@ func AddOutFriendToResponse(accountId string,friendAction models.FriendAction, r
 		AccountId: friendAction.ForAccountId,
 		Status:    status,
 		Direction: direction,
-		Created:   time.Now().Format("2006-01-02T15:04:05.999Z"),
+		Created:   time.Now().AddDate(0, 0, -7).Format("2006-01-02T15:04:05.999Z"),
 		Favorite:  false,
 	})
 }

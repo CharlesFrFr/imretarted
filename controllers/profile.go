@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -10,6 +11,7 @@ import (
 	"github.com/zombman/server/all"
 	"github.com/zombman/server/common"
 	"github.com/zombman/server/models"
+	"github.com/zombman/server/socket"
 )
 
 func ClientProfileActionHandler(c *gin.Context) {
@@ -26,6 +28,8 @@ func ClientProfileActionHandler(c *gin.Context) {
 	}
 
 	switch action {
+		case "QueryProfile":
+			QueryProfile(c, user, &profile, &response)
 		case "PurchaseCatalogEntry":
 			PurchaseCatalogEntry(c, user, &profile, &response)
 		case "EquipBattleRoyaleCustomization":
@@ -36,8 +40,10 @@ func ClientProfileActionHandler(c *gin.Context) {
 			SetCosmeticLockerSlot(c, user, &profile, &response)
 		case "SetCosmeticLockerBanner":
 			SetCosmeticLockerBanner(c, user, &profile, &response)
-		case "QueryProfile":
-			QueryProfile(c, user, &profile, &response)
+		case "GiftCatalogEntry":
+			GiftCatalogEntry(c, user, &profile, &response)
+		case "RemoveGiftBox":
+			RemoveGiftBox(c, user, &profile, &response)
 		default:
 			break
 	}
@@ -59,7 +65,7 @@ func ClientProfileActionHandler(c *gin.Context) {
 		})
 	}
 
-	if response.ProfileRevision == -37707 {
+	if c.IsAborted() {
 		return
 	}
 
@@ -131,7 +137,19 @@ func DedicatedServerProfileActionHandler(c *gin.Context) {
 	c.JSON(200, response)
 }
 
+var doday = time.Now().Format("2006-01-02T15:04:05.999Z")
+var dailyVBucks = -1
+
 func QueryProfile(c *gin.Context, user models.User, profile *models.Profile, response *models.ProfileResponse) {
+	if dailyVBucks == -1 {
+		envVbucks, err := strconv.Atoi(os.Getenv("USER_DAILY_VBUCKS"))
+		if err != nil {
+			dailyVBucks = 50
+		}
+
+		dailyVBucks = envVbucks
+	}
+
 	if profile.ProfileId == "athena" {
 		common.AppendLoadoutsToProfileNoSave(profile, user.AccountId)
 		athenaProfile, _ := common.ConvertProfileToAthena(*profile)
@@ -152,7 +170,71 @@ func QueryProfile(c *gin.Context, user models.User, profile *models.Profile, res
 			AttributeValue: activeLoadout.Attributes.LockerSlotsData,
 		})
 	}
-	
+
+	if profile.ProfileId == "common_core" {
+		profile.Stats.Attributes["allowed_to_receive_gifts"] = true
+		profile.Stats.Attributes["allowed_to_send_gifts"] = true
+		profile.Stats.Attributes["mfa_enabled"] = true
+	}
+
+	if profile.ProfileId == "common_core" {
+		if user.LastLogon == "" {
+			user.LastLogon = time.Now().AddDate(0, 0, -1).Format("2006-01-02T15:04:05.999Z")
+			all.Postgres.Save(&user)
+		}
+
+		timeLastLoggedOn, err := time.Parse("2006-01-02T15:04:05.999Z", user.LastLogon)
+		if err != nil {
+			all.PrintRed([]any{"could not parse time", user.LastLogon})
+			response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
+				ChangeType: "fullProfileUpdate",
+				Profile: *profile,
+			})
+			return
+		}
+		timeNow, err := time.Parse("2006-01-02T15:04:05.999Z", doday)
+		if err != nil {
+			all.PrintRed([]any{"could not parse time", user.LastLogon})
+			response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
+				ChangeType: "fullProfileUpdate",
+				Profile: *profile,
+			})
+			return
+		}
+
+		if timeLastLoggedOn.Day() != timeNow.Day() {
+			user.VBucks += dailyVBucks
+			user.LastLogon = doday
+			all.Postgres.Save(&user)
+
+			common.AddUserVBucks(user.AccountId, profile, dailyVBucks)
+			common.AppendLoadoutsToProfile(profile, user.AccountId)
+
+			gift := models.CommonCoreItem{
+				TemplateId: "GiftBox:gb_default",
+				Attributes: gin.H{
+					"fromAccountId": "Server",
+					"lootList": []gin.H{{
+						"itemType": "Currency:MtxGiveaway",
+						"itemGuid": "Currency:MtxGiveaway",
+						"itemProfile": "athena",
+						"quantity": dailyVBucks,
+					}},
+					"params": gin.H{
+						"userMessage": "Daily Login Reward",
+					},
+					"level": 1,
+					"giftedOn": time.Now().Format("2006-01-02T15:04:05.999Z"),
+				},
+				Quantity: 1,
+			}
+			profile.Items["GiftBox:gb_default"] = gift
+			common.SaveProfileToUser(user.AccountId, *profile)
+
+			all.PrintGreen([]any{"giving daily login reward", user.Username})
+		}
+	}
+
 	response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
 		ChangeType: "fullProfileUpdate",
 		Profile: *profile,
@@ -739,5 +821,145 @@ func SetCosmeticLockerBanner(c *gin.Context, user models.User, profile *models.P
 		ItemID: body.LockerName,
 		AttributeName: "banner_color_template",
 		AttributeValue: body.BannerColorTemplateName,
+	})
+}
+
+func GiftCatalogEntry(c *gin.Context, user models.User, profile *models.Profile, response *models.ProfileResponse) {
+	var body struct {
+		OfferId string `json:"offerId"`
+		ReceiverAccountIds []string `json:"receiverAccountIds"`
+		GiftWrapTemplateId string `json:"giftWrapTemplateId"`
+		PersonalMessage string `json:"personalMessage"`
+	}
+
+	if err := c.ShouldBind(&body); err != nil {
+		all.PrintRed([]any{"could not bind body", err.Error()})
+		common.ErrorBadRequest(c)
+		c.Abort()
+		return
+	}
+
+	offer, err := common.GetCatalogEntry(body.OfferId)
+	if err != nil {
+		all.PrintRed([]any{"could not find offer", body.OfferId})
+		common.ErrorBadRequest(c)
+		c.Abort()
+		return
+	}
+
+	if user.VBucks < offer.Prices[0].FinalPrice {
+		all.PrintRed([]any{"player does not have enough vbucks", user.VBucks, offer.Prices[0].FinalPrice})
+		common.ErrorBadRequest(c)
+		c.Abort()
+		return
+	}
+
+	for _, friend := range body.ReceiverAccountIds {
+		friendAthenaProfile := common.GetFullAthenaProfile(friend)
+		if friendAthenaProfile.AccountId == "" {
+			continue
+		}
+
+		friendCommonCoreProfile, err := common.ReadProfileFromUser(friend, "common_core")
+		if err != nil {
+			common.ErrorBadRequest(c)
+			c.Abort()
+			continue
+		}
+
+		gift := models.CommonCoreItem{
+			TemplateId: body.GiftWrapTemplateId,
+			Attributes: gin.H{
+				"fromAccountId": user.AccountId,
+				"lootList": []gin.H{},
+				"params": gin.H{
+					"userMessage": body.PersonalMessage,
+				},
+				"level": 1,
+				"giftedOn": time.Now().Format("2006-01-02T15:04:05.999Z"),
+			},
+			Quantity: 1,
+		}
+
+		for _, item := range offer.ItemGrants {
+			item222, hasItem := friendAthenaProfile.Items[item.TemplateID]
+			if hasItem {
+				all.MarshPrintJSON(item222)
+				all.PrintRed([]any{"friend already has item", friend})
+				common.ErrorUserAlreadyHasItem(c)
+				c.Abort()
+				continue
+			}
+
+			gift.Attributes["lootList"] = append(gift.Attributes["lootList"].([]gin.H), gin.H{
+				"itemType": item.TemplateID,
+				"itemGuid": item.TemplateID,
+				"itemProfile": "athena",
+				"quantity": 1,
+			})
+		}
+
+		if c.IsAborted() {
+			continue
+		}
+
+		friendCommonCoreProfile.Rvn += 1
+		friendCommonCoreProfile.CommandRevision += 1
+		friendCommonCoreProfile.Updated = time.Now().Format("2006-01-02T15:04:05.999Z")
+
+		friendCommonCoreProfile.Items[body.GiftWrapTemplateId] = gift
+		common.SaveProfileToUser(friend, friendCommonCoreProfile)
+
+		for _, item := range offer.ItemGrants {
+			common.AddItemToProfile(&friendAthenaProfile, item.TemplateID, friend)
+			common.SaveProfileToUser(friend, friendAthenaProfile)
+		}
+
+		socket.XMPPSendBodyToAccountId(gin.H{
+			"payload": gin.H{},
+			"type": "com.epicgames.gift.received",
+			"timestamp": time.Now().Format("2006-01-02T15:04:05.999Z"),
+		}, friend)
+	}
+
+	if c.IsAborted() {
+		return
+	}
+
+	common.TakeUserVBucks(user.AccountId, profile, offer.Prices[0].FinalPrice)
+	common.SaveProfileToUser(user.AccountId, *profile)
+
+	response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
+		ChangeType: "itemQuantityChanged",
+		ItemID: "Currency:MtxPurchased",
+		Quantity: user.VBucks - offer.Prices[0].FinalPrice,
+	})
+}
+
+func RemoveGiftBox(c *gin.Context, user models.User, profile *models.Profile, response *models.ProfileResponse) {
+	var body struct {
+		GiftBoxItemId string `json:"giftBoxItemId"`
+	}
+
+	if err := c.ShouldBind(&body); err != nil {
+		all.PrintRed([]any{"could not bind body", err.Error()})
+		common.ErrorBadRequest(c)
+		c.Abort()
+		return
+	}
+
+	items := profile.Items
+	delete(items, body.GiftBoxItemId)
+	profile.Items = items
+	
+	common.SaveProfileToUser(user.AccountId, *profile)
+
+	
+	all.MarshPrintJSON(profile)
+	all.MarshPrintJSON(body)
+
+	response.ProfileChanges = append(response.ProfileChanges, models.ProfileChange{
+		ChangeType: "fullProfileUpdate",
+		Profile: *profile,
 	})
 }

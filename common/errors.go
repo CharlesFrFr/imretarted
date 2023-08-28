@@ -54,3 +54,7 @@ func ErrorInternalServer(c *gin.Context) {
 func ErrorUnauthorized(c *gin.Context) {
 	DefaultEpicError(c, "errors.com.epicgames.common.oauth.unauthorized", "Unauthorized", 1002, "", 403)
 }
+
+func ErrorUserAlreadyHasItem(c *gin.Context) {
+	DefaultEpicError(c, "errors.com.epicgames.common.item_has_been_granted", "User already has item", 28004, "", 400)
+}

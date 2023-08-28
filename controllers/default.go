@@ -907,18 +907,20 @@ func GetContentPage(c *gin.Context) {
 	Dynamicbackgrounds := ContentPageData["dynamicbackgrounds"].(map[string]interface{})
 	OuterBackgrounds := Dynamicbackgrounds["backgrounds"].(map[string]interface{})
 
-	InnerBackgrounds := []gin.H{
-		{
+	InnerBackgrounds := []gin.H{}
+
+	if common.Season > 10 {
+		InnerBackgrounds[0] = gin.H{
 			"stage": "season"+fmt.Sprint(common.Season),
 			"backgroundimage": "https://cdn2.unrealengine.com/0814-ch4s4-lobby-2048x1024-2048x1024-e3c2cf8d342d.png",
 			"key": "lobby",
 			"_type": "DynamicBackground",
-		},
-		{
-			"stage": "default",
+		}
+		InnerBackgrounds[1] = gin.H{
+			"stage": "season"+fmt.Sprint(common.Season),
 			"key": "vault",
 			"_type": "DynamicBackground",
-		},
+		}
 	}
 
 	OuterBackgrounds["backgrounds"] = InnerBackgrounds
@@ -965,6 +967,14 @@ func CalendarTimeline(c *gin.Context) {
 		state.ActiveEvents[i] = event
 	}
 	state.ValidFrom = time.Now().Format("2006-01-02T15:04:05.999Z")
+
+	if common.Season6HalloweenLobby {
+		state.ActiveEvents = append(state.ActiveEvents, models.ActiveEvent{
+			EventType: "EventFlag.LobbySeason6Halloween",
+			ActiveSince: time.Now().Format("2006-01-02T15:04:05.999Z"),
+			ActiveUntil: monthPos,
+		})
+	}
 	
 	state.State.SeasonNumber = common.Season
 	state.State.SeasonTemplateID = "AthenaSeason:athenaseason" + fmt.Sprint(common.Season)
@@ -982,6 +992,7 @@ func CalendarTimeline(c *gin.Context) {
 	calendar.CurrentTime = time.Now().Format("2006-01-02T15:04:05.999Z")
 	calendar.Channels.ClientMatchmaking.CacheExpire = endOfDay
 	calendar.Channels.ClientEvents.CacheExpire = endOfDay
+
 
 	c.JSON(http.StatusOK, calendar)
 }
@@ -1382,9 +1393,16 @@ func PartyPrivacy(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"accountId": c.Param("accountId"),
 		"optOutOfPublicLeaderboards": false,
-		"partyInviteRestriction": "AnyMember",
-		"acceptingMembers": true,
-		"partyType": "Public",
+	})
+}
+
+func SetPartyPrivacy(c *gin.Context) {
+	var body any
+	c.BindJSON(&body)
+	all.MarshPrintJSON(body)
+	c.JSON(200, gin.H{
+		"accountId": c.Param("accountId"),
+		"optOutOfPublicLeaderboards": false,
 	})
 }
 

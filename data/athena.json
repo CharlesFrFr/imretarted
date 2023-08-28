@@ -7,6 +7,20 @@
   "profileId": "athena",
   "version": "1",
   "items": {
+    "60524158-9f98-4df6-8310-a9c6aa2671a0": {
+      "templateId": "Quest:quest_s24_lf_q01",
+      "attributes": {
+        "creation_time": "2023-04-08T13:20:31.173Z",
+        "quest_state": "Active",
+        "last_state_change_time": "2023-04-08T13:20:31.173Z",
+        "level": -1,
+        "sent_new_notification": true,
+        "challenge_bundle_id": "173831bd-2a42-49ce-bb5c-a14859496256",
+        "quest_rarity": "common",
+        "xp_reward_scalar": 1
+      },
+      "quantity": 1
+    },
     "AthenaCharacter:CID_001_Athena_Commando_F_Default": {
       "attributes": {
         "favorite": false,

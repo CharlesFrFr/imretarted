@@ -6,7 +6,20 @@
   "accountId": "",
   "profileId": "theater0",
   "version": "no_version",
-  "items": {},
+  "items": {
+    "3d81f6f3-1290-326e-dfee-e577af2e9fbb": {
+      "templateId": "Ingredient:ingredient_blastpowder",
+      "attributes": {
+        "loadedAmmo": 0,
+        "inventory_overflow_date": false,
+        "level": 0,
+        "alterationDefinitions": [],
+        "durability": 1,
+        "itemSource": ""
+      },
+      "quantity": 123
+    }
+  },
   "stats": {
     "attributes": {
       "inventory_limit_bonus": 0

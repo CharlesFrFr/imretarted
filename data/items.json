@@ -1,5 +1,41 @@
 [
     {
+        "id": "CID_Empress",
+        "backendType": "AthenaCharacter",
+        "introductionSeason": 0,
+        "rarity": "Epic"
+    },
+    {
+        "id": "CID_Boyle",
+        "backendType": "AthenaCharacter",
+        "introductionSeason": 0,
+        "rarity": "Epic"
+    },
+    {
+        "id": "CID_Samuel",
+        "backendType": "AthenaCharacter",
+        "introductionSeason": 0,
+        "rarity": "Epic"
+    },
+    {
+        "id": "CID_LordRegent",
+        "backendType": "AthenaCharacter",
+        "introductionSeason": 0,
+        "rarity": "Epic"
+    },
+    {
+        "id": "CID_Outsider",
+        "backendType": "AthenaCharacter",
+        "introductionSeason": 0,
+        "rarity": "Epic"
+    },
+    {
+        "id": "MusicPack_Automotivo",
+        "backendType": "AthenaMusicPack",
+        "introductionSeason": 0,
+        "rarity": "Common"
+    },
+    {
         "id": "Backpack_AgentSherbert",
         "backendType": "AthenaBackpack",
         "introductionSeason": 43,

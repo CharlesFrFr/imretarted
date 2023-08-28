@@ -11,6 +11,7 @@ import (
 	"github.com/zombman/server/all"
 	"github.com/zombman/server/common"
 	"github.com/zombman/server/models"
+	"github.com/zombman/server/socket"
 )
 
 func UserCreate(c *gin.Context) {
@@ -438,6 +439,12 @@ func AdminGiveAllSkins(c * gin.Context) {
 
 	common.AddEverythingToProfile(&profile, accountId)
 	common.AppendLoadoutsToProfile(&profile, accountId)
+	
+	socket.XMPPSendBodyToAccountId(gin.H{
+		"payload": gin.H{},
+		"type": "com.epicgames.gift.received",
+		"timestamp": time.Now().Format("2006-01-02T15:04:05.999Z"),
+	}, accountId)
 
 	c.JSON(http.StatusOK, profile)
 }

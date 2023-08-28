@@ -21,6 +21,7 @@ var (
 	IP               string = "127.0.0.1:3000"
 	Season           int    = 0
 	LoadShopFromJson bool   = false
+	Season6HalloweenLobby bool = false
 )
 
 func InitGameServers() {

@@ -173,8 +173,9 @@ func main() {
     
     fortnite.GET("/v2/versioncheck/Windows", controllers.UpdateCheck)
     
-    fortnite.GET("/storefront/v2/catalog", controllers.StorefrontCatalog)
+    fortnite.GET("/storefront/v2/catalog", middleware.VerifyAccessToken, controllers.StorefrontCatalog)
     fortnite.GET("/storefront/v2/keychain", middleware.VerifyAccessToken, controllers.StorefrontKeychain)
+    fortnite.GET("/storefront/v2/gift/check_eligibility/recipient/:recipientId/offer/:offerId", middleware.VerifyAccessToken, controllers.CheckGiftStatus)
   }
 
   party := r.Group("/party/api/v1/Fortnite")
@@ -216,7 +217,9 @@ func main() {
 
     blank.GET("/fortnite/api/game/v2/chat/:accountId/:chatRoomType/:area/pc", controllers.ChatRooms)
     blank.GET("/fortnite/api/game/v2/privacy/account/:accountId", controllers.PartyPrivacy)
+    blank.POST("/fortnite/api/game/v2/privacy/account/:accountId", controllers.SetPartyPrivacy)
     blank.GET("/fortnite/api/game/v2/br-inventory/account/:accountId", controllers.BRInventory)
+    blank.GET("/fortnite/api/matchmaking/session/findPlayer/:accountId", controllers.NoContent)
   }
 
   r.GET("/", controllers.XMPP)

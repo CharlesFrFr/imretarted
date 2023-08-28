@@ -7,7 +7,9 @@ import (
 	"io"
 	"os"
 	"strconv"
+	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/zombman/server/all"
 	"github.com/zombman/server/models"
 )
@@ -370,7 +372,38 @@ func AddEverythingToProfile(profile *models.Profile, accountId string) {
 		itemIds = append(itemIds, item.BackendType + ":" + item.ID)
 	}
 
+	commonCore, err := ReadProfileFromUser(accountId, "common_core")
+	if err != nil {
+		return
+	}
+
+	gift := models.CommonCoreItem{
+		TemplateId: "GiftBox:gb_default",
+		Attributes: gin.H{
+			"fromAccountId": "Server",
+			"lootList": []gin.H{},
+			"params": gin.H{
+				"userMessage": "Enjoy this gift from the server!",
+			},
+			"level": 1,
+			"giftedOn": time.Now().Format("2006-01-02T15:04:05.999Z"),
+		},
+		Quantity: 1,
+	}
+
+	for _, item := range itemIds {
+		gift.Attributes["lootList"] = append(gift.Attributes["lootList"].([]gin.H), gin.H{
+			"itemType": item,
+			"itemGuid": item,
+			"itemProfile": "athena",
+			"quantity": 1,
+		})
+	}
+
+	commonCore.Items["GiftBox:gb_default"] = gift
 	AddItemsToProfile(profile, itemIds, accountId)
+	SaveProfileToUser(accountId, commonCore)
+
 	all.PrintGreen([]any{"added all items to profile", accountId})
 }
 
