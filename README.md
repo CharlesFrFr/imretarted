@@ -12,7 +12,7 @@ An open source, performant fortnite backend server with a built in web-interface
 - **Blazing fast:** Written in Go, this server is extremely fast and lightweight.
 - **Easy to use:** Designed to be easy to use and setup.
 - **Open source:** Completely free to use, share and modify!
-- **Web interface:** Built in web interface to manage your server. (not implemented yet)
+- **Web interface:** Built in web interface to manage your server.
 
 ## Setup
 
