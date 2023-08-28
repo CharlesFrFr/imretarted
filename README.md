@@ -24,22 +24,20 @@ An open source, performant fortnite backend server with a built in web-interface
 Roadmap is in order of completion, so closer to the top of list means it will be done before items lower down the list. View the trello board [here](https://trello.com/b/7AKhxa5T/zombie-server) to see a more detailed view of this roadmap and to view any bugs.
 
 - [x] Basic user creation and authentication
-- [x] Fortnite uses oauth tokens
+- [x] Access the fortnite lobby
 - [x] Profiles to access lobby and item shop
-- [x] Random item shop
-- [x] Buy from item shop
-- [x] Gifting
-- [x] Equip items and variants
+- [x] Rotating item shop with correct prices and items from season or below
+- [x] Gifting & Buying from item shop
+- [x] Equip items and variants (works with superhero skins)
 - [x] Cloud storage for settings
 - [x] Control panel for server admins
-- [x] Game launcher and web interface
-- [x] Friends
-- [x] Matchmaker
-- [x] Xmpp
-- [x] Parties
-- [x] Party v2 (kinda scuffed)
+- [x] Friends (friends v2)
+- [x] Matchmaker & XMPP
+- [x] Parties (party v2 is kinda scuffed)
 - [x] Daily rewards
+- [x] Change lobby background in chapter 2+
 - [ ] Battle Pass & Levelling Up
+- [ ] Challenges (or Quests)
 
 ## Prerequisites
 
