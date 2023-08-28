@@ -25,7 +25,7 @@ Roadmap is in order of completion, so closer to the top of list means it will be
 
 - [x] Basic user creation and authentication
 - [x] Access the fortnite lobby
-- [x] Profiles to access lobby and item shop
+- [x] Profiles per user (not shared/full locker)
 - [x] Rotating item shop with correct prices and items from season or below
 - [x] Gifting & Buying from item shop
 - [x] Equip items and variants (works with superhero skins)
