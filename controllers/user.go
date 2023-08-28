@@ -500,8 +500,42 @@ func AdminGiveItem(c *gin.Context) {
 		return
 	}
 
+	commonCore, err := common.ReadProfileFromUser(accountId, "common_core")
+	if err != nil {
+		return
+	}
+
+	gift := models.CommonCoreItem{
+		TemplateId: "GiftBox:gb_default",
+		Attributes: gin.H{
+			"fromAccountId": "Server",
+			"lootList": []gin.H{
+				{
+					"itemType": itemId,
+					"itemGuid": itemId,
+					"itemProfile": "athena",
+					"quantity": 1,
+				},
+			},
+			"params": gin.H{
+				"userMessage": "Enjoy this gift from the server!",
+			},
+			"level": 1,
+			"giftedOn": time.Now().Format("2006-01-02T15:04:05.999Z"),
+		},
+		Quantity: 1,
+	}
+	commonCore.Items["GiftBox:gb_default"] = gift
+	common.SaveProfileToUser(accountId, commonCore)
+
 	common.AddItemToProfile(&profile, itemId, accountId)
 	common.AppendLoadoutsToProfile(&profile, accountId)
+
+	socket.XMPPSendBodyToAccountId(gin.H{
+		"payload": gin.H{},
+		"type": "com.epicgames.gift.received",
+		"timestamp": time.Now().Format("2006-01-02T15:04:05.999Z"),
+	}, accountId)
 
 	c.JSON(http.StatusOK, profile)
 }
