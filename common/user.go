@@ -1,7 +1,12 @@
 package common
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
+	"net/http"
+	"net/url"
+	"os"
 	"regexp"
 
 	"github.com/google/uuid"
@@ -108,4 +113,45 @@ func GetUserByUsernameAndHashPassword(username string, password string) (models.
 	}
 
 	return user, nil
+}
+
+func VerifyGoogleRecaptcha(token string) bool {
+	secret := os.Getenv("GOOGLE_RECAPTCHA_SECRET_KEY")
+	if secret == "" {
+		return false
+	}
+
+	if secret == "OFF" {
+		return true
+	}
+
+	response, err := http.PostForm("https://www.google.com/recaptcha/api/siteverify?secret="+ secret +"&response="+ token, url.Values{})
+	if err != nil {
+		return false
+	}
+
+	if response.StatusCode != 200 {
+		return false
+	}
+
+	bodyclone := response.Body
+
+	// body2 := make([]byte, 10000)
+	// response.Body.Read(body2)
+	// fmt.Println(string(body2))
+
+	// read response body
+	defer response.Body.Close()
+	var body struct {
+		Success bool `json:"success"`
+	}
+
+	if err := json.NewDecoder(bodyclone).Decode(&body); err != nil {
+		fmt.Println(err)
+		return false
+	}
+
+	fmt.Println(body.Success)
+
+	return body.Success
 }

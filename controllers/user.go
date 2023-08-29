@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -18,10 +19,16 @@ func UserCreate(c *gin.Context) {
 	var body struct {
 		Username  string `json:"username" binding:"required"`
 		Password  string `json:"password" binding:"required"`
+		Captcha  	string `json:"captcha"`
 	}
 
 	if err := c.ShouldBind(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if ok := common.VerifyGoogleRecaptcha(body.Captcha); !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "You are not a human. Please refresh the page and try again."})
 		return
 	}
 
@@ -86,6 +93,10 @@ type UserAccountPublicResponse struct {
 	Id string `json:"id"`
 	DisplayName string `json:"displayName"`
 	ExternalAuths interface{} `json:"externalAuths"`
+}
+
+func GetGoogleRecaptcha(c *gin.Context) {
+	c.JSON(http.StatusOK, os.Getenv("GOOGLE_RECAPTCHA_SITE_KEY"))
 }
 
 // for some reason i think it is party v2 related
@@ -175,14 +186,19 @@ func UserGetLocker(c *gin.Context) {
 			continue
 		}
 
-		if common.AllItemsKeys[item.TemplateId].IntroductionSeason > 20 {
+		if len(common.AllItemsKeys) == 0 {
+			common.GetAllFortniteItems()
+		}
+
+		itemInfo, ok := common.AllItemsKeys[item.TemplateId]
+		if !ok {
 			continue
 		}
 
 		locker = append(locker, LockerItem{
 			ItemId: item.TemplateId,
-			Rarity: common.AllItemsKeys[item.TemplateId].Rarity,
-			Season: common.AllItemsKeys[item.TemplateId].IntroductionSeason,
+			Rarity: itemInfo.Rarity,
+			Season: itemInfo.IntroductionSeason,
 		})
 	}
 

@@ -99,6 +99,8 @@ func main() {
 
   site := r.Group("/api")
   {
+    site.GET("/google", controllers.GetGoogleRecaptcha)
+
     site.POST("/user/login", controllers.UserLogin)
     site.POST("/user/create", middleware.RateLimitMiddleware(1, 1), controllers.UserCreate)
     site.POST("/user/refresh", controllers.SiteRefresh)
