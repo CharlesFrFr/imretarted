@@ -235,6 +235,7 @@ func main() {
   r.Static("/assets", "./public/assets")
   r.StaticFile("api.json", "./public/api.json")
   r.StaticFile("data.json", "./public/data.json")
+  r.StaticFile("vbuck.png", "./public/vbuck.png")
 
   r.GET("/cid/:cid", controllers.CIDImage)
 

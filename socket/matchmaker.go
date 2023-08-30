@@ -26,7 +26,7 @@ var (
 	RemoteAddressToAccountId = make(map[string]string)
 
 	playerWaitTime = 10
-	FakePlayersToInflateETA = 0
+	FakePlayersToInflateETA = 1200
 )
 
 type MatchmakeInfo struct {

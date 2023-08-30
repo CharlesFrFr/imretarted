@@ -5,6 +5,14 @@
     "//": "The folder is located at ./public/custom_cid_preview"
   },
   {
+    "id": "CID_Sponge",
+    "backendType": "AthenaCharacter",
+    "introductionSeason": 1,
+    "rarity": "Mythic",
+    "gender": "Male",
+    "name": "Spongebob"
+  },
+  {
     "id": "CID_267_Athena_Commando_M_RobotRed",
     "backendType": "AthenaCharacter",
     "introductionSeason": 16,
