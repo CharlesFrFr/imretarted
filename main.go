@@ -100,6 +100,7 @@ func main() {
   site := r.Group("/api")
   {
     site.GET("/google", controllers.GetGoogleRecaptcha)
+    site.GET("/shop", controllers.GetFriendlyShop)
 
     site.POST("/user/login", controllers.UserLogin)
     site.POST("/user/create", middleware.RateLimitMiddleware(1, 1), controllers.UserCreate)
@@ -107,6 +108,7 @@ func main() {
     site.POST("/user/update", middleware.VerifySiteToken, controllers.UserUpdate)
     site.GET("/user/locker", middleware.VerifySiteToken, controllers.UserGetLocker)
 
+    site.POST("/admin/shop", middleware.VerifySiteToken, controllers.AdminChangeShop)
     site.GET("/admin/users", middleware.VerifySiteToken, controllers.AdminGetAllUsers)
     site.GET("/admin/locker/:accountId", middleware.VerifySiteToken, controllers.AdminGetLocker)
     site.POST("/admin/user/:accountId/give/admin", middleware.VerifySiteToken, controllers.AdminGiveUserAdmin)

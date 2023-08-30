@@ -70,8 +70,17 @@ type BeforeStoreItem struct {
 	Rarity            	string `json:"rarity"`
 	Gender							string `json:"gender"`
 	Set									string `json:"set"`
+	Name								string `json:"name"`
 }
 
 type BeforeStoreSetMap map[string][]string
 
 type Prices map[string]map[string]int
+
+type SiteShopItem struct {
+	Name 				 string `json:"name"`
+	Price				 int    `json:"price"`
+	ItemId			 string `json:"itemId"`
+	Rarity			 string `json:"rarity"`
+	Season			 int    `json:"season"`
+}

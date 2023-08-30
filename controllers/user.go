@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 	"regexp"
@@ -192,6 +193,10 @@ func UserGetLocker(c *gin.Context) {
 
 		itemInfo, ok := common.AllItemsKeys[item.TemplateId]
 		if !ok {
+			continue
+		}
+
+		if itemInfo.IntroductionSeason > common.Season + 10 && itemInfo.Rarity != "Mythic" {
 			continue
 		}
 
@@ -713,4 +718,62 @@ func AdminTakeUserAdmin(c *gin.Context) {
 	all.Postgres.Save(&user)
 
 	c.JSON(http.StatusOK, user)
+}
+
+func GetFriendlyShop(c *gin.Context) {
+	realShop := ItemShop
+
+	fmt.Println(len(realShop.Storefronts))
+
+	if len(realShop.Storefronts) == 0 {
+		GenerateRandomItemShop()
+	}
+
+	daily := []models.SiteShopItem{}
+	for _, item := range realShop.Storefronts[0].CatalogEntries {
+		simpleItem, ok := common.AllItemsKeys[item.ItemGrants[0].TemplateID]
+		if !ok {
+			continue
+		}
+
+		daily = append(daily, models.SiteShopItem{
+			ItemId: item.ItemGrants[0].TemplateID,
+			Price: item.Prices[0].FinalPrice,
+			Rarity: simpleItem.Rarity,
+			Season: simpleItem.IntroductionSeason,
+			Name: simpleItem.Name,
+		})
+	}
+
+	featured := []models.SiteShopItem{}
+	for _, item := range realShop.Storefronts[1].CatalogEntries {
+		simpleItem, ok := common.AllItemsKeys[item.ItemGrants[0].TemplateID]
+		if !ok {
+			continue
+		}
+
+		featured = append(featured, models.SiteShopItem{
+			ItemId: item.ItemGrants[0].TemplateID,
+			Price: item.Prices[0].FinalPrice,
+			Rarity: simpleItem.Rarity,
+			Season: simpleItem.IntroductionSeason,
+			Name: simpleItem.Name,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"daily": daily,
+		"featured": featured,
+	})
+}
+
+func AdminChangeShop(c *gin.Context) {
+	me := c.MustGet("user").(models.User)
+	if me.AccessLevel < 2 {
+		common.ErrorUnauthorized(c)
+		return
+	}
+	
+	GenerateRandomItemShop()
+	GetFriendlyShop(c)
 }

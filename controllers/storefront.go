@@ -15,44 +15,6 @@ import (
 	"github.com/zombman/server/models"
 )
 
-var Prices = models.Prices{
-	"AthenaCharacter": {
-		"Legendary": 2000,
-		"Epic":      1500,
-		"Rare":      1200,
-		"Uncommon":  800,
-		"Common":    500,
-	},
-	"AthenaPickaxe": {
-		"Legendary": 1500,
-		"Epic":      1200,
-		"Rare":      800,
-		"Uncommon":  500,
-		"Common":    300,
-	},
-	"AthenaGlider": {
-		"Legendary": 1500,
-		"Epic":      1200,
-		"Rare":      800,
-		"Uncommon":  500,
-		"Common":    300,
-	},
-	"AthenaDance": {
-		"Legendary": 800,
-		"Epic":      800,
-		"Rare":      500,
-		"Uncommon":  200,
-		"Common":    200,
-	},
-	"AthenaSkyDiveContrail": {
-		"Legendary": 500,
-		"Epic":      400,
-		"Rare":      300,
-		"Uncommon":  200,
-		"Common":    100,
-	},
-}
-
 var ItemShop models.StorePage
 var ShouldRefresh int64 = 0
 
